@@ -70,7 +70,7 @@ repos:
         name: ✅ Check code for common misspellings
         language: system
         types: [text]
-        exclude: ^poetry\.lock$
+        exclude: ^(poetry\.lock|assets/.*)$
         entry: poetry run codespell
         args: [--ignore-words=.codespell-ignore]
       - id: detect-private-key
@@ -125,3 +125,4 @@ repos:
         language: system
         types: [yaml]
         entry: poetry run yamllint
+        exclude: ^assets/.*$
