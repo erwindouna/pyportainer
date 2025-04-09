@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v3.2.1
+_src_path: gh:klaasnicolaas/pypackage-template
+author_email: e.douna@gmail.com
+author_name: Erwin Douna
+github_sponsors: false
+github_username: erwindouna
+kofi_funding: false
+package_name: pyportainer
+project_name: Python Portainer
+project_short_description: Asynchronous Python client for the Portainer API
+project_slug: python-portainer
+run_poetry_install: false
+software_license: MIT License
+tweet_on_release: false

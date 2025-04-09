@@ -1,0 +1,24 @@
+---
+name: Lock
+
+# yamllint disable-line rule:truthy
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  inactivity-lock:
+    name: Lock issues and PRs
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: 🔒 Lock closed issues and PRs
+        uses: klaasnicolaas/action-inactivity-lock@v1.1.1
+        with:
+          days-inactive-issues: 30
+          lock-reason-issues: ""
+          days-inactive-prs: 1
+          lock-reason-prs: ""
