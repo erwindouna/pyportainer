@@ -29,13 +29,8 @@ packages = [
 aiohttp = ">=3.0.0"
 python = "^3.11"
 yarl = ">=1.6.0"
+mashumaro = ">=3.15"
 
-[tool.datamodel-codegen]
-input = "assets/portainer-openapi.yaml"
-input-file-type = "openapi"
-output = "src/pyportainer/models.py"
-use-double-quotes = true
-snake-case-field = true
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/erwindouna/python-python-portainer/issues"
@@ -128,6 +123,7 @@ asyncio_mode = "auto"
 
 [tool.ruff]
 lint.select = ["ALL"]
+line-length = 150
 lint.ignore = [
   "ANN401",  # Opinioated warning on disallowing dynamically typed expressions
   "D203",    # Conflicts with other rules

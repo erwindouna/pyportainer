@@ -70,7 +70,7 @@ repos:
         name: ✅ Check code for common misspellings
         language: system
         types: [text]
-        exclude: ^(poetry\.lock|assets/.*)$
+        exclude: ^(poetry\.lock|assets/.*|src/pyportainer/models/.*)$
         entry: poetry run codespell
         args: [--ignore-words=.codespell-ignore]
       - id: detect-private-key

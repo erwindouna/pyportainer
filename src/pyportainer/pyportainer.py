@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import asyncio
+import socket
 from dataclasses import dataclass
 from importlib import metadata
 from typing import Any, Self
 from urllib.parse import urlparse
 
-import aiohttp
-from aiohttp import ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession
 from aiohttp.hdrs import METH_GET
 from yarl import URL
 
@@ -117,7 +117,7 @@ class Portainer:
         except TimeoutError as err:
             msg = f"Timeout error while accessing {method} {url}: {err}"
             raise PortainerTimeoutError(msg) from err
-        except aiohttp.ClientResponseError as err:
+        except ClientResponseError as err:
             if err.status == 401:
                 msg = f"Authentication failed for {method} {url}: Invalid API key"
                 raise PortainerAuthenticationError(msg) from err
@@ -126,7 +126,7 @@ class Portainer:
                 raise PortainerNotFoundError(msg) from err
             msg = f"Connection error for {method} {url}: {err}"
             raise PortainerConnectionError(msg) from err
-        except Exception as err:
+        except (ClientError, socket.gaierror) as err:
             msg = f"Unexpected error during {method} {url}: {err}"
             raise PortainerConnectionError(msg) from err
 
