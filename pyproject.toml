@@ -121,6 +121,7 @@ max-attributes = 20
 [tool.pytest.ini_options]
 addopts = "--cov"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 
 [tool.ruff]
 lint.select = ["ALL"]

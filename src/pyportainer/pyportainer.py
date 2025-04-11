@@ -102,13 +102,13 @@ class Portainer:
             "X-API-Key": self._api_key,
         }
 
-        if self.session is None:
-            self.session = ClientSession()
+        if self._session is None:
+            self._session = ClientSession()
             self._close_session = True
 
         try:
             async with asyncio.timeout(self._request_timeout):
-                response = await self.session.request(
+                response = await self._session.request(
                     method,
                     url,
                     headers=headers,
@@ -156,8 +156,8 @@ class Portainer:
 
     async def close(self) -> None:
         """Close open client session."""
-        if self.session and self._close_session:
-            await self.session.close()
+        if self._session and self._close_session:
+            await self._session.close()
 
     async def __aenter__(self) -> Self:
         """Async enter.

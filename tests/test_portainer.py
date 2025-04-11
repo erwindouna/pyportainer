@@ -9,7 +9,13 @@ from aiohttp import ClientError, ClientResponse, ClientSession
 from aresponses import Response, ResponsesMockServer
 
 from pyportainer import Portainer
-from pyportainer.exceptions import PortainerConnectionError, PortainerError
+from pyportainer.exceptions import (
+    PortainerAuthenticationError,
+    PortainerConnectionError,
+    PortainerError,
+    PortainerNotFoundError,
+    PortainerTimeoutError,
+)
 
 
 async def test_json_request(
@@ -51,20 +57,20 @@ async def test_timeout(aresponses: ResponsesMockServer) -> None:
         return aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
-            text="{}",  # Return an empty JSON object as the response body
+            text="{}",
         )
 
     aresponses.add(
-        "http://localhost:9000",
+        "localhost:9000",
         "/api/test",
         "GET",
         response_handler,
     )
 
     async with ClientSession() as session:
-        client = Portainer(api_url="http://localhost:9000/api", api_key="test_api_key", session=session, request_timeout=10)
-        with pytest.raises(PortainerConnectionError):
-            assert await client._request("test")
+        client = Portainer(api_url="http://localhost:9000/api", api_key="test_api_key", session=session, request_timeout=0.1)
+        with pytest.raises(PortainerTimeoutError):
+            await client._request("test")
         await session.close()
 
 
@@ -74,7 +80,7 @@ async def test_content_type(
 ) -> None:
     """Test request content type error from Portainer API."""
     aresponses.add(
-        "http://localhost:9000",
+        "localhost:9000",
         "/api/test",
         "GET",
         aresponses.Response(
@@ -102,16 +108,23 @@ async def test_client_error() -> None:
         await session.close()
 
 
-async def test_response_status_404(
-    aresponses: ResponsesMockServer,
-    portainer_client: Portainer,
+@pytest.mark.parametrize(
+    ("status_code", "expected_exception"),
+    [
+        (401, PortainerAuthenticationError),
+        (404, PortainerNotFoundError),
+        (500, PortainerConnectionError),
+    ],
+)
+async def test_response_status(
+    aresponses: ResponsesMockServer, portainer_client: Portainer, status_code: int, expected_exception: type[Exception]
 ) -> None:
-    """Test HTTP 404 response handling."""
+    """Test HTTP response status handling."""
     aresponses.add(
-        "http://localhost:9000",
+        "localhost:9000",
         "/api/test",
         "GET",
-        aresponses.Response(text="Check for containers!", status=404),
+        aresponses.Response(text="Error response", status=status_code),
     )
-    with pytest.raises(PortainerConnectionError):
-        assert await portainer_client._request("test")
+    with pytest.raises(expected_exception):
+        await portainer_client._request("test")
