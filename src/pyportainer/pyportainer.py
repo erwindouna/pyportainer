@@ -20,6 +20,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
+from pyportainer.models.portainer import Endpoint
 
 try:
     VERSION = metadata.version(__package__)
@@ -141,21 +142,17 @@ class Portainer:
 
         return await response.json()
 
-    async def get_endpoints(self) -> Any:
+    async def get_endpoints(self) -> list[Endpoint]:
         """Get the list of endpoints from the Portainer API.
 
         Returns
         -------
-            A list of endpoints.
+            A list of Endpoint objects.
 
         """
         endpoints = await self._request("endpoints")
 
-        if endpoints is None:
-            msg = "No endpoints found in the Portainer API"
-            raise PortainerError(msg, {"response": endpoints})
-
-        return endpoints
+        return [Endpoint.from_dict(endpoint) for endpoint in endpoints]
 
     async def close(self) -> None:
         """Close open client session."""

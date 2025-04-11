@@ -30,6 +30,7 @@ aiohttp = ">=3.0.0"
 python = "^3.11"
 yarl = ">=1.6.0"
 mashumaro = ">=3.15"
+orjson = "^3.10.16"
 
 
 [tool.poetry.urls]
