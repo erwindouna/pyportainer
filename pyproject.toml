@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "python-portainer"
+name = "pyportainer"
 version = "0.0.0"
 description = "Asynchronous Python client for the Portainer API"
 authors = ["Erwin Douna <e.douna@gmail.com>"]
