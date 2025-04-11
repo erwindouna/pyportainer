@@ -20,6 +20,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
+from pyportainer.models.docker import DockerContainer
 from pyportainer.models.portainer import Endpoint
 
 try:
@@ -153,6 +154,22 @@ class Portainer:
         endpoints = await self._request("endpoints")
 
         return [Endpoint.from_dict(endpoint) for endpoint in endpoints]
+
+    async def get_containers(self, endpoint_id: int) -> list[DockerContainer]:
+        """Get the list of containers from the Portainer API.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint to get containers from.
+
+        Returns:
+        -------
+            A list of containers.
+
+        """
+        containers = await self._request(f"endpoints/{endpoint_id}/docker/containers/json")
+
+        return [DockerContainer.from_dict(container) for container in containers]
 
     async def close(self) -> None:
         """Close open client session."""
