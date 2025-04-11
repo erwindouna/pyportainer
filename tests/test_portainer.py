@@ -128,3 +128,93 @@ async def test_response_status(
     )
     with pytest.raises(expected_exception):
         await portainer_client._request("test")
+
+
+async def test_start_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test starting a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/start",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.start_container(1, "container_id")
+    assert response is None
+
+
+async def test_stop_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test stopping a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/stop",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.stop_container(1, "container_id")
+    assert response is None
+
+
+async def test_restart_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test restarting a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/restart",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.restart_container(1, "container_id")
+    assert response is None
+
+
+async def test_pause_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test pausing a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/pause",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.pause_container(1, "container_id")
+    assert response is None
+
+
+async def test_unpause_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test unpausing a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/unpause",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.unpause_container(1, "container_id")
+    assert response is None
+
+
+async def test_kill_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test killing a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/kill",
+        "POST",
+        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+    )
+    response = await portainer_client.kill_container(1, "container_id")
+    assert response is None

@@ -171,6 +171,90 @@ class Portainer:
 
         return [DockerContainer.from_dict(container) for container in containers]
 
+    async def start_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Start a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to start.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/start",
+            method="POST",
+        )
+
+    async def stop_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Stop a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to stop.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/stop",
+            method="POST",
+        )
+
+    async def restart_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Restart a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to restart.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/restart",
+            method="POST",
+        )
+
+    async def pause_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Pause a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to pause.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/pause",
+            method="POST",
+        )
+
+    async def unpause_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Unpause a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to unpause.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/unpause",
+            method="POST",
+        )
+
+    async def kill_container(self, endpoint_id: int, container_id: str) -> Any:
+        """Kill a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to kill.
+
+        """
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/kill",
+            method="POST",
+        )
+
     async def close(self) -> None:
         """Close open client session."""
         if self._session and self._close_session:
