@@ -23,7 +23,10 @@ Asynchronous Python client for Python Portainer.
 
 ## About
 
-<!-- TODO: Add a short description about the project. -->
+This is an asynchronous Python client for the [Portainer API](https://docs.portainer.io/api-docs/). It is designed to be used with the [Portainer](https://www.portainer.io/) container management tool.
+This package is a wrapper around the Portainer API, which allows you to interact with Portainer programmatically.
+
+In it's current stage it's still in development and not all endpoints are implemented yet.
 
 ## Installation
 
@@ -31,20 +34,22 @@ Asynchronous Python client for Python Portainer.
 pip install python-portainer
 ```
 
-## Datasets
-
-<!-- TODO: Add a list of datasets that are supported by this package. -->
-
 ### Example
 
 ```python
 import asyncio
 
-from pyportainer import
+from pyportainer import Portainer
 
 
 async def main() -> None:
-    """Show example on using this package."""
+    """Run the example."""
+    async with Portainer(
+        api_url="http://localhost:9000",
+        api_key="YOUR_API_KEY",
+    ) as portainer:
+        endpoints = await portainer.get_endpoints()
+        print("Portainer Endpoints:", endpoints)
 
 
 if __name__ == "__main__":
