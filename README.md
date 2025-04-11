@@ -1,6 +1,3 @@
-<!-- Banner -->
-![alt Banner of the Python Portainer package](https://raw.githubusercontent.com/erwindouna/python-python-portainer/main/assets/header_pyportainer-min.png)
-
 <!-- PROJECT SHIELDS -->
 [![GitHub Release][releases-shield]][releases]
 [![Python Versions][python-versions-shield]][pypi]
@@ -31,7 +28,7 @@ In it's current stage it's still in development and not all endpoints are implem
 ## Installation
 
 ```bash
-pip install python-portainer
+pip install pyportainer
 ```
 
 ### Example
@@ -153,28 +150,28 @@ SOFTWARE.
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
-[build-shield]: https://github.com/erwindouna/python-python-portainer/actions/workflows/tests.yaml/badge.svg
-[build-url]: https://github.com/erwindouna/python-python-portainer/actions/workflows/tests.yaml
-[codecov-shield]: https://codecov.io/gh/erwindouna/python-python-portainer/branch/main/graph/badge.svg?token=TOKEN
-[codecov-url]: https://codecov.io/gh/erwindouna/python-python-portainer
-[commits-shield]: https://img.shields.io/github/commit-activity/y/erwindouna/python-python-portainer.svg
-[commits-url]: https://github.com/erwindouna/python-python-portainer/commits/main
+[build-shield]: https://github.com/erwindouna/pyportainer/actions/workflows/tests.yaml/badge.svg
+[build-url]: https://github.com/erwindouna/pyportainer/actions/workflows/tests.yaml
+[codecov-shield]: https://codecov.io/gh/erwindouna/pyportainer/branch/main/graph/badge.svg?token=TOKEN
+[codecov-url]: https://codecov.io/gh/erwindouna/pyportainer
+[commits-shield]: https://img.shields.io/github/commit-activity/y/erwindouna/pyportainer.svg
+[commits-url]: https://github.com/erwindouna/pyportainer/commits/main
 [devcontainer-shield]: https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode
-[devcontainer]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/erwindouna/python-python-portainer
-[downloads-shield]: https://img.shields.io/pypi/dm/python-portainer
-[downloads-url]: https://pypistats.org/packages/python-portainer
-[last-commit-shield]: https://img.shields.io/github/last-commit/erwindouna/python-python-portainer.svg
-[license-shield]: https://img.shields.io/github/license/erwindouna/python-python-portainer.svg
+[devcontainer]: https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/erwindouna/pyportainer
+[downloads-shield]: https://img.shields.io/pypi/dm/pyportainer
+[downloads-url]: https://pypistats.org/packages/pyportainer
+[last-commit-shield]: https://img.shields.io/github/last-commit/erwindouna/pyportainer.svg
+[license-shield]: https://img.shields.io/github/license/erwindouna/pyportainer.svg
 [maintainability-shield]: https://api.codeclimate.com/v1/badges/TOKEN/maintainability
-[maintainability-url]: https://codeclimate.com/github/erwindouna/python-python-portainer/maintainability
+[maintainability-url]: https://codeclimate.com/github/erwindouna/pyportainer/maintainability
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
-[pypi]: https://pypi.org/project/python-portainer/
-[python-versions-shield]: https://img.shields.io/pypi/pyversions/python-portainer
-[releases-shield]: https://img.shields.io/github/release/erwindouna/python-python-portainer.svg
-[releases]: https://github.com/erwindouna/python-python-portainer/releases
-[typing-shield]: https://github.com/erwindouna/python-python-portainer/actions/workflows/typing.yaml/badge.svg
-[typing-url]: https://github.com/erwindouna/python-python-portainer/actions/workflows/typing.yaml
+[pypi]: https://pypi.org/project/pyportainer/
+[python-versions-shield]: https://img.shields.io/pypi/pyversions/pyportainer
+[releases-shield]: https://img.shields.io/github/release/erwindouna/pyportainer.svg
+[releases]: https://github.com/erwindouna/pyportainer/releases
+[typing-shield]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml/badge.svg
+[typing-url]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml
 
 [poetry-install]: https://python-poetry.org/docs/#installation
 [poetry]: https://python-poetry.org
