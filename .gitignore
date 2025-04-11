@@ -128,3 +128,6 @@ venv.bak/
 
 setup.py
 .python-version
+
+ # Examples
+examples/example_dev.py
