@@ -46,6 +46,7 @@ jobs:
   coverage:
     runs-on: ubuntu-latest
     needs: pytest
+    name: Coverage
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4.2.2
