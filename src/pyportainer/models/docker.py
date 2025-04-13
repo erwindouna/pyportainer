@@ -64,9 +64,9 @@ class IPAMConfig(DataClassORJSONMixin):
 class Network(DataClassORJSONMixin):
     """Represents the network configuration for a Docker container."""
 
-    links: list[str] | None = None
-    aliases: list[str] | None = None
-    gateway: str | None = None
+    links: list[str] | None = field(default=None, metadata=field_options(alias="Links"))
+    aliases: list[str] | None = field(default=None, metadata=field_options(alias="Aliases"))
+    gateway: str | None = field(default=None, metadata=field_options(alias="Gateway"))
 
     ipam_config: IPAMConfig | None = field(default=None, metadata=field_options(alias="IPAMConfig"))
     mac_address: str | None = field(default=None, metadata=field_options(alias="MacAddress"))
@@ -86,7 +86,7 @@ class Network(DataClassORJSONMixin):
 class NetworkSettings(DataClassORJSONMixin):
     """Represents the network settings for a Docker container."""
 
-    networks: dict[str, Network] | None = None
+    networks: dict[str, Network] | None = field(default=None, metadata=field_options(alias="Networks"))
 
 
 @dataclass
@@ -107,15 +107,15 @@ class Mount(DataClassORJSONMixin):
 class DockerContainer(DataClassORJSONMixin):
     """Represents a Docker container."""
 
-    names: list[str] | None = None
-    image: str | None = None
-    command: str | None = None
-    created: str | None = None
-    ports: list[Port] | None = None
-    labels: dict[str, str] | None = None
-    state: str | None = None
-    status: str | None = None
-    mounts: list[Mount] | None = None
+    names: list[str] | None = field(default=None, metadata=field_options(alias="Names"))
+    image: str | None = field(default=None, metadata=field_options(alias="Image"))
+    command: str | None = field(default=None, metadata=field_options(alias="Command"))
+    created: str | None = field(default=None, metadata=field_options(alias="Created"))
+    ports: list[Port] | None = field(default=None, metadata=field_options(alias="Ports"))
+    labels: dict[str, str] | None = field(default=None, metadata=field_options(alias="Labels"))
+    state: str | None = field(default=None, metadata=field_options(alias="State"))
+    status: str | None = field(default=None, metadata=field_options(alias="Status"))
+    mounts: list[Mount] | None = field(default=None, metadata=field_options(alias="Mounts"))
 
     id: str | None = field(default=None, metadata=field_options(alias="Id"))
     image_id: str | None = field(default=None, metadata=field_options(alias="ImageID"))
