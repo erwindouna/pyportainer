@@ -54,3 +54,24 @@ async def test_portainer_containers(
 
     containers = await portainer_client.get_containers(1)
     assert containers == snapshot
+
+
+async def test_portainer_container_inspect(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer container inspect."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_inspect.json"),
+        ),
+    )
+
+    container = await portainer_client.inspect_container(1, "test_container")
+    assert container == snapshot

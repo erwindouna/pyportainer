@@ -21,6 +21,7 @@ from pyportainer.exceptions import (
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import DockerContainer
+from pyportainer.models.docker_inspect import DockerInspect
 from pyportainer.models.portainer import Endpoint
 
 try:
@@ -254,6 +255,23 @@ class Portainer:
             f"endpoints/{endpoint_id}/docker/containers/{container_id}/kill",
             method="POST",
         )
+
+    async def inspect_container(self, endpoint_id: int, container_id: str) -> DockerInspect:
+        """Inspect a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to inspect.
+
+        Returns:
+        -------
+            A DockerContainer object with the inspected data.
+
+        """
+        container = await self._request(f"endpoints/{endpoint_id}/docker/containers/{container_id}/json")
+
+        return DockerInspect.from_dict(container)
 
     async def close(self) -> None:
         """Close open client session."""
