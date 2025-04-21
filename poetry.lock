@@ -404,21 +404,21 @@ toml = ["tomli ; python_full_version <= \"3.11.0a6\""]
 
 [[package]]
 name = "datamodel-code-generator"
-version = "0.28.5"
+version = "0.30.0"
 description = "Datamodel Code Generator"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "datamodel_code_generator-0.28.5-py3-none-any.whl", hash = "sha256:f899c1da5af04b5d5b6e3edbd718c1bf3a00fc4b2fe8210cef609d93a9983e9e"},
-    {file = "datamodel_code_generator-0.28.5.tar.gz", hash = "sha256:20e8b817d301d2d0bb15f436e81c97b25ad1c2ef922c99249c2444141ae15a6a"},
+    {file = "datamodel_code_generator-0.30.0-py3-none-any.whl", hash = "sha256:b1244f3f1b3e98daa48adeb6c366ed432305a1e9f363a57e6f8a7dd3ad364e70"},
+    {file = "datamodel_code_generator-0.30.0.tar.gz", hash = "sha256:00972ab4d3368d06ec29e8b6f06ff1d8cdddf1ee33e6401d5c58f31954692959"},
 ]
 
 [package.dependencies]
 argcomplete = ">=2.10.1,<4"
 black = ">=19.10b0"
 genson = ">=1.2.1,<2"
-inflect = ">=4.1,<6"
+inflect = ">=4.1,<8"
 isort = ">=4.3.21,<7"
 jinja2 = ">=2.10.1,<4"
 packaging = "*"
@@ -1886,4 +1886,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "008b504052c624d7ba3079836b3425a99f74c693ce164573794bda033f403cbe"
+content-hash = "3dbdab05f5bb8c78aae18c4f4f252a16d797a7743441ab2ab8aba41e7a72fa87"
