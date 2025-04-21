@@ -71,7 +71,6 @@ class Network(DataClassORJSONMixin):
     ipam_config: IPAMConfig | None = field(default=None, metadata=field_options(alias="IPAMConfig"))
     mac_address: str | None = field(default=None, metadata=field_options(alias="MacAddress"))
     driver_opts: dict[str, str] | None = field(default=None, metadata=field_options(alias="DriverOpts"))
-    gw_priority: list[int] | None = field(default=None, metadata=field_options(alias="GwPriority"))
     network_id: str | None = field(default=None, metadata=field_options(alias="NetworkID"))
     endpoint_id: str | None = field(default=None, metadata=field_options(alias="EndpointID"))
     ip_address: str | None = field(default=None, metadata=field_options(alias="IPAddress"))
@@ -107,6 +106,8 @@ class Mount(DataClassORJSONMixin):
 class DockerContainer(DataClassORJSONMixin):
     """Represents a Docker container."""
 
+    id: str = field(metadata=field_options(alias="Id"))
+
     names: list[str] | None = field(default=None, metadata=field_options(alias="Names"))
     image: str | None = field(default=None, metadata=field_options(alias="Image"))
     command: str | None = field(default=None, metadata=field_options(alias="Command"))
@@ -117,7 +118,6 @@ class DockerContainer(DataClassORJSONMixin):
     status: str | None = field(default=None, metadata=field_options(alias="Status"))
     mounts: list[Mount] | None = field(default=None, metadata=field_options(alias="Mounts"))
 
-    id: str | None = field(default=None, metadata=field_options(alias="Id"))
     image_id: str | None = field(default=None, metadata=field_options(alias="ImageID"))
     image_manifest_descriptor: ImageManifestDescriptor | None = field(default=None, metadata=field_options(alias="ImageManifestDescriptor"))
     size_rw: str | None = field(default=None, metadata=field_options(alias="SizeRw"))
