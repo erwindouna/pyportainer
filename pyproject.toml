@@ -6,9 +6,9 @@ authors = ["Erwin Douna <e.douna@gmail.com>"]
 maintainers = ["Erwin Douna <e.douna@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/erwindouna/python-python-portainer"
-repository = "https://github.com/erwindouna/python-python-portainer"
-documentation = "https://github.com/erwindouna/python-python-portainer"
+homepage = "https://github.com/erwindouna/pyportainer"
+repository = "https://github.com/erwindouna/pyportainer"
+documentation = "https://github.com/erwindouna/pyportainer"
 keywords = ["python-portainer", "api", "async", "client"]
 classifiers = [
   "Framework :: AsyncIO",
@@ -34,8 +34,8 @@ orjson = "^3.10.16"
 
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/erwindouna/python-python-portainer/issues"
-Changelog = "https://github.com/erwindouna/python-python-portainer/releases"
+"Bug Tracker" = "https://github.com/erwindouna/pyportainer/issues"
+Changelog = "https://github.com/erwindouna/pyportainer/releases"
 
 [tool.poetry.group.dev.dependencies]
 aresponses = "3.0.0"
