@@ -64,15 +64,15 @@ class IPAMConfig(DataClassORJSONMixin):
 class Network(DataClassORJSONMixin):
     """Represents the network configuration for a Docker container."""
 
+    endpoint_id: str = field(metadata=field_options(alias="EndpointID"))
+
     links: list[str] | None = field(default=None, metadata=field_options(alias="Links"))
     aliases: list[str] | None = field(default=None, metadata=field_options(alias="Aliases"))
     gateway: str | None = field(default=None, metadata=field_options(alias="Gateway"))
-
     ipam_config: IPAMConfig | None = field(default=None, metadata=field_options(alias="IPAMConfig"))
     mac_address: str | None = field(default=None, metadata=field_options(alias="MacAddress"))
     driver_opts: dict[str, str] | None = field(default=None, metadata=field_options(alias="DriverOpts"))
     network_id: str | None = field(default=None, metadata=field_options(alias="NetworkID"))
-    endpoint_id: str | None = field(default=None, metadata=field_options(alias="EndpointID"))
     ip_address: str | None = field(default=None, metadata=field_options(alias="IPAddress"))
     ip_prefix_len: int | None = field(default=None, metadata=field_options(alias="IPPrefixLen"))
     ipv6_gateway: str | None = field(default=None, metadata=field_options(alias="IPv6Gateway"))
