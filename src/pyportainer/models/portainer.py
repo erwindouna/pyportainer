@@ -70,6 +70,8 @@ class Edge(DataClassORJSONMixin):
 class Endpoint(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
     """Represents a Portainer endpoint."""
 
+    id: int = field(metadata=field_options(alias="Id"))
+
     amt_device_guid: str | None = field(default=None, metadata=field_options(alias="AMTDeviceGUID"))
     authorized_teams: list[int] | None = field(default=None, metadata=field_options(alias="AuthorizedTeams"))
     authorized_users: list[int] | None = field(default=None, metadata=field_options(alias="AuthorizedUsers"))
@@ -83,7 +85,6 @@ class Endpoint(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attri
     gpus: list[dict[str, str]] | None = field(default=None, metadata=field_options(alias="Gpus"))
     group_id: int | None = field(default=None, metadata=field_options(alias="GroupId"))
     heartbeat: bool | None = field(default=None, metadata=field_options(alias="Heartbeat"))
-    id: int | None = field(default=None, metadata=field_options(alias="Id"))
     is_edge_device: bool | None = field(default=None, metadata=field_options(alias="IsEdgeDevice"))
     kubernetes: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Kubernetes"))
     name: str | None = field(default=None, metadata=field_options(alias="Name"))
