@@ -133,6 +133,9 @@ class Portainer:
             msg = f"Unexpected error during {method} {url}: {err}"
             raise PortainerConnectionError(msg) from err
 
+        if response.status == 204:
+            return None
+
         content_type = response.headers.get("Content-Type", "")
         if "application/json" not in content_type:
             text = await response.text()

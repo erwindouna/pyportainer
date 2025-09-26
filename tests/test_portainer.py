@@ -139,7 +139,7 @@ async def test_start_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/start",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.start_container(1, "container_id")
     assert response is None
@@ -154,7 +154,7 @@ async def test_stop_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/stop",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.stop_container(1, "container_id")
     assert response is None
@@ -169,7 +169,7 @@ async def test_restart_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/restart",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.restart_container(1, "container_id")
     assert response is None
@@ -184,7 +184,7 @@ async def test_pause_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/pause",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.pause_container(1, "container_id")
     assert response is None
@@ -199,7 +199,7 @@ async def test_unpause_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/unpause",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.unpause_container(1, "container_id")
     assert response is None
@@ -214,7 +214,7 @@ async def test_kill_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/kill",
         "POST",
-        aresponses.Response(headers={"Content-Type": "application/json"}, status=204),
+        aresponses.Response(status=204),
     )
     response = await portainer_client.kill_container(1, "container_id")
     assert response is None
