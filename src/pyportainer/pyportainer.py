@@ -133,7 +133,7 @@ class Portainer:
             msg = f"Unexpected error during {method} {url}: {err}"
             raise PortainerConnectionError(msg) from err
 
-        if response.status == 204:
+        if response.status in (204, 304):
             return None
 
         content_type = response.headers.get("Content-Type", "")
