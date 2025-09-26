@@ -154,7 +154,7 @@ async def test_stop_container(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/container_id/stop",
         "POST",
-        aresponses.Response(status=204),
+        aresponses.Response(status=304),
     )
     response = await portainer_client.stop_container(1, "container_id")
     assert response is None
