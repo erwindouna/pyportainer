@@ -75,3 +75,45 @@ async def test_portainer_container_inspect(
 
     container = await portainer_client.inspect_container(1, "test_container")
     assert container == snapshot
+
+
+async def test_portainer_docker_version(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer Docker version."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/version",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_version.json"),
+        ),
+    )
+
+    docker_version = await portainer_client.docker_version(endpoint_id=1)
+    assert docker_version == snapshot
+
+
+async def test_portainer_docker_info(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer Docker info."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/info",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_info.json"),
+        ),
+    )
+
+    docker_info = await portainer_client.docker_info(endpoint_id=1)
+    assert docker_info == snapshot

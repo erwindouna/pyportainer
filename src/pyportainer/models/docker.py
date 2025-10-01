@@ -107,8 +107,8 @@ class DockerContainer(DataClassORJSONMixin):
     """Represents a Docker container."""
 
     id: str = field(metadata=field_options(alias="Id"))
+    names: list[str] = field(default_factory=list, metadata=field_options(alias="Names"))
 
-    names: list[str] | None = field(default=None, metadata=field_options(alias="Names"))
     image: str | None = field(default=None, metadata=field_options(alias="Image"))
     command: str | None = field(default=None, metadata=field_options(alias="Command"))
     created: str | None = field(default=None, metadata=field_options(alias="Created"))

@@ -21,7 +21,7 @@ from pyportainer.exceptions import (
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import DockerContainer
-from pyportainer.models.docker_inspect import DockerInspect
+from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
 try:
@@ -275,6 +275,38 @@ class Portainer:
         container = await self._request(f"endpoints/{endpoint_id}/docker/containers/{container_id}/json")
 
         return DockerInspect.from_dict(container)
+
+    async def docker_version(self, endpoint_id: int) -> DockerVersion:
+        """Get the Docker version on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+
+        Returns:
+        -------
+            A DockerVersion object with the Docker version data.
+
+        """
+        version = await self._request(f"endpoints/{endpoint_id}/docker/version")
+
+        return DockerVersion.from_dict(version)
+
+    async def docker_info(self, endpoint_id: int) -> DockerInfo:
+        """Get the Docker info on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+
+        Returns:
+        -------
+            A DockerInfo object with the Docker info data.
+
+        """
+        info = await self._request(f"endpoints/{endpoint_id}/docker/info")
+
+        return DockerInfo.from_dict(info)
 
     async def close(self) -> None:
         """Close open client session."""
