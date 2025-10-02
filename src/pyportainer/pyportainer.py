@@ -165,13 +165,14 @@ class Portainer:
         Args:
         ----
             endpoint_id: The ID of the endpoint to get containers from.
+            all: If True, include all containers. If False, only running containers.
 
         Returns:
         -------
             A list of containers.
 
         """
-        containers = await self._request(f"endpoints/{endpoint_id}/docker/containers/json")
+        containers = await self._request(f"endpoints/{endpoint_id}/docker/containers/json?all=1")
 
         return [DockerContainer.from_dict(container) for container in containers]
 
