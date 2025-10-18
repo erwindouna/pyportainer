@@ -26,8 +26,8 @@ from pyportainer.models.portainer import Endpoint
 
 try:
     VERSION = metadata.version(__package__)
-except metadata.PackageNotFoundError:
-    VERSION = "DEV-0.0.0"
+except metadata.PackageNotFoundError:  # pragma: no cover
+    VERSION = "DEV-0.0.0"  # pylint: disable=invalid-name
 
 
 @dataclass
