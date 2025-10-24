@@ -315,6 +315,7 @@ class Portainer:
         container_id: str,
         *,
         stream: bool = False,
+        one_shot: bool = True,
     ) -> Any:
         """Get the stats of a container on the specified endpoint.
 
@@ -323,13 +324,14 @@ class Portainer:
             endpoint_id: The ID of the endpoint.
             container_id: The ID of the container to get stats from.
             stream: If True, stream the stats. If False, get a single snapshot.
+            one_shot: If True, get a single snapshot. If False, stream the stats.
 
         Returns:
         -------
             The stats of the container.
 
         """
-        params = {"stream": str(stream).lower()}
+        params = {"stream": str(stream).lower(), "one-shot": str(one_shot).lower()}
         stats = await self._request(
             f"endpoints/{endpoint_id}/docker/containers/{container_id}/stats",
             params=params,
