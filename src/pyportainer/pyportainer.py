@@ -20,7 +20,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer
+from pyportainer.models.docker import DockerContainer, DockerContainerStats
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
@@ -308,6 +308,34 @@ class Portainer:
         info = await self._request(f"endpoints/{endpoint_id}/docker/info")
 
         return DockerInfo.from_dict(info)
+
+    async def container_stats(
+        self,
+        endpoint_id: int,
+        container_id: str,
+        *,
+        stream: bool = False,
+    ) -> Any:
+        """Get the stats of a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to get stats from.
+            stream: If True, stream the stats. If False, get a single snapshot.
+
+        Returns:
+        -------
+            The stats of the container.
+
+        """
+        params = {"stream": str(stream).lower()}
+        stats = await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}/stats",
+            params=params,
+        )
+
+        return DockerContainerStats.from_dict(stats)
 
     async def close(self) -> None:
         """Close open client session."""
