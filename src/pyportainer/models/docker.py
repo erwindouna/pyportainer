@@ -206,32 +206,31 @@ class ThrottlingData(DataClassORJSONMixin):
 class CpuUsage(DataClassORJSONMixin):
     """Represents CPU usage statistics for a Docker container."""
 
-    percpu_usage: list[int]
-    usage_in_usermode: int
-    total_usage: int
-    usage_in_kernelmode: int
+    percpu_usage: list[int] | None = None
+    usage_in_usermode: int | None = None
+    total_usage: int | None = None
+    usage_in_kernelmode: int | None = None
 
 
 @dataclass
 class CpuStats(DataClassORJSONMixin):
     """Represents CPU statistics for a Docker container."""
 
-    cpu_usage: CpuUsage
-    system_cpu_usage: int
-    online_cpus: int
-    throttling_data: ThrottlingData
+    cpu_usage: CpuUsage | None = None
+    system_cpu_usage: int | None = None
+    online_cpus: int | None = None
+    throttling_data: ThrottlingData | None = None
 
 
 @dataclass
 class DockerContainerStats(DataClassORJSONMixin):
     """Represents Docker container statistics."""
 
-    memory_stats: MemoryStats
-    blkio_stats: dict[str, Any]
-    cpu_stats: CpuStats
-    precpu_stats: CpuStats
-
     read: str | None = None
     preread: str | None = None
     pids_stats: PidsStats | None = None
     networks: dict[str, NetworkStats] | None = None
+    memory_stats: MemoryStats | None = None
+    blkio_stats: dict[str, Any] | None = None
+    cpu_stats: CpuStats | None = None
+    precpu_stats: CpuStats | None = None
