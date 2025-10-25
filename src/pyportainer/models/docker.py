@@ -151,86 +151,86 @@ class NetworkStats(DataClassORJSONMixin):
 class MemoryStatsDetails(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
     """Represents detailed memory statistics for a Docker container."""
 
-    total_pgmajfault: int | None = None
-    cache: int | None = None
-    mapped_file: int | None = None
-    total_inactive_file: int | None = None
-    pgpgout: int | None = None
-    rss: int | None = None
-    total_mapped_file: int | None = None
-    writeback: int | None = None
-    unevictable: int | None = None
-    pgpgin: int | None = None
-    total_unevictable: int | None = None
-    pgmajfault: int | None = None
-    total_rss: int | None = None
-    total_rss_huge: int | None = None
-    total_writeback: int | None = None
-    total_inactive_anon: int | None = None
-    rss_huge: int | None = None
-    hierarchical_memory_limit: int | None = None
-    total_pgfault: int | None = None
-    total_active_file: int | None = None
-    active_anon: int | None = None
-    total_active_anon: int | None = None
-    total_pgpgout: int | None = None
-    total_cache: int | None = None
-    inactive_anon: int | None = None
-    active_file: int | None = None
-    pgfault: int | None = None
-    inactive_file: int | None = None
-    total_pgpgin: int | None = None
+    total_pgmajfault: int = field(default=0)
+    cache: int = field(default=0)
+    mapped_file: int = field(default=0)
+    total_inactive_file: int = field(default=0)
+    pgpgout: int = field(default=0)
+    rss: int = field(default=0)
+    total_mapped_file: int = field(default=0)
+    writeback: int = field(default=0)
+    unevictable: int = field(default=0)
+    pgpgin: int = field(default=0)
+    total_unevictable: int = field(default=0)
+    pgmajfault: int = field(default=0)
+    total_rss: int = field(default=0)
+    total_rss_huge: int = field(default=0)
+    total_writeback: int = field(default=0)
+    total_inactive_anon: int = field(default=0)
+    rss_huge: int = field(default=0)
+    hierarchical_memory_limit: int = field(default=0)
+    total_pgfault: int = field(default=0)
+    total_active_file: int = field(default=0)
+    active_anon: int = field(default=0)
+    total_active_anon: int = field(default=0)
+    total_pgpgout: int = field(default=0)
+    total_cache: int = field(default=0)
+    inactive_anon: int = field(default=0)
+    active_file: int = field(default=0)
+    pgfault: int = field(default=0)
+    inactive_file: int = field(default=0)
+    total_pgpgin: int = field(default=0)
 
 
 @dataclass
 class MemoryStats(DataClassORJSONMixin):
     """Represents memory statistics for a Docker container."""
 
-    stats: MemoryStatsDetails | None = None
-    max_usage: int | None = None
-    usage: int | None = None
-    failcnt: int | None = None
-    limit: int | None = None
+    stats: MemoryStatsDetails = field(default_factory=MemoryStatsDetails)
+    max_usage: int = field(default=0)
+    usage: int = field(default=0)
+    failcnt: int = field(default=0)
+    limit: int = field(default=0)
 
 
 @dataclass
 class ThrottlingData(DataClassORJSONMixin):
     """Represents CPU throttling data for a Docker container."""
 
-    periods: int | None = None
-    throttled_periods: int | None = None
-    throttled_time: int | None = None
+    periods: int = field(default=0)
+    throttled_periods: int = field(default=0)
+    throttled_time: int = field(default=0)
 
 
 @dataclass
 class CpuUsage(DataClassORJSONMixin):
     """Represents CPU usage statistics for a Docker container."""
 
-    percpu_usage: list[int] | None = None
-    usage_in_usermode: int | None = None
-    total_usage: int | None = None
-    usage_in_kernelmode: int | None = None
+    total_usage: int = field(default=0)
+    usage_in_kernelmode: int = field(default=0)
+    usage_in_usermode: int = field(default=0)
+    percpu_usage: list[int] = field(default_factory=list)
 
 
 @dataclass
 class CpuStats(DataClassORJSONMixin):
     """Represents CPU statistics for a Docker container."""
 
-    cpu_usage: CpuUsage | None = None
-    system_cpu_usage: int | None = None
-    online_cpus: int | None = None
-    throttling_data: ThrottlingData | None = None
+    cpu_usage: CpuUsage = field(default_factory=CpuUsage)
+    system_cpu_usage: int = field(default=0)
+    online_cpus: int = field(default=0)
+    throttling_data: ThrottlingData = field(default_factory=ThrottlingData)
 
 
 @dataclass
 class DockerContainerStats(DataClassORJSONMixin):
     """Represents Docker container statistics."""
 
-    read: str | None = None
-    preread: str | None = None
-    pids_stats: PidsStats | None = None
-    networks: dict[str, NetworkStats] | None = None
-    memory_stats: MemoryStats | None = None
-    blkio_stats: dict[str, Any] | None = None
-    cpu_stats: CpuStats | None = None
-    precpu_stats: CpuStats | None = None
+    read: str = field(default="")
+    preread: str = field(default="")
+    pids_stats: PidsStats = field(default_factory=PidsStats)
+    networks: dict[str, NetworkStats] = field(default_factory=dict)
+    memory_stats: MemoryStats = field(default_factory=MemoryStats)
+    blkio_stats: dict[str, Any] = field(default_factory=dict)
+    cpu_stats: CpuStats = field(default_factory=CpuStats)
+    precpu_stats: CpuStats | None = field(default_factory=CpuStats)
