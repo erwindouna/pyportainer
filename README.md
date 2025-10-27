@@ -12,7 +12,6 @@
 
 [![Build Status][build-shield]][build-url]
 [![Typing Status][typing-shield]][typing-url]
-[![Maintainability][maintainability-shield]][maintainability-url]
 [![Code Coverage][codecov-shield]][codecov-url]
 
 
@@ -162,9 +161,6 @@ SOFTWARE.
 [downloads-url]: https://pypistats.org/packages/pyportainer
 [last-commit-shield]: https://img.shields.io/github/last-commit/erwindouna/pyportainer.svg
 [license-shield]: https://img.shields.io/github/license/erwindouna/pyportainer.svg
-[maintainability-shield]: https://api.codeclimate.com/v1/badges/TOKEN/maintainability
-[maintainability-url]: https://codeclimate.com/github/erwindouna/pyportainer/maintainability
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
 [pypi]: https://pypi.org/project/pyportainer/
 [python-versions-shield]: https://img.shields.io/pypi/pyversions/pyportainer
