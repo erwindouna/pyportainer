@@ -162,6 +162,7 @@ SOFTWARE.
 [last-commit-shield]: https://img.shields.io/github/last-commit/erwindouna/pyportainer.svg
 [license-shield]: https://img.shields.io/github/license/erwindouna/pyportainer.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-experimental-yellow.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
 [pypi]: https://pypi.org/project/pyportainer/
 [python-versions-shield]: https://img.shields.io/pypi/pyversions/pyportainer
 [releases-shield]: https://img.shields.io/github/release/erwindouna/pyportainer.svg
