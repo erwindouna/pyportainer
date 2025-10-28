@@ -1,0 +1,42 @@
+{
+  "Descriptor": {
+    "mediaType": "application/vnd.oci.image.manifest.v1+json",
+    "digest": "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96",
+    "size": 424,
+    "urls": [
+      "http://example.com"
+    ],
+    "annotations": {
+      "com.docker.official-images.bashbrew.arch": "amd64",
+      "org.opencontainers.image.base.digest": "sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8",
+      "org.opencontainers.image.base.name": "scratch",
+      "org.opencontainers.image.created": "2025-01-27T00:00:00Z",
+      "org.opencontainers.image.revision": "9fabb4bad5138435b01857e2fe9363e2dc5f6a79",
+      "org.opencontainers.image.source": "https://git.launchpad.net/cloud-images/+oci/ubuntu-base",
+      "org.opencontainers.image.url": "https://hub.docker.com/_/ubuntu",
+      "org.opencontainers.image.version": "24.04"
+    },
+    "data": null,
+    "platform": {
+      "architecture": "arm",
+      "os": "windows",
+      "os.version": "10.0.19041.1165",
+      "os.features": [
+        "win32k"
+      ],
+      "variant": "v7"
+    },
+    "artifactType": null
+  },
+  "Platforms": [
+    {
+      "architecture": "arm",
+      "os": "windows",
+      "os.version": "10.0.19041.1165",
+      "os.features": [
+        "win32k"
+      ],
+      "variant": "v7"
+    }
+  ]
+}

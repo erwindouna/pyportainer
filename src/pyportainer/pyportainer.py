@@ -20,7 +20,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer, DockerContainerStats
+from pyportainer.models.docker import DockerContainer, DockerContainerStats, ImageInformation
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
@@ -338,6 +338,23 @@ class Portainer:
         )
 
         return DockerContainerStats.from_dict(stats)
+
+    async def get_image_information(self, endpoint_id: int, image_id: str) -> ImageInformation:
+        """Get information about a Docker image.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            image_id: The ID of the image to get information about.
+
+        Returns:
+        -------
+            An ImageInformation object with the image data.
+
+        """
+        image = await self._request(f"endpoints/{endpoint_id}/docker/distribution/{image_id}/json")
+
+        return ImageInformation.from_dict(image)
 
     async def close(self) -> None:
         """Close open client session."""
