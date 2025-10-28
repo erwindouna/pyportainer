@@ -10,6 +10,14 @@ from mashumaro.mixins.orjson import DataClassORJSONMixin
 
 
 @dataclass
+class ImageInformation(DataClassORJSONMixin):
+    """Represents the image information, from the registry."""
+
+    descriptor: ImageManifestDescriptor | None = field(default=None, metadata=field_options(alias="Descriptor"))
+    platforms: list[ImageManifestDescriptorPlatform] | None = field(default=None, metadata=field_options(alias="Platforms"))
+
+
+@dataclass
 class ImageManifestDescriptorPlatform(DataClassORJSONMixin):
     """Represents the platform information of an image manifest descriptor."""
 
