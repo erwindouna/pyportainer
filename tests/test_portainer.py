@@ -16,6 +16,8 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
+from pyportainer.models.docker import DockerContainer
+from tests import load_fixtures
 
 
 async def test_json_request(
@@ -218,3 +220,132 @@ async def test_kill_container(
     )
     response = await portainer_client.kill_container(1, "container_id")
     assert response is None
+
+
+async def test_delete_container(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test deleting a container."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id",
+        "DELETE",
+        aresponses.Response(status=204),
+    )
+    response = await portainer_client.delete_container(1, "container_id")
+    assert response is None
+
+
+async def test_image_recreate(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test recreating an image."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/create",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text="""
+                {"status": "Pulling from adguard/adguardhome", "id": "latest"}
+                {"status": "Digest: sha256:09a24f05e110e53e213a340b22e5d3c8cdab12ff9be6775388c71b140255c54c"}
+                {"status": "Status: Image is up to date for adguard/adguardhome:latest"}
+            """,
+        ),
+    )
+    response = await portainer_client.image_recreate(1, "adguard/adguardhome:latest")
+    assert isinstance(response, list)
+    assert response[0]["status"] == "Pulling from adguard/adguardhome"
+
+
+async def test_container_recreate_helper(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test container recreate helper."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_inspect.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/create",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text="""
+                {"status": "Pulling from adguard/adguardhome", "id": "latest"}
+                {"status": "Digest: sha256:09a24f05e110e53e213a340b22e5d3c8cdab12ff9be6775388c71b140255c54c"}
+                {"status": "Status: Image is up to date for adguard/adguardhome:latest"}
+            """,
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id/stop",
+        "POST",
+        aresponses.Response(
+            status=204,
+            headers={"Content-Type": "application/json"},
+            text="",
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/funny_chatelet/start",
+        "POST",
+        aresponses.Response(
+            status=204,
+            headers={"Content-Type": "application/json"},
+            text="",
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/container_id",
+        "DELETE",
+        aresponses.Response(status=204),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/create",
+        "POST",
+        aresponses.Response(
+            status=201,
+            headers={"Content-Type": "application/json"},
+            text='{"Id": "funny_chatelet"}',
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/networks/property1/connect",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text="",
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/networks/property2/connect",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text="",
+        ),
+    )
+
+    response = await portainer_client.container_recreate_helper(1, "container_id", "adguard/adguardhome:latest")
+    assert isinstance(response, DockerContainer)
