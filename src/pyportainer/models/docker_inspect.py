@@ -7,6 +7,22 @@ from typing import Any
 
 from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
+from mashumaro.types import SerializationStrategy
+
+
+# Custom serialization strategy for Optional[int] fields that may be empty string
+class OptionalIntStringNoneStrategy(SerializationStrategy):
+    """Custom strategy to handle Optional[int] fields that may be empty strings."""
+
+    def deserialize(self, value: Any) -> Any:
+        """Deserialize value to Optional[int], treating empty strings as None."""
+        if value == "" or value is None:
+            return None
+        return int(value)
+
+    def serialize(self, value: Any) -> Any:
+        """Serialize Optional[int] value."""
+        return value
 
 
 @dataclass
@@ -72,6 +88,97 @@ class ImageManifestDescriptor(DataClassORJSONMixin):
 
 
 @dataclass
+class DockerInspectConfig(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
+    """Represents the configuration of a Docker container."""
+
+    hostname: str | None = field(default=None, metadata=field_options(alias="Hostname"))
+    domainname: str | None = field(default=None, metadata=field_options(alias="Domainname"))
+    user: str | None = field(default=None, metadata=field_options(alias="User"))
+    attach_stdin: bool | None = field(default=None, metadata=field_options(alias="AttachStdin"))
+    attach_stdout: bool | None = field(default=None, metadata=field_options(alias="AttachStdout"))
+    attach_stderr: bool | None = field(default=None, metadata=field_options(alias="AttachStderr"))
+    tty: bool | None = field(default=None, metadata=field_options(alias="Tty"))
+    open_stdin: bool | None = field(default=None, metadata=field_options(alias="OpenStdin"))
+    stdin_once: bool | None = field(default=None, metadata=field_options(alias="StdinOnce"))
+    env: list[str] | None = field(default=None, metadata=field_options(alias="Env"))
+    cmd: list[str] | None = field(default=None, metadata=field_options(alias="Cmd"))
+    image: str | None = field(default=None, metadata=field_options(alias="Image"))
+    working_dir: str | None = field(default=None, metadata=field_options(alias="WorkingDir"))
+    entrypoint: list[str] | None = field(default=None, metadata=field_options(alias="Entrypoint"))
+    labels: dict[str, str] | None = field(default=None, metadata=field_options(alias="Labels"))
+    healthcheck: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Healthcheck"))
+    mac_address: str | None = field(default=None, metadata=field_options(alias="MacAddress"))
+    network_disabled: bool | None = field(default=None, metadata=field_options(alias="NetworkDisabled"))
+    volumes: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Volumes"))
+    stop_signal: str | None = field(default=None, metadata=field_options(alias="StopSignal"))
+    stop_timeout: int | None = field(default=None, metadata=field_options(alias="StopTimeout"))
+
+
+@dataclass
+class DockerInspectHostConfig(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
+    """Represents the host configuration of a Docker container."""
+
+    maximum_iops: int | None = field(default=None, metadata=field_options(alias="MaximumIOps"))
+    maximum_iobps: int | None = field(default=None, metadata=field_options(alias="MaximumIOBps"))
+    blkio_weight: int | None = field(default=None, metadata=field_options(alias="BlkioWeight"))
+    blkio_weight_device: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="BlkioWeightDevice"))
+    blkio_device_read_bps: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="BlkioDeviceReadBps"))
+    blkio_device_write_bps: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="BlkioDeviceWriteBps"))
+    blkio_device_read_iops: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="BlkioDeviceReadIOps"))
+    blkio_device_write_iops: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="BlkioDeviceWriteIOps"))
+    container_id_file: str | None = field(default=None, metadata=field_options(alias="ContainerIDFile"))
+    cpuset_cpus: str | None = field(default=None, metadata=field_options(alias="CpusetCpus"))
+    cpuset_mems: str | None = field(default=None, metadata=field_options(alias="CpusetMems"))
+    cpu_percent: int | None = field(default=None, metadata=field_options(alias="CpuPercent"))
+    network_mode: str | None = field(default=None, metadata=field_options(alias="NetworkMode"))
+    port_bindings: dict[str, list[dict[str, Any]]] | None = field(default=None, metadata=field_options(alias="PortBindings"))
+    binds: list[str] | None = field(default=None, metadata=field_options(alias="Binds"))
+    restart_policy: dict[str, Any] | None = field(default=None, metadata=field_options(alias="RestartPolicy"))
+    cpu_shares: int | None = field(default=None, metadata=field_options(alias="CpuShares"))
+    cpu_period: int | None = field(default=None, metadata=field_options(alias="CpuPeriod"))
+    cpu_realtime_period: int | None = field(default=None, metadata=field_options(alias="CpuRealtimePeriod"))
+    cpu_realtime_runtime: int | None = field(default=None, metadata=field_options(alias="CpuRealtimeRuntime"))
+    memory: int | None = field(default=None, metadata=field_options(alias="Memory"))
+    memory_swap: int | None = field(default=None, metadata=field_options(alias="MemorySwap"))
+    memory_reservation: int | None = field(default=None, metadata=field_options(alias="MemoryReservation"))
+    cgroup_parent: str | None = field(default=None, metadata=field_options(alias="CgroupParent"))
+    devices: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="Devices"))
+    device_requests: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="DeviceRequests"))
+    ipc_mode: str | None = field(default=None, metadata=field_options(alias="IpcMode"))
+    dns: list[str] | None = field(default=None, metadata=field_options(alias="Dns"))
+    dns_search: list[str] | None = field(default=None, metadata=field_options(alias="DnsSearch"))
+    oom_kill_disable: bool | None = field(default=None, metadata=field_options(alias="OomKillDisable"))
+    oom_score_adj: int | None = field(default=None, metadata=field_options(alias="OomScoreAdj"))
+    privileged: bool | None = field(default=None, metadata=field_options(alias="Privileged"))
+    pid_mode: str | None = field(default=None, metadata=field_options(alias="PidMode"))
+    volume_driver: str | None = field(default=None, metadata=field_options(alias="VolumeDriver"))
+    readonly_rootfs: bool | None = field(default=None, metadata=field_options(alias="ReadonlyRootfs"))
+    publish_all_ports: bool | None = field(default=None, metadata=field_options(alias="PublishAllPorts"))
+    log_config: dict[str, Any] | None = field(default=None, metadata=field_options(alias="LogConfig"))
+    sysctls: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Sysctls"))
+    ulimits: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="Ulimits"))
+    shm_size: int | None = field(default=None, metadata=field_options(alias="ShmSize"))
+
+
+@dataclass
+class DockerInspectNetworkSettings(DataClassORJSONMixin):
+    """Represents the network settings of a Docker container."""
+
+    bridge: str | None = field(default=None, metadata=field_options(alias="Bridge"))
+    sandbox_id: str | None = field(default=None, metadata=field_options(alias="SandboxID"))
+    hairpin_mode: bool | None = field(default=None, metadata=field_options(alias="HairpinMode"))
+    link_local_ipv6_address: str | None = field(default=None, metadata=field_options(alias="LinkLocalIPv6Address"))
+    sandbox_key: str | None = field(default=None, metadata=field_options(alias="SandboxKey"))
+    endpoint_id: str | None = field(default=None, metadata=field_options(alias="EndpointID"))
+    gateway: str | None = field(default=None, metadata=field_options(alias="Gateway"))
+    global_ipv6_address: str | None = field(default=None, metadata=field_options(alias="GlobalIPv6Address"))
+    ip_address: str | None = field(default=None, metadata=field_options(alias="IPAddress"))
+    ipv6_gateway: str | None = field(default=None, metadata=field_options(alias="IPv6Gateway"))
+    mac_address: str | None = field(default=None, metadata=field_options(alias="MacAddress"))
+    networks: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Networks"))
+
+
+@dataclass
 class GraphDriver(DataClassORJSONMixin):
     """Represents the graph driver information for a Docker container."""
 
@@ -80,8 +187,19 @@ class GraphDriver(DataClassORJSONMixin):
 
 
 @dataclass
-class DockerInspect(DataClassORJSONMixin):
+class DockerInspect(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
     """Represents the Docker container inspection data."""
+
+    @classmethod
+    def preprocessor(cls, d: dict[str, Any]) -> dict[str, Any]:
+        """Preprocess the Docker inspect payload to clean up certain fields."""
+        ns = d.get("NetworkSettings")
+        int_fields = ["LinkLocalIPv6PrefixLen", "GlobalIPv6PrefixLen", "IPPrefixLen"]
+        if ns and isinstance(ns, dict):
+            for int_field in int_fields:
+                if int_field in ns and ns[int_field] == "":
+                    ns[int_field] = None
+        return d
 
     id: str | None = field(default=None, metadata=field_options(alias="Id"))
     created: str | None = field(default=None, metadata=field_options(alias="Created"))
@@ -103,6 +221,10 @@ class DockerInspect(DataClassORJSONMixin):
     app_armor_profile: str | None = field(default=None, metadata=field_options(alias="AppArmorProfile"))
     exec_ids: list[str] | None = field(default=None, metadata=field_options(alias="ExecIDs"))
     graph_driver: GraphDriver | None = field(default=None, metadata=field_options(alias="GraphDriver"))
+    config: DockerInspectConfig | None = field(default=None, metadata=field_options(alias="Config"))
+    host_config: DockerInspectHostConfig | None = field(default=None, metadata=field_options(alias="HostConfig"))
+    network_settings: DockerInspectNetworkSettings | None = field(default=None, metadata=field_options(alias="NetworkSettings"))
+    mounts: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="Mounts"))
 
 
 @dataclass
