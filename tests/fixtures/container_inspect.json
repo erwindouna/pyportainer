@@ -208,8 +208,7 @@
           "HostIp": "0.0.0.0",
           "HostPort": "53"
         }
-      ],
-      "2377/tcp": null
+      ]
     },
     "RestartPolicy": {
       "Name": "",
@@ -451,8 +450,7 @@
           "HostIp": "0.0.0.0",
           "HostPort": "53"
         }
-      ],
-      "2377/tcp": null
+      ]
     },
     "SandboxKey": "/var/run/docker/netns/8ab54b426c38",
     "SecondaryIPAddresses": [

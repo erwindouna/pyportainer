@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyportainer"
-version = "1.0.9"
+version = "1.0.11"
 description = "Asynchronous Python client for the Portainer API"
 authors = ["Erwin Douna <e.douna@gmail.com>"]
 maintainers = ["Erwin Douna <e.douna@gmail.com>"]
@@ -29,7 +29,7 @@ packages = [
 aiohttp = ">=3.0.0"
 python = "^3.11"
 yarl = ">=1.6.0"
-mashumaro = ">=3.15"
+mashumaro = "^3.17"
 orjson = "^3.10.16"
 
 
@@ -133,6 +133,8 @@ lint.ignore = [
   "D417",    # False positives in some occasions
   "PLR2004", # Just annoying, not really useful
   "SLOT000", # Has a bug with enums: https://github.com/astral-sh/ruff/issues/5748
+  "PLR0913", # Too many arguments in function definition
+  "PLR0912", # Too many branches
 
   # Conflicts with the Ruff formatter
   "COM812",

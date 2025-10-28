@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import socket
 from dataclasses import dataclass
+from datetime import timedelta
 from importlib import metadata
 from typing import Any, Self
 from urllib.parse import urlparse
@@ -66,12 +68,16 @@ class Portainer:
         self._api_scheme = parsed_url.scheme or "http"
         self._api_port = parsed_url.port or 9000
 
+    # pylint: disable=too-many-arguments, too-many-locals
     async def _request(
         self,
         uri: str,
         *,
         method: str = METH_GET,
         params: dict[str, Any] | None = None,
+        json_body: dict[str, Any] | None = None,
+        timeout: float | None = None,
+        parse: bool = True,
     ) -> Any:
         """Handle a request to the Python Portainer API.
 
@@ -80,6 +86,8 @@ class Portainer:
             uri: Request URI, without '/api/', for example, 'status'.
             method: HTTP method to use.
             params: Extra options to improve or limit the response.
+            timeout: Timeout for the request (in seconds).
+            parse: Whether to parse the response as JSON.
 
         Returns:
         -------
@@ -108,13 +116,18 @@ class Portainer:
             self._session = ClientSession()
             self._close_session = True
 
+        # Only override timeout if a specific value is provided, else use default
+        if timeout is None:
+            timeout = self._request_timeout
+
         try:
-            async with asyncio.timeout(self._request_timeout):
+            async with asyncio.timeout(timeout):
                 response = await self._session.request(
                     method,
                     url,
                     headers=headers,
                     params=params,
+                    json=json_body,
                 )
                 response.raise_for_status()
         except TimeoutError as err:
@@ -144,6 +157,17 @@ class Portainer:
                 msg,
                 {"Content-Type": content_type, "response": text},
             )
+
+        # Read events instead. Ideal for getting image pull progress
+        events: list[Any] = []
+        if not parse:
+            async for chunk in response.content:
+                for line in chunk.splitlines():
+                    stripped_line = line.strip()
+                    if not stripped_line:
+                        continue
+                    events.append(json.loads(stripped_line))
+            return events
 
         return await response.json()
 
@@ -260,13 +284,31 @@ class Portainer:
             method="POST",
         )
 
-    async def inspect_container(self, endpoint_id: int, container_id: str) -> DockerInspect:
+    async def delete_container(self, endpoint_id: int, container_id: str, *, force: bool = False) -> Any:
+        """Delete a container on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to delete.
+            force: If True, force delete the container.
+
+        """
+        params = {"force": str(force).lower()}
+        return await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/{container_id}",
+            method="DELETE",
+            params=params,
+        )
+
+    async def inspect_container(self, endpoint_id: int, container_id: str, *, raw: bool = False) -> DockerInspect | Any:
         """Inspect a container on the specified endpoint.
 
         Args:
         ----
             endpoint_id: The ID of the endpoint.
             container_id: The ID of the container to inspect.
+            raw: If True, return the raw JSON response. If False, return a DockerInspect object.
 
         Returns:
         -------
@@ -275,6 +317,8 @@ class Portainer:
         """
         container = await self._request(f"endpoints/{endpoint_id}/docker/containers/{container_id}/json")
 
+        if raw:
+            return container
         return DockerInspect.from_dict(container)
 
     async def docker_version(self, endpoint_id: int) -> DockerVersion:
@@ -355,6 +399,134 @@ class Portainer:
         image = await self._request(f"endpoints/{endpoint_id}/docker/distribution/{image_id}/json")
 
         return ImageInformation.from_dict(image)
+
+    async def image_recreate(self, endpoint_id: int, image_id: str, timeout: timedelta = timedelta(minutes=5)) -> Any:
+        """Recreate a Docker image.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            image_id: The ID of the image to recreate.
+            timeout: Timeout for the image recreation process. Defaults to 5 minutes.
+
+        Returns:
+        -------
+            An ImageInformation object with the recreated image data.
+
+        """
+        params = {"fromImage": image_id}
+        return await self._request(
+            uri=f"endpoints/{endpoint_id}/docker/images/create?fromImage={image_id}",
+            timeout=timeout.total_seconds(),
+            method="POST",
+            params=params,
+            parse=False,
+        )
+
+    async def container_recreate_helper(self, endpoint_id: int, container_id: str, image: str, timeout: timedelta = timedelta(minutes=5)) -> Any:
+        """Recreate a Docker container service.
+
+        This helper runs through the Portainer API and recreates the specified container.
+        It first inspects the container to get its configuration, then creates a new container
+        with the same configuration.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to recreate.
+            image: The tag of the image to use for the new container.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        container_inspect = await self.inspect_container(
+            endpoint_id=endpoint_id,
+            container_id=container_id,
+            raw=True,
+        )
+
+        if not isinstance(container_inspect, dict):
+            msg = "Failed to inspect container for recreation."
+            raise PortainerError(msg)
+
+        await self.image_recreate(
+            endpoint_id=endpoint_id,
+            image_id=image,
+            timeout=timeout,
+        )
+
+        await self.stop_container(
+            endpoint_id=endpoint_id,
+            container_id=container_id,
+        )
+
+        await self.delete_container(
+            endpoint_id=endpoint_id,
+            container_id=container_id,
+            force=True,
+        )
+
+        create_body = {
+            **container_inspect["Config"],
+            "Image": image,
+            "HostConfig": container_inspect["HostConfig"],
+            "Config": container_inspect["Config"],
+        }
+
+        created = await self.container_create(
+            endpoint_id=endpoint_id,
+            name=container_inspect.get("Name", "").lstrip("/"),
+            image=image,
+            config=create_body,
+        )
+
+        # This is optional; reattach networks the same way as the original container
+        # I have to test this, probablt need some friendly users...
+        networks = (container_inspect["NetworkSettings"] or {}).get("Networks") or {}
+        for net_name in networks:
+            network_name = (container_inspect["HostConfig"] or {}).get("NetworkMode") or ""
+            if network_name in {"host", "none"} or network_name.startswith("container:"):
+                continue
+
+            await self._request(
+                f"endpoints/{endpoint_id}/docker/networks/{net_name}/connect",
+                method="POST",
+                json_body={"Container": created.id},
+            )
+
+        await self.start_container(
+            endpoint_id=endpoint_id,
+            container_id=created.id,
+        )
+
+        return created
+
+    async def container_create(self, endpoint_id: int, name: str, image: str, config: dict[str, Any]) -> DockerContainer:
+        """Create a Docker container.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            name: The name of the container to create.
+
+        Returns:
+        -------
+            A DockerContainer object with the created container data.
+
+        """
+        params = {"name": name}
+        json_body = {"Image": image}
+        json_body.update(config)
+        container = await self._request(
+            uri=f"endpoints/{endpoint_id}/docker/containers/create",
+            method="POST",
+            params=params,
+            json_body=json_body,
+        )
+
+        return DockerContainer.from_dict(container)
 
     async def close(self) -> None:
         """Close open client session."""
