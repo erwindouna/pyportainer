@@ -10,6 +10,33 @@ from mashumaro.mixins.orjson import DataClassORJSONMixin
 
 
 @dataclass
+class LocalImageInformation(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
+    """Represents the local image information, from the Docker daemon."""
+
+    id: str = field(metadata=field_options(alias="Id"))
+    repo_tags: list[str] | None = field(default=None, metadata=field_options(alias="RepoTags"))
+    repo_digests: list[str] | None = field(default=None, metadata=field_options(alias="RepoDigests"))
+    parent: str | None = field(default=None, metadata=field_options(alias="Parent"))
+    comment: str | None = field(default=None, metadata=field_options(alias="Comment"))
+    created: str | None = field(default=None, metadata=field_options(alias="Created"))
+    container: str | None = field(default=None, metadata=field_options(alias="Container"))
+    container_config: dict[str, Any] | None = field(default=None, metadata=field_options(alias="ContainerConfig"))
+    docker_version: str | None = field(default=None, metadata=field_options(alias="DockerVersion"))
+    author: str | None = field(default=None, metadata=field_options(alias="Author"))
+    config: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Config"))
+    architecture: str | None = field(default=None, metadata=field_options(alias="Architecture"))
+    variant: str | None = field(default=None, metadata=field_options(alias="Variant"))
+    os: str | None = field(default=None, metadata=field_options(alias="Os"))
+    os_version: str | None = field(default=None, metadata=field_options(alias="OsVersion"))
+    size: int | None = field(default=None, metadata=field_options(alias="Size"))
+    virtual_size: int | None = field(default=None, metadata=field_options(alias="VirtualSize"))
+    graph_driver: dict[str, Any] | None = field(default=None, metadata=field_options(alias="GraphDriver"))
+    root_fs: dict[str, Any] | None = field(default=None, metadata=field_options(alias="RootFS"))
+    metadata: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Metadata"))
+    labels: dict[str, str] | None = field(default=None, metadata=field_options(alias="Labels"))
+
+
+@dataclass
 class ImageInformation(DataClassORJSONMixin):
     """Represents the image information, from the registry."""
 

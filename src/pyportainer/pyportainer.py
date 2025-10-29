@@ -22,7 +22,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer, DockerContainerStats, ImageInformation
+from pyportainer.models.docker import DockerContainer, DockerContainerStats, ImageInformation, LocalImageInformation
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
@@ -399,6 +399,23 @@ class Portainer:
         image = await self._request(f"endpoints/{endpoint_id}/docker/distribution/{image_id}/json")
 
         return ImageInformation.from_dict(image)
+
+    async def get_image(self, endpoint_id: int, image_id: str) -> LocalImageInformation:
+        """Get information about a Docker image.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            image_id: The ID of the image to get information about.
+
+        Returns:
+        -------
+            A LocalImageInformation object with the image data.
+
+        """
+        image = await self._request(f"endpoints/{endpoint_id}/docker/images/{image_id}/json")
+
+        return LocalImageInformation.from_dict(image)
 
     async def image_recreate(self, endpoint_id: int, image_id: str, timeout: timedelta = timedelta(minutes=5)) -> Any:
         """Recreate a Docker image.

@@ -159,3 +159,24 @@ async def test_portainer_images(
 
     images = await portainer_client.get_image_information(endpoint_id=1, image_id="image_id")
     assert images == snapshot
+
+
+async def test_portainer_local_images(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer local images."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/image_id/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    local_images = await portainer_client.get_image(endpoint_id=1, image_id="image_id")
+    assert local_images == snapshot

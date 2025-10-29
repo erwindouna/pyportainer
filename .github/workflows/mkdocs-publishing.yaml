@@ -1,5 +1,6 @@
 ---
 name: mkdocs-publish
+# yamllint disable-line rule:truthy
 on:
   push:
     branches:
