@@ -1,0 +1,51 @@
+---
+site_name: pyportainer
+site_url: https://erwindouna.github.io/pyportainer/
+repo_url: https://github.com/erwindouna/pyportainer
+
+theme:
+  name: material
+  logo: assets/t2f.png
+  favicon: assets/favicon.png
+  palette:
+    scheme: default
+    primary: blue
+  features:
+    - navigation.tabs
+    - navigation.top
+    - navigation.footer
+    - navigation.expand
+    - navigation.sections
+    - navigation.instant
+    - navigation.tracking
+    - navigation.search.highlight
+    - navigation.search.suggest
+    - navigation.search.share
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          setup_commands:
+            - import sys
+            - sys.path.append("src")
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/erwindouna
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/erwindouna/
+
+copyright: Copyright © 2025 Erwin Douna

@@ -31,6 +31,7 @@ python = "^3.11"
 yarl = ">=1.6.0"
 mashumaro = "^3.17"
 orjson = "^3.10.16"
+mkdocs = "^1.6.1"
 
 
 [tool.poetry.urls]
