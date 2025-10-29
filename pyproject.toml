@@ -55,7 +55,10 @@ ruff = "0.14.2"
 syrupy = "5.0.0"
 yamllint = "1.37.1"
 datamodel-code-generator = ">=0.28.5,<0.36.0"
-mkdocstrings = "^0.30.1"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs-material = "^9.5"
+mkdocstrings = { version = "^0.26", extras = ["python"] } # <-- pulls handler
 
 [tool.coverage.run]
 plugins = ["covdefaults"]
