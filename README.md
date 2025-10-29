@@ -54,6 +54,9 @@ if __name__ == "__main__":
 
 More examples can be found in the [examples folder](./examples/).
 
+## Documentation
+The full documentation, including API reference, can be found at: [https://erwindouna.github.io/pyportainer/](https://erwindouna.github.io/pyportainer/)
+
 ## Contributing
 
 This is an active open-source project. We are always open to people who want to
