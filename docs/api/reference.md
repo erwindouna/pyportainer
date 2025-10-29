@@ -1,3 +1,3 @@
 # API Reference
 
-::: myproject.module
+::: pyportainer
