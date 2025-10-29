@@ -29,5 +29,7 @@ jobs:
         run: pip install poetry
       - name: Install docs deps
         run: poetry install --no-interaction --no-root --with docs
+      - name: Add src to PYTHONPATH
+        run: echo "PYTHONPATH=$PWD/src" >> $GITHUB_ENV
       - name: Build & deploy
         run: poetry run mkdocs gh-deploy --force

@@ -33,6 +33,7 @@ mashumaro = "^3.17"
 orjson = "^3.10.16"
 mkdocs = "^1.6.1"
 mkdocstrings = "^0.30.1"
+mkdocs-material = "^9.6.22"
 
 
 [tool.poetry.urls]
