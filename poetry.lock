@@ -998,6 +998,23 @@ i18n = ["babel (>=2.9.0)"]
 min-versions = ["babel (==2.9.0)", "click (==7.0)", "colorama (==0.4) ; platform_system == \"Windows\"", "ghp-import (==1.0)", "importlib-metadata (==4.4) ; python_version < \"3.10\"", "jinja2 (==2.11.1)", "markdown (==3.3.6)", "markupsafe (==2.0.1)", "mergedeep (==1.3.4)", "mkdocs-get-deps (==0.2.0)", "packaging (==20.5)", "pathspec (==0.11.1)", "pyyaml (==5.1)", "pyyaml-env-tag (==0.1)", "watchdog (==2.0)"]
 
 [[package]]
+name = "mkdocs-autorefs"
+version = "1.4.3"
+description = "Automatically link across pages in MkDocs."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "mkdocs_autorefs-1.4.3-py3-none-any.whl", hash = "sha256:469d85eb3114801d08e9cc55d102b3ba65917a869b893403b8987b601cf55dc9"},
+    {file = "mkdocs_autorefs-1.4.3.tar.gz", hash = "sha256:beee715b254455c4aa93b6ef3c67579c399ca092259cc41b7d9342573ff1fc75"},
+]
+
+[package.dependencies]
+Markdown = ">=3.3"
+markupsafe = ">=2.0.1"
+mkdocs = ">=1.1"
+
+[[package]]
 name = "mkdocs-get-deps"
 version = "0.2.0"
 description = "MkDocs extension that lists all dependencies according to a mkdocs.yml file"
@@ -1013,6 +1030,31 @@ files = [
 mergedeep = ">=1.3.4"
 platformdirs = ">=2.2.0"
 pyyaml = ">=5.1"
+
+[[package]]
+name = "mkdocstrings"
+version = "0.30.1"
+description = "Automatic documentation from sources, for MkDocs."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "mkdocstrings-0.30.1-py3-none-any.whl", hash = "sha256:41bd71f284ca4d44a668816193e4025c950b002252081e387433656ae9a70a82"},
+    {file = "mkdocstrings-0.30.1.tar.gz", hash = "sha256:84a007aae9b707fb0aebfc9da23db4b26fc9ab562eb56e335e9ec480cb19744f"},
+]
+
+[package.dependencies]
+Jinja2 = ">=2.11.1"
+Markdown = ">=3.6"
+MarkupSafe = ">=1.1"
+mkdocs = ">=1.6"
+mkdocs-autorefs = ">=1.4"
+pymdown-extensions = ">=6.3"
+
+[package.extras]
+crystal = ["mkdocstrings-crystal (>=0.3.4)"]
+python = ["mkdocstrings-python (>=1.16.2)"]
+python-legacy = ["mkdocstrings-python-legacy (>=0.2.1)"]
 
 [[package]]
 name = "more-itertools"
@@ -1782,6 +1824,25 @@ spelling = ["pyenchant (>=3.2,<4.0)"]
 testutils = ["gitpython (>3)"]
 
 [[package]]
+name = "pymdown-extensions"
+version = "10.16.1"
+description = "Extension pack for Python Markdown."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "pymdown_extensions-10.16.1-py3-none-any.whl", hash = "sha256:d6ba157a6c03146a7fb122b2b9a121300056384eafeec9c9f9e584adfdb2a32d"},
+    {file = "pymdown_extensions-10.16.1.tar.gz", hash = "sha256:aace82bcccba3efc03e25d584e6a22d27a8e17caa3f4dd9f207e49b787aa9a91"},
+]
+
+[package.dependencies]
+markdown = ">=3.6"
+pyyaml = "*"
+
+[package.extras]
+extra = ["pygments (>=2.19.1)"]
+
+[[package]]
 name = "pytest"
 version = "8.4.2"
 description = "pytest: simple powerful testing with Python"
@@ -2450,4 +2511,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "61e8660586581a5dd765fc2530f8c870a940e41aa77923e5f71555e9b2cfadfa"
+content-hash = "536e6b70d7ab5672e2d1a44b90229f4a52e66ecc35ca45edb3b8ee2bb579dc6c"
