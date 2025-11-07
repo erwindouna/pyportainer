@@ -66,7 +66,7 @@ class Portainer:
         parsed_url = urlparse(api_url)
         self._api_host = parsed_url.hostname or "localhost"
         self._api_scheme = parsed_url.scheme or "http"
-        self._api_port = parsed_url.port or 9000
+        self._api_port = parsed_url.port
 
     # pylint: disable=too-many-arguments, too-many-locals
     async def _request(
