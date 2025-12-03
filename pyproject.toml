@@ -56,7 +56,7 @@ datamodel-code-generator = ">=0.28.5,<0.40.0"
 
 [tool.poetry.group.docs.dependencies]
 mkdocs = "^1.6.1"
-mkdocstrings = { version = "^0.30.1", extras = ["python"] }
+mkdocstrings = { version = ">=0.30.1,<1.1.0", extras = ["python"] }
 mkdocs-material = "^9.6.22"
 
 [tool.coverage.run]
