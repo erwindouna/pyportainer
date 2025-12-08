@@ -636,14 +636,14 @@ toml = ["tomli ; python_full_version <= \"3.11.0a6\""]
 
 [[package]]
 name = "datamodel-code-generator"
-version = "0.39.0"
+version = "0.42.0"
 description = "Datamodel Code Generator"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "datamodel_code_generator-0.39.0-py3-none-any.whl", hash = "sha256:f08cd8cf826d3556f638989af4851037026a93cfb846aa6429b13cd622714775"},
-    {file = "datamodel_code_generator-0.39.0.tar.gz", hash = "sha256:d08b5f9cce8fff2b57784c8f1d737fa91ad22ac621a6a732946307730f24f887"},
+    {file = "datamodel_code_generator-0.42.0-py3-none-any.whl", hash = "sha256:ce0ba9cc21ead530e54daa2f5b8ab7dbdc1531edfbf8fbd3ad1a4ab1815b2663"},
+    {file = "datamodel_code_generator-0.42.0.tar.gz", hash = "sha256:f369d0e72eefa7999464826e15cae7406813d9d3c5c7f62140808a21a28da441"},
 ]
 
 [package.dependencies]
@@ -2658,7 +2658,7 @@ version = "2.6.0"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.9"
-groups = ["dev", "docs"]
+groups = ["docs"]
 files = [
     {file = "urllib3-2.6.0-py3-none-any.whl", hash = "sha256:c90f7a39f716c572c4e3e58509581ebd83f9b59cced005b7db7ad2d22b0db99f"},
     {file = "urllib3-2.6.0.tar.gz", hash = "sha256:cb9bcef5a4b345d5da5d145dc3e30834f58e8018828cbc724d30b4cb7d4d49f1"},
@@ -2901,4 +2901,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "15153cc864426be241c6b89e09597e9341760c56e64d42ec9d7ef6172212bd96"
+content-hash = "eb1ed445e60f50d17201fea5e3ff2039b1f8371bae399525fab6afa4c5138183"
