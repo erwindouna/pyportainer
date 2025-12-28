@@ -349,3 +349,23 @@ async def test_container_recreate_helper(
 
     response = await portainer_client.container_recreate_helper(1, "container_id", "adguard/adguardhome:latest")
     assert isinstance(response, DockerContainer)
+
+
+async def test_container_recreate(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test container recreate."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/docker/1/containers/container_id/recreate",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_inspect.json"),
+        ),
+    )
+
+    response = await portainer_client.container_recreate(1, "container_id")
+    assert isinstance(response, DockerContainer)
