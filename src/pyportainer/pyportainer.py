@@ -520,6 +520,29 @@ class Portainer:
 
         return created
 
+    async def container_recreate(self, endpoint_id: int, container_id: str, *, pull_image: bool = False) -> DockerContainer:
+        """Recreate a Docker container.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container to recreate.
+            pull_image: If True, pull the latest image before recreating the container.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params = {"PullImage": pull_image}
+        container = await self._request(
+            uri=f"docker/{endpoint_id}/containers/{container_id}/recreate",
+            method="POST",
+            json_body=params,
+        )
+
+        return DockerContainer.from_dict(container)
+
     async def container_create(self, endpoint_id: int, name: str, image: str, config: dict[str, Any]) -> DockerContainer:
         """Create a Docker container.
 
