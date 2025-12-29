@@ -520,13 +520,16 @@ class Portainer:
 
         return created
 
-    async def container_recreate(self, endpoint_id: int, container_id: str, *, pull_image: bool = False) -> DockerContainer:
+    async def container_recreate(
+        self, endpoint_id: int, container_id: str, timeout: timedelta = timedelta(minutes=5), *, pull_image: bool = False
+    ) -> DockerContainer:
         """Recreate a Docker container.
 
         Args:
         ----
             endpoint_id: The ID of the endpoint.
             container_id: The ID of the container to recreate.
+            timeout: Timeout for the container recreation process. Defaults to 5 minutes.
             pull_image: If True, pull the latest image before recreating the container.
 
         Returns:
@@ -539,6 +542,7 @@ class Portainer:
             uri=f"docker/{endpoint_id}/containers/{container_id}/recreate",
             method="POST",
             json_body=params,
+            timeout=timeout.total_seconds(),
         )
 
         return DockerContainer.from_dict(container)
