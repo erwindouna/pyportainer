@@ -58,12 +58,12 @@
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers-contrib/features/poetry:2": {},
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers-extra/features/uv:1": {},
+    "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
     "ghcr.io/devcontainers/features/common-utils:2": {
       "installOhMyZsh": true
     },
-    "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
       "plugins": "git zsh-autosuggestions zsh-syntax-highlighting zsh-completions",
       "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions.git https://github.com/zsh-users/zsh-syntax-highlighting.git https://github.com/zsh-users/zsh-completions.git"
     },
@@ -71,5 +71,5 @@
       "installTools": false
     }
   },
-  "postCreateCommand": "python3 -m venv .venv && . .venv/bin/activate && poetry install && pre-commit install"
+  "postCreateCommand": "uv sync --all-groups && pre-commit install"
 }

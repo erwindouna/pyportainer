@@ -20,22 +20,30 @@ jobs:
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v6
-      - name: 🏗 Set up Poetry
-        run: pipx install poetry
       - name: 🏗 Set up Python ${{ matrix.python }}
         id: python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
-          cache: "poetry"
-      - name: 🏗 Install workflow dependencies
+      - name: 📦 Cache uv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ matrix.python }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-${{ matrix.python }}-
+            ${{ runner.os }}-uv-
+      - name: 🏗 Install uv
         run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: 🏗 Install workflow dependencies
+        run: uv sync --all-groups
       - name: 🏗 Install dependencies
-        run: poetry install --no-interaction
+        run: uv sync --all-groups
       - name: 🚀 Run pytest
-        run: poetry run pytest -v --cov src tests
+        run: uv run pytest -v --cov src tests
       - name: ⬆️ Upload coverage artifact
         uses: actions/upload-artifact@v6.0.0
         with:
@@ -54,24 +62,32 @@ jobs:
           fetch-depth: 0
       - name: ⬇️ Download coverage data
         uses: actions/download-artifact@v7.0.0
-      - name: 🏗 Set up Poetry
-        run: pipx install poetry
       - name: 🏗 Set up Python ${{ env.DEFAULT_PYTHON }}
         id: python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
-          cache: 'poetry'
-      - name: 🏗 Install workflow dependencies
+      - name: 📦 Cache uv
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/uv
+          key: ${{ runner.os }}-uv-${{ env.DEFAULT_PYTHON }}-${{ hashFiles('uv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-uv-${{ env.DEFAULT_PYTHON }}-
+            ${{ runner.os }}-uv-
+      - name: 🏗 Install uv
         run: |
-          poetry config virtualenvs.create true
-          poetry config virtualenvs.in-project true
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: 🏗 Install workflow dependencies
+        run: uv sync --all-groups
       - name: 🏗 Install dependencies
-        run: poetry install --no-interaction
+        run: uv sync --all-groups
       - name: 🚀 Process coverage results
         run: |
-          poetry run coverage combine coverage*/.coverage*
-          poetry run coverage xml -i
+          uv run coverage combine coverage*/.coverage*
+          uv run coverage xml -i
       - name: 🚀 Upload coverage report
         uses: codecov/codecov-action@v5.5.2
         with:
