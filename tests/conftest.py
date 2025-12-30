@@ -14,7 +14,7 @@ async def client() -> AsyncGenerator[Portainer, None]:
     async with (
         ClientSession() as session,
         Portainer(
-            api_url="http://localhost:9000/api",
+            api_url="http://localhost:9000",
             api_key="test_api_key",
             session=session,
             request_timeout=10.0,

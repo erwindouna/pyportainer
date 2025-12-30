@@ -45,7 +45,7 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
         aresponses.Response(status=200, headers={"Content-Type": "application/json"}, text="{}"),
     )
 
-    async with Portainer(api_url="http://localhost:9000/api", api_key="test-api-key") as client:
+    async with Portainer(api_url="http://localhost:9000", api_key="test-api-key") as client:
         response = await client._request("test")
         assert response == {}
 
@@ -70,7 +70,7 @@ async def test_timeout(aresponses: ResponsesMockServer) -> None:
     )
 
     async with ClientSession() as session:
-        client = Portainer(api_url="http://localhost:9000/api", api_key="test_api_key", session=session, request_timeout=0.1)
+        client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session, request_timeout=0.1)
         with pytest.raises(PortainerTimeoutError):
             await client._request("test")
         await session.close()
@@ -97,7 +97,7 @@ async def test_content_type(
 async def test_client_error() -> None:
     """Test request client error from Autarco API."""
     async with ClientSession() as session:
-        client = Portainer(api_url="http://localhost:9000/api", api_key="test_api_key", session=session)
+        client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session)
         with (
             patch.object(
                 session,
