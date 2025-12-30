@@ -64,9 +64,11 @@ class Portainer:
         self._session = session
 
         parsed_url = urlparse(api_url)
-        self._api_host = parsed_url.hostname or "localhost"
-        self._api_scheme = parsed_url.scheme or "http"
+        self._api_host = parsed_url.hostname or ""
+        self._api_scheme = parsed_url.scheme or ""
         self._api_port = parsed_url.port
+
+        self._api_base_path = (parsed_url.path or "").rstrip("/")
 
     # pylint: disable=too-many-arguments, too-many-locals
     async def _request(
@@ -103,7 +105,7 @@ class Portainer:
             scheme=self._api_scheme,
             host=self._api_host,
             port=self._api_port,
-            path="/api/",
+            path=f"{self._api_base_path}/api/",
         ).join(URL(uri))
 
         headers = {
