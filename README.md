@@ -75,24 +75,19 @@ By clicking the button below you immediately start a Dev Container in Visual Stu
 
 [![Open in Dev Containers][devcontainer-shield]][devcontainer]
 
-This Python project relies on [Poetry][poetry] as its dependency manager,
+This Python project relies on [UV][poetry] as its dependency manager,
 providing comprehensive management and control over project dependencies.
 
-You need at least:
-
-- Python 3.11+
-- [Poetry][poetry-install]
 
 ### Installation
 
 Install all packages, including all development requirements:
 
 ```bash
-poetry install
+uv sync --all-groups && pre-commit install
 ```
 
-_Poetry creates by default an virtual environment where it installs all
-necessary pip packages_.
+_UV creates by default an virtual environment where it installs all necessary pip packages_.
 
 ### Pre-commit
 
@@ -100,13 +95,13 @@ This repository uses the [pre-commit][pre-commit] framework, all changes
 are linted and tested with each commit. To setup the pre-commit check, run:
 
 ```bash
-poetry run pre-commit install
+uv run pre-commit install
 ```
 
 And to run all checks and tests manually, use the following command:
 
 ```bash
-poetry run pre-commit run --all-files
+uv run pre-commit run --all-files
 ```
 
 ### Testing
@@ -114,13 +109,13 @@ poetry run pre-commit run --all-files
 It uses [pytest](https://docs.pytest.org/en/stable/) as the test framework. To run the tests:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 To update the [syrupy](https://github.com/tophat/syrupy) snapshot tests:
 
 ```bash
-poetry run pytest --snapshot-update
+uv run pytest --snapshot-update
 ```
 
 ## License
@@ -173,6 +168,5 @@ SOFTWARE.
 [typing-shield]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml/badge.svg
 [typing-url]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml
 
-[poetry-install]: https://python-poetry.org/docs/#installation
-[poetry]: https://python-poetry.org
+[uv]: https://docs.astral.sh/uv/
 [pre-commit]: https://pre-commit.com
