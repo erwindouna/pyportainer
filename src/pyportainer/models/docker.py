@@ -269,3 +269,11 @@ class DockerContainerStats(DataClassORJSONMixin):
     blkio_stats: dict[str, Any] = field(default_factory=dict)
     cpu_stats: CpuStats = field(default_factory=CpuStats)
     precpu_stats: CpuStats | None = field(default_factory=CpuStats)
+
+
+@dataclass
+class DockerImagePruneResponse(DataClassORJSONMixin):
+    """Represents the response from pruning Docker images."""
+
+    images_deleted: list[str] = field(default_factory=list, metadata=field_options(alias="ImagesDeleted"))
+    space_reclaimed: int = field(default=0, metadata=field_options(alias="SpaceReclaimed"))

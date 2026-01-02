@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from aresponses import ResponsesMockServer
@@ -180,3 +181,28 @@ async def test_portainer_local_images(
 
     local_images = await portainer_client.get_image(endpoint_id=1, image_id="image_id")
     assert local_images == snapshot
+
+
+async def test_portainer_images_prune(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer prune images."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/prune",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_image_prune.json"),
+        ),
+    )
+
+    prune_response = await portainer_client.images_prune(
+        endpoint_id=1,
+        dangling=True,
+        until=timedelta(hours=1),
+    )
+    assert prune_response == snapshot
