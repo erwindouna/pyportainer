@@ -294,9 +294,7 @@ class DockerSystemDFAttribute(DataClassORJSONMixin):
 class DockerSystemDF(DataClassORJSONMixin):
     """Represents Docker system disk usage information."""
 
-    image_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ImageDiskUsage"))
-    container_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ContainerDiskUsage"))
-    volume_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="VolumeDiskUsage"))
-    build_cache_disk_usage: DockerSystemDFAttribute = field(
-        default_factory=DockerSystemDFAttribute, metadata=field_options(alias="BuildCacheDiskUsage")
-    )
+    image_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ImageUsage"))
+    container_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ContainerUsage"))
+    volume_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="VolumeUsage"))
+    build_cache_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="BuildCacheUsage"))
