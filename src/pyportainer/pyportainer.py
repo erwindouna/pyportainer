@@ -6,7 +6,7 @@ import asyncio
 import json
 import socket
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from importlib import metadata
 from typing import Any, Self
 from urllib.parse import urlparse
@@ -22,7 +22,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer, DockerContainerStats, ImageInformation, LocalImageInformation
+from pyportainer.models.docker import DockerContainer, DockerContainerStats, DockerImagePruneResponse, ImageInformation, LocalImageInformation
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
@@ -573,6 +573,33 @@ class Portainer:
         )
 
         return DockerContainer.from_dict(container)
+
+    async def images_prune(self, endpoint_id: int, until: timedelta | None, *, dangling: bool) -> Any:
+        """Prune Docker images on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            dangling: When set to true (or 1), prune only unused and untagged images. When set to false (or 0), all unused images are pruned.
+            until: Prune images created before this timestamp. The until is a timedelta that specifies the duration before the current time.
+            The <timestamp> can be Unix timestamps, date formatted timestamps, or Go duration strings (e.g. 10m, 1h30m).
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params: dict[str, Any] = {"dangling": str(dangling).lower()}
+        if until is not None:
+            params["until"] = int((datetime.now(UTC) - until).timestamp())
+
+        response = await self._request(
+            f"endpoints/{endpoint_id}/docker/images/prune",
+            method="POST",
+            params=params,
+        )
+
+        return DockerImagePruneResponse.from_dict(response)
 
     async def close(self) -> None:
         """Close open client session."""

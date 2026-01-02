@@ -134,6 +134,7 @@ disable= [
   "duplicate-code",
   "format",
   "unsubscriptable-object",
+  "too-many-public-methods",
 ]
 
 [tool.pylint.SIMILARITIES]
