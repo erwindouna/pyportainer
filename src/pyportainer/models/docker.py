@@ -277,3 +277,26 @@ class DockerImagePruneResponse(DataClassORJSONMixin):
 
     images_deleted: list[str] = field(default_factory=list, metadata=field_options(alias="ImagesDeleted"))
     space_reclaimed: int = field(default=0, metadata=field_options(alias="SpaceReclaimed"))
+
+
+@dataclass
+class DockerSystemDFAttribute(DataClassORJSONMixin):
+    """Represents Docker system disk usage attribute."""
+
+    active_count: int | None = field(default=None, metadata=field_options(alias="ActiveCount"))
+    total_count: int | None = field(default=None, metadata=field_options(alias="TotalCount"))
+    reclaimable: int | None = field(default=None, metadata=field_options(alias="Reclaimable"))
+    total_size: int | None = field(default=None, metadata=field_options(alias="TotalSize"))
+    items: list[Any] | None = field(default=None, metadata=field_options(alias="Items"))
+
+
+@dataclass
+class DockerSystemDF(DataClassORJSONMixin):
+    """Represents Docker system disk usage information."""
+
+    image_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ImageDiskUsage"))
+    container_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="ContainerDiskUsage"))
+    volume_disk_usage: DockerSystemDFAttribute = field(default_factory=DockerSystemDFAttribute, metadata=field_options(alias="VolumeDiskUsage"))
+    build_cache_disk_usage: DockerSystemDFAttribute = field(
+        default_factory=DockerSystemDFAttribute, metadata=field_options(alias="BuildCacheDiskUsage")
+    )

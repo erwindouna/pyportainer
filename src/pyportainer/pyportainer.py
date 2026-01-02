@@ -22,7 +22,14 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer, DockerContainerStats, DockerImagePruneResponse, ImageInformation, LocalImageInformation
+from pyportainer.models.docker import (
+    DockerContainer,
+    DockerContainerStats,
+    DockerImagePruneResponse,
+    DockerSystemDF,
+    ImageInformation,
+    LocalImageInformation,
+)
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 
@@ -600,6 +607,25 @@ class Portainer:
         )
 
         return DockerImagePruneResponse.from_dict(response)
+
+    async def docker_system_df(self, endpoint_id: int) -> Any:
+        """Get Docker system disk usage on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        response = await self._request(
+            f"endpoints/{endpoint_id}/docker/system/df",
+            method="GET",
+        )
+
+        return DockerSystemDF.from_dict(response)
 
     async def close(self) -> None:
         """Close open client session."""
