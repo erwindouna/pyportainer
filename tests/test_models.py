@@ -206,3 +206,24 @@ async def test_portainer_images_prune(
         until=timedelta(hours=1),
     )
     assert prune_response == snapshot
+
+
+async def test_portainer_system_df(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer system df."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/system/df",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_system_df.json"),
+        ),
+    )
+
+    system_df = await portainer_client.docker_system_df(endpoint_id=1)
+    assert system_df == snapshot
