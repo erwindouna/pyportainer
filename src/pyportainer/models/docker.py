@@ -275,8 +275,8 @@ class DockerContainerStats(DataClassORJSONMixin):
 class DockerImagePruneResponse(DataClassORJSONMixin):
     """Represents the response from pruning Docker images."""
 
-    images_deleted: list[str] = field(default_factory=list, metadata=field_options(alias="ImagesDeleted"))
-    space_reclaimed: int = field(default=0, metadata=field_options(alias="SpaceReclaimed"))
+    images_deleted: list[str] | None = field(default_factory=list, metadata=field_options(alias="ImagesDeleted"))
+    space_reclaimed: int | None = field(default=0, metadata=field_options(alias="SpaceReclaimed"))
 
 
 @dataclass
