@@ -77,7 +77,7 @@ class Portainer:
 
         self._api_base_path = (parsed_url.path or "").rstrip("/")
 
-    # pylint: disable=too-many-arguments, too-many-locals
+    # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     async def _request(
         self,
         uri: str,
@@ -143,14 +143,16 @@ class Portainer:
             msg = f"Timeout error while accessing {method} {url}: {err}"
             raise PortainerTimeoutError(msg) from err
         except ClientResponseError as err:
-            if err.status == 401:
-                msg = f"Authentication failed for {method} {url}: Invalid API key"
-                raise PortainerAuthenticationError(msg) from err
-            if err.status == 404:
-                msg = f"Resource not found at {method} {url}: {err}"
-                raise PortainerNotFoundError(msg) from err
-            msg = f"Connection error for {method} {url}: {err}"
-            raise PortainerConnectionError(msg) from err
+            match err.status:
+                case 401:
+                    msg = f"Authentication failed for {method} {url}: Invalid API key"
+                    raise PortainerAuthenticationError(msg) from err
+                case 404:
+                    msg = f"Resource not found at {method} {url}: {err}"
+                    raise PortainerNotFoundError(msg) from err
+                case _:
+                    msg = f"Connection error for {method} {url}: {err}"
+                    raise PortainerConnectionError(msg) from err
         except (ClientError, socket.gaierror) as err:
             msg = f"Unexpected error during {method} {url}: {err}"
             raise PortainerConnectionError(msg) from err
@@ -221,6 +223,7 @@ class Portainer:
         return await self._request(
             f"endpoints/{endpoint_id}/docker/containers/{container_id}/start",
             method="POST",
+            json_body={},
         )
 
     async def stop_container(self, endpoint_id: int, container_id: str) -> Any:
