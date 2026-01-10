@@ -1,0 +1,27 @@
+{
+  "Id": 1,
+  "Name": "my-web-app",
+  "Type": 2,
+  "EndpointId": 1,
+  "Status": 2,
+  "SwarmId": "",
+  "EntryPoint": "docker-compose.yml",
+  "AdditionalFiles": null,
+  "Env": [
+    {
+      "name": "NODE_ENV",
+      "value": "production"
+    }
+  ],
+  "Option": null,
+  "AutoUpdate": null,
+  "GitConfig": null,
+  "ResourceControl": null,
+  "ProjectPath": "/data/compose/my-web-app",
+  "Namespace": "",
+  "CreatedBy": "admin",
+  "CreationDate": 1704067200,
+  "UpdatedBy": "admin",
+  "UpdateDate": 1704153600,
+  "FromAppTemplate": false
+}
