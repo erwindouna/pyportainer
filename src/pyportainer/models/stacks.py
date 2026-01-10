@@ -61,7 +61,7 @@ class AutoUpdateSettings(DataClassORJSONMixin):
 class GitAuthentication(DataClassORJSONMixin):
     """Git authentication configuration."""
 
-    authorization_type: int | None = field(default=None, metadata=field_options(alias="authorizationType"))
+    authorization_type: GitCredentialAuthType | None = field(default=None, metadata=field_options(alias="authorizationType"))
     git_credential_id: int | None = field(default=None, metadata=field_options(alias="gitCredentialID"))
     password: str | None = None
     username: str | None = None
