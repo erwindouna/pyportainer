@@ -1,0 +1,43 @@
+{
+  "Id": 1,
+  "Name": "my-web-app",
+  "Type": 2,
+  "EndpointId": 1,
+  "Status": 1,
+  "SwarmId": "",
+  "EntryPoint": "docker-compose.yml",
+  "AdditionalFiles": null,
+  "Env": [
+    {
+      "name": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "name": "PORT",
+      "value": "3000"
+    }
+  ],
+  "Option": {
+    "prune": false
+  },
+  "AutoUpdate": null,
+  "GitConfig": null,
+  "ResourceControl": {
+    "Id": 1,
+    "ResourceId": "1_my-web-app",
+    "SubResourceIds": [],
+    "Type": 6,
+    "UserAccesses": [],
+    "TeamAccesses": [],
+    "Public": false,
+    "AdministratorsOnly": false,
+    "System": false
+  },
+  "ProjectPath": "/data/compose/my-web-app",
+  "Namespace": "",
+  "CreatedBy": "admin",
+  "CreationDate": 1704067200,
+  "UpdatedBy": "admin",
+  "UpdateDate": 1704153600,
+  "FromAppTemplate": false
+}

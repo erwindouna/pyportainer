@@ -12,7 +12,7 @@ from typing import Any, Self
 from urllib.parse import urlparse
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
-from aiohttp.hdrs import METH_GET
+from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST
 from yarl import URL
 
 from pyportainer.exceptions import (
@@ -32,6 +32,7 @@ from pyportainer.models.docker import (
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
+from pyportainer.models.stacks import Stack
 
 try:
     VERSION = metadata.version(__package__)
@@ -629,6 +630,145 @@ class Portainer:
         )
 
         return DockerSystemDF.from_dict(response)
+
+    async def get_stacks(
+        self,
+        *,
+        endpoint_id: int | None = None,
+        swarm_id: str | None = None,
+    ) -> list[Stack]:
+        """Get the list of stacks from the Portainer API.
+
+        Args:
+        ----
+            endpoint_id: Filter stacks by endpoint ID.
+            swarm_id: Filter stacks by Swarm cluster ID.
+
+        Returns:
+        -------
+            A list of stacks.
+
+        """
+        filters: dict[str, Any] = {}
+        if endpoint_id is not None:
+            filters["EndpointID"] = endpoint_id
+        if swarm_id is not None:
+            filters["SwarmID"] = swarm_id
+
+        params = filters and {"filters": json.dumps(filters)}
+        stacks = await self._request("stacks", params=params)
+
+        if stacks is None:  # 204 response = no stacks
+            return []
+        return [Stack.from_dict(stack) for stack in stacks]
+
+    async def get_stack(self, stack_id: int) -> Stack:
+        """Get details of a specific stack.
+
+        Args:
+        ----
+            stack_id: The ID of the stack.
+
+        Returns:
+        -------
+            Stack details.
+
+        """
+        stack = await self._request(f"stacks/{stack_id}")
+        return Stack.from_dict(stack)
+
+    async def get_stack_containers(
+        self,
+        endpoint_id: int,
+        stack_name: str,
+    ) -> list[DockerContainer]:
+        """Get containers belonging to a stack.
+
+        Filters containers by the com.docker.compose.project label.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            stack_name: The name of the stack.
+
+        Returns:
+        -------
+            A list of containers in the stack.
+
+        """
+        filters = {"label": [f"com.docker.compose.project={stack_name}"]}
+        params = {"all": "1", "filters": json.dumps(filters)}
+        containers = await self._request(
+            f"endpoints/{endpoint_id}/docker/containers/json",
+            params=params,
+        )
+        return [DockerContainer.from_dict(container) for container in containers]
+
+    async def start_stack(self, stack_id: int, endpoint_id: int) -> Stack:
+        """Start a stopped stack.
+
+        Args:
+        ----
+            stack_id: The ID of the stack.
+            endpoint_id: The ID of the endpoint.
+
+        Returns:
+        -------
+            Updated stack details.
+
+        """
+        stack = await self._request(
+            f"stacks/{stack_id}/start",
+            method=METH_POST,
+            params={"endpointId": endpoint_id},
+        )
+        return Stack.from_dict(stack)
+
+    async def stop_stack(self, stack_id: int, endpoint_id: int) -> Stack:
+        """Stop a running stack.
+
+        Args:
+        ----
+            stack_id: The ID of the stack.
+            endpoint_id: The ID of the endpoint.
+
+        Returns:
+        -------
+            Updated stack details.
+
+        """
+        stack = await self._request(
+            f"stacks/{stack_id}/stop",
+            method=METH_POST,
+            params={"endpointId": endpoint_id},
+        )
+        return Stack.from_dict(stack)
+
+    async def delete_stack(
+        self,
+        stack_id: int,
+        endpoint_id: int,
+        *,
+        external: bool = False,
+    ) -> None:
+        """Delete a stack.
+
+        Args:
+        ----
+            stack_id: The ID of the stack.
+            endpoint_id: The ID of the endpoint.
+            external: Set to True to delete an external Swarm stack.
+
+        """
+        params: dict[str, Any] = {
+            "endpointId": endpoint_id,
+            "external": str(external).lower(),
+        }
+        await self._request(
+            f"stacks/{stack_id}",
+            method=METH_DELETE,
+            params=params,
+        )
 
     async def close(self) -> None:
         """Close open client session."""
