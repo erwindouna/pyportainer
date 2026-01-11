@@ -1,15 +1,16 @@
 """Tests for Portainer stacks API."""
 
 from aresponses import ResponsesMockServer
+from syrupy.assertion import SnapshotAssertion
 
 from pyportainer import Portainer
-from pyportainer.models.docker import DockerContainer
-from pyportainer.models.stacks import Stack, StackStatus, StackType
+from pyportainer.models.stacks import StackStatus, StackType
 from tests import load_fixtures
 
 
 async def test_get_stacks(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting all stacks."""
@@ -24,33 +25,7 @@ async def test_get_stacks(
         ),
     )
     stacks = await portainer_client.get_stacks()
-
-    assert len(stacks) == 3
-    assert all(isinstance(stack, Stack) for stack in stacks)
-
-    # Check first stack (active compose stack)
-    assert stacks[0].id == 1
-    assert stacks[0].name == "my-web-app"
-    assert stacks[0].type == StackType.COMPOSE
-    assert stacks[0].status == StackStatus.ACTIVE
-    assert stacks[0].is_active is True
-    assert stacks[0].stack_type == StackType.COMPOSE
-
-    # Check second stack (inactive compose stack)
-    assert stacks[1].id == 2
-    assert stacks[1].name == "database-stack"
-    assert stacks[1].status == StackStatus.INACTIVE
-    assert stacks[1].is_active is False
-    assert stacks[1].git_config is not None
-    assert stacks[1].git_config.url == "https://github.com/example/database-stack.git"
-
-    # Check third stack (swarm stack with auto-update)
-    assert stacks[2].id == 3
-    assert stacks[2].name == "swarm-service"
-    assert stacks[2].type == StackType.SWARM
-    assert stacks[2].swarm_id == "jpofkc0i9uo9wtx1zesuk649w"
-    assert stacks[2].auto_update is not None
-    assert stacks[2].auto_update.interval == "5m"
+    assert stacks == snapshot
 
 
 async def test_get_stacks_with_endpoint_filter(
@@ -114,6 +89,7 @@ async def test_get_stacks_empty(
 
 async def test_get_stack(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting a specific stack."""
@@ -128,36 +104,12 @@ async def test_get_stack(
         ),
     )
     stack = await portainer_client.get_stack(stack_id=1)
-
-    assert isinstance(stack, Stack)
-    assert stack.id == 1
-    assert stack.name == "my-web-app"
-    assert stack.type == StackType.COMPOSE
-    assert stack.endpoint_id == 1
-    assert stack.status == StackStatus.ACTIVE
-    assert stack.is_active is True
-    assert stack.entry_point == "docker-compose.yml"
-    assert stack.project_path == "/data/compose/my-web-app"
-    assert stack.created_by == "admin"
-
-    # Check environment variables
-    assert stack.env is not None
-    assert len(stack.env) == 2
-    assert stack.env[0].name == "NODE_ENV"
-    assert stack.env[0].value == "production"
-
-    # Check option
-    assert stack.option is not None
-    assert stack.option.prune is False
-
-    # Check resource control
-    assert stack.resource_control is not None
-    assert stack.resource_control.id == 1
-    assert stack.resource_control.type == 6
+    assert stack == snapshot
 
 
 async def test_get_stack_containers(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting containers in a stack."""
@@ -176,13 +128,12 @@ async def test_get_stack_containers(
         endpoint_id=1,
         stack_name="my-web-app",
     )
-
-    assert isinstance(containers, list)
-    assert all(isinstance(c, DockerContainer) for c in containers)
+    assert containers == snapshot
 
 
 async def test_start_stack(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test starting a stopped stack."""
@@ -198,15 +149,12 @@ async def test_start_stack(
         match_querystring=False,
     )
     stack = await portainer_client.start_stack(stack_id=1, endpoint_id=1)
-
-    assert isinstance(stack, Stack)
-    assert stack.id == 1
-    assert stack.status == StackStatus.ACTIVE
-    assert stack.is_active is True
+    assert stack == snapshot
 
 
 async def test_stop_stack(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test stopping a running stack."""
@@ -222,11 +170,7 @@ async def test_stop_stack(
         match_querystring=False,
     )
     stack = await portainer_client.stop_stack(stack_id=1, endpoint_id=1)
-
-    assert isinstance(stack, Stack)
-    assert stack.id == 1
-    assert stack.status == StackStatus.INACTIVE
-    assert stack.is_active is False
+    assert stack == snapshot
 
 
 async def test_delete_stack(

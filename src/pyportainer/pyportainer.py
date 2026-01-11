@@ -655,7 +655,7 @@ class Portainer:
         if swarm_id is not None:
             filters["SwarmID"] = swarm_id
 
-        params = {"filters": json.dumps(filters)} if filters else None
+        params = filters and {"filters": json.dumps(filters)}
         stacks = await self._request("stacks", params=params)
 
         if stacks is None:  # 204 response = no stacks
@@ -702,7 +702,7 @@ class Portainer:
             f"endpoints/{endpoint_id}/docker/containers/json",
             params=params,
         )
-        return [DockerContainer.from_dict(c) for c in containers]
+        return [DockerContainer.from_dict(container) for container in containers]
 
     async def start_stack(self, stack_id: int, endpoint_id: int) -> Stack:
         """Start a stopped stack.
@@ -760,9 +760,10 @@ class Portainer:
             external: Set to True to delete an external Swarm stack.
 
         """
-        params: dict[str, Any] = {"endpointId": endpoint_id}
-        if external:
-            params["external"] = "true"
+        params: dict[str, Any] = {
+            "endpointId": endpoint_id,
+            "external": str(external).lower(),
+        }
         await self._request(
             f"stacks/{stack_id}",
             method=METH_DELETE,
