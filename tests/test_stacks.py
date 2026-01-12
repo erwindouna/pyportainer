@@ -30,6 +30,7 @@ async def test_get_stacks(
 
 async def test_get_stacks_with_endpoint_filter(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting stacks filtered by endpoint ID."""
@@ -45,11 +46,12 @@ async def test_get_stacks_with_endpoint_filter(
         match_querystring=False,
     )
     stacks = await portainer_client.get_stacks(endpoint_id=1)
-    assert len(stacks) == 3
+    assert stacks == snapshot
 
 
 async def test_get_stacks_with_swarm_filter(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting stacks filtered by Swarm ID."""
@@ -65,12 +67,12 @@ async def test_get_stacks_with_swarm_filter(
         match_querystring=False,
     )
     stacks = await portainer_client.get_stacks(swarm_id="jpofkc0i9uo9wtx1zesuk649w")
-    assert len(stacks) == 1
-    assert stacks[0].swarm_id == "jpofkc0i9uo9wtx1zesuk649w"
+    assert stacks == snapshot
 
 
 async def test_get_stacks_empty(
     aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
     portainer_client: Portainer,
 ) -> None:
     """Test getting stacks when no stacks exist (204 response)."""
@@ -84,7 +86,7 @@ async def test_get_stacks_empty(
         ),
     )
     stacks = await portainer_client.get_stacks()
-    assert stacks == []
+    assert stacks == snapshot
 
 
 async def test_get_stack(

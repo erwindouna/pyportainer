@@ -14,6 +14,22 @@
     Stack(id=3, name='swarm-service', type=1, endpoint_id=1, status=1, swarm_id='jpofkc0i9uo9wtx1zesuk649w', entry_point='docker-compose.yml', additional_files=['config/nginx.conf', 'config/app.env'], env=[], option=StackOption(prune=True), auto_update=AutoUpdateSettings(force_pull_image=True, force_update=False, interval='5m', job_id='42', webhook='550e8400-e29b-41d4-a716-446655440000'), git_config=None, resource_control=None, project_path='/data/compose/swarm-service', namespace='', created_by='devops', creation_date=1703894400, updated_by='devops', update_date=1704240000, from_app_template=True),
   ])
 # ---
+# name: test_get_stacks_empty
+  list([
+  ])
+# ---
+# name: test_get_stacks_with_endpoint_filter
+  list([
+    Stack(id=1, name='my-web-app', type=2, endpoint_id=1, status=1, swarm_id='', entry_point='docker-compose.yml', additional_files=None, env=[StackEnvVar(name='NODE_ENV', value='production'), StackEnvVar(name='PORT', value='3000')], option=StackOption(prune=False), auto_update=None, git_config=None, resource_control=ResourceControl(id=1, resource_id='1_my-web-app', sub_resource_ids=[], type=6, user_accesses=[], team_accesses=[], public=False, administrators_only=False, system=False, owner_id=None), project_path='/data/compose/my-web-app', namespace='', created_by='admin', creation_date=1704067200, updated_by='admin', update_date=1704153600, from_app_template=False),
+    Stack(id=2, name='database-stack', type=2, endpoint_id=1, status=2, swarm_id='', entry_point='docker-compose.yml', additional_files=None, env=[StackEnvVar(name='POSTGRES_PASSWORD', value='secret')], option=None, auto_update=None, git_config=GitRepoConfig(authentication=GitAuthentication(authorization_type=<GitCredentialAuthType.BASIC: 0>, git_credential_id=0, password='', username=''), config_file_path='docker-compose.yml', config_hash='abc123def456', reference_name='refs/heads/main', tls_skip_verify=False, url='https://github.com/example/database-stack.git'), resource_control=None, project_path='/data/compose/database-stack', namespace='', created_by='admin', creation_date=1703980800, updated_by='', update_date=0, from_app_template=False),
+    Stack(id=3, name='swarm-service', type=1, endpoint_id=1, status=1, swarm_id='jpofkc0i9uo9wtx1zesuk649w', entry_point='docker-compose.yml', additional_files=['config/nginx.conf', 'config/app.env'], env=[], option=StackOption(prune=True), auto_update=AutoUpdateSettings(force_pull_image=True, force_update=False, interval='5m', job_id='42', webhook='550e8400-e29b-41d4-a716-446655440000'), git_config=None, resource_control=None, project_path='/data/compose/swarm-service', namespace='', created_by='devops', creation_date=1703894400, updated_by='devops', update_date=1704240000, from_app_template=True),
+  ])
+# ---
+# name: test_get_stacks_with_swarm_filter
+  list([
+    Stack(id=3, name='swarm-service', type=1, endpoint_id=1, status=1, swarm_id='jpofkc0i9uo9wtx1zesuk649w', entry_point=None, additional_files=None, env=None, option=None, auto_update=None, git_config=None, resource_control=None, project_path=None, namespace=None, created_by=None, creation_date=None, updated_by=None, update_date=None, from_app_template=None),
+  ])
+# ---
 # name: test_start_stack
   Stack(id=1, name='my-web-app', type=2, endpoint_id=1, status=1, swarm_id='', entry_point='docker-compose.yml', additional_files=None, env=[StackEnvVar(name='NODE_ENV', value='production'), StackEnvVar(name='PORT', value='3000')], option=StackOption(prune=False), auto_update=None, git_config=None, resource_control=ResourceControl(id=1, resource_id='1_my-web-app', sub_resource_ids=[], type=6, user_accesses=[], team_accesses=[], public=False, administrators_only=False, system=False, owner_id=None), project_path='/data/compose/my-web-app', namespace='', created_by='admin', creation_date=1704067200, updated_by='admin', update_date=1704153600, from_app_template=False)
 # ---

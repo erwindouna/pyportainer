@@ -121,7 +121,6 @@ class Stack(DataClassORJSONMixin):
     endpoint_id: int = field(metadata=field_options(alias="EndpointId"))
     status: int = field(metadata=field_options(alias="Status"))
 
-    # Optional fields
     swarm_id: str | None = field(default=None, metadata=field_options(alias="SwarmId"))
     entry_point: str | None = field(default=None, metadata=field_options(alias="EntryPoint"))
     additional_files: list[str] | None = field(default=None, metadata=field_options(alias="AdditionalFiles"))
