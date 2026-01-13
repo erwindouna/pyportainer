@@ -1,6 +1,6 @@
 [project]
 name = "pyportainer"
-version = "1.0.17"
+version = "1.0.23"
 description = "Asynchronous Python client for the Portainer API"
 authors = [{ name = "Erwin Douna", email = "e.douna@gmail.com" }]
 requires-python = ">=3.11,<4"
