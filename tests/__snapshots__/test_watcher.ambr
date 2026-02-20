@@ -1,15 +1,25 @@
 # serializer version: 1
 # name: test_image_watcher_check_all
   dict({
-    '1_aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf': PortainerImageWatcherResult(endpoint_id=1, container_id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', status=PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')),
+    tuple(
+      1,
+      'aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf',
+    ): PortainerImageWatcherResult(endpoint_id=1, container_id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', status=PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')),
   })
 # ---
 # name: test_image_watcher_results_copy
   dict({
+    tuple(
+      1,
+      'aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf',
+    ): PortainerImageWatcherResult(endpoint_id=1, container_id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', status=PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')),
   })
 # ---
 # name: test_image_watcher_start_stop
   dict({
-    '1_aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf': PortainerImageWatcherResult(endpoint_id=1, container_id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', status=PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')),
+    tuple(
+      1,
+      'aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf',
+    ): PortainerImageWatcherResult(endpoint_id=1, container_id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', status=PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')),
   })
 # ---
