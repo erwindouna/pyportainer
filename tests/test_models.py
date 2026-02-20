@@ -232,6 +232,7 @@ async def test_portainer_system_df(
 async def test_container_image_status_update_available(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
 ) -> None:
     """Test container_image_status when the registry digest differs from the local digest."""
     aresponses.add(
@@ -255,14 +256,14 @@ async def test_container_image_status_update_available(
         ),
     )
 
-    status = await portainer_client.container_image_status(endpoint_id=1, image_id="nginx:latest")
-    assert status.update_available is True
-    assert status.registry_digest == "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96"
+    status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
+    assert status == snapshot
 
 
 async def test_container_image_status_up_to_date(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
 ) -> None:
     """Test container_image_status when the registry digest matches the local digest."""
     aresponses.add(
@@ -286,6 +287,5 @@ async def test_container_image_status_up_to_date(
         ),
     )
 
-    status = await portainer_client.container_image_status(endpoint_id=1, image_id="nginx:latest")
-    assert status.update_available is False
-    assert status.registry_digest == "sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb"
+    status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
+    assert status == snapshot

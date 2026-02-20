@@ -6,7 +6,6 @@ from .exceptions import (
     PortainerError,
     PortainerTimeoutError,
 )
-from .models.docker import PortainerImageUpdateStatus
 from .pyportainer import Portainer
 from .watcher import PortainerImageWatcher
 
@@ -15,7 +14,6 @@ __all__ = [
     "PortainerAuthenticationError",
     "PortainerConnectionError",
     "PortainerError",
-    "PortainerImageUpdateStatus",
     "PortainerImageWatcher",
     "PortainerTimeoutError",
 ]

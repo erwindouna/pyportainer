@@ -451,7 +451,7 @@ class Portainer:
 
         registry_digest = remote.descriptor.digest if remote.descriptor else None
         local_digest = next(
-            (digest.split("@")[-1] for digest in (local.repo_digests or []) if "@" in digest),
+            (digest.partition("@")[2] for digest in (local.repo_digests or []) if "@" in digest),
             None,
         )
 

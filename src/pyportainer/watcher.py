@@ -8,16 +8,12 @@ import time
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from pyportainer.exceptions import (
-    PortainerWatcherAuthenticationError,
-    PortainerWatcherConnectionError,
-    PortainerWatcherError,
-    PortainerWatcherTimeoutError,
-)
+from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
 from pyportainer.models.docker import PortainerImageUpdateStatus
 
 if TYPE_CHECKING:
     from pyportainer.pyportainer import Portainer
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,6 +29,8 @@ class PortainerImageWatcher:
         portainer: Portainer,
         endpoint_id: int | None = None,
         interval: timedelta = timedelta(hours=12),
+        *,
+        debug: bool = False,
     ) -> None:
         """Initialize the PortainerImageWatcher.
 
@@ -49,6 +47,8 @@ class PortainerImageWatcher:
         self._results: dict[str, PortainerImageUpdateStatus] = {}
         self._task: asyncio.Task[None] | None = None
         self._last_check: float | None = None
+
+        _LOGGER.setLevel(logging.DEBUG if debug else logging.INFO)
 
     @property
     def interval(self) -> timedelta:
@@ -85,7 +85,7 @@ class PortainerImageWatcher:
             self._task.cancel()
 
     async def _run(self) -> None:
-        """Main loop: check immediately, then sleep for the interval, then repeat.
+        """Loop that checks immediately, then sleep for the interval, then repeat.
 
         Errors during checks are logged but don't stop the watcher, allowing
         recovery from transient issues.
@@ -94,15 +94,14 @@ class PortainerImageWatcher:
             try:
                 await self._check_all()
                 self._last_check = time.time()
-            except (
-                PortainerWatcherConnectionError,
-                PortainerWatcherAuthenticationError,
-                PortainerWatcherTimeoutError,
-                PortainerWatcherError,
-            ) as err:
-                _LOGGER.error("Error during image check: %s", err)
-            except Exception as err:
-                _LOGGER.exception("Unexpected error during image check: %s", err)
+            except PortainerTimeoutError:
+                _LOGGER.exception("Timeout during image check")
+            except PortainerConnectionError:
+                _LOGGER.exception("Connection error during image check")
+            except PortainerAuthenticationError:
+                _LOGGER.exception("Authentication error during image check")
+            except PortainerError:
+                _LOGGER.exception("Error during image check")
 
             await asyncio.sleep(self._interval.total_seconds())
 
@@ -112,15 +111,18 @@ class PortainerImageWatcher:
         Errors for individual images are logged but silently skipped so one
         failing image does not prevent the rest from being checked.
         """
-        endpoint_ids = [self._endpoint_id]
-        if self._endpoint_id is None:
+        if self._endpoint_id is not None:
+            endpoint_ids: list[int] = [self._endpoint_id]
+        else:
+            _LOGGER.debug("No endpoint_id specified, fetching all endpoints to check.")
             endpoints = await self._portainer.get_endpoints()
             endpoint_ids = [endpoint.id for endpoint in endpoints]
 
         for endpoint_id in endpoint_ids:
-            assert endpoint_id is not None
             containers = await self._portainer.get_containers(endpoint_id)
             unique_images = {container.image for container in containers if container.image}
+
+            _LOGGER.debug("Checking %d unique images for endpoint %s...", len(unique_images), endpoint_id)
 
             statuses = await asyncio.gather(
                 *(self._portainer.container_image_status(endpoint_id, image) for image in unique_images),
@@ -129,5 +131,6 @@ class PortainerImageWatcher:
             for image, status in zip(unique_images, statuses, strict=False):
                 if isinstance(status, PortainerImageUpdateStatus):
                     self._results[image] = status
-                elif isinstance(status, Exception):
-                    _LOGGER.debug("Failed to check image %s: %s", image, status)
+                    _LOGGER.debug("Checked image %s on endpoint %s: %s", image, endpoint_id, status)
+                elif isinstance(status, PortainerError):
+                    raise status
