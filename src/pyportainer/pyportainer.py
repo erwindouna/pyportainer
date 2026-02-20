@@ -29,6 +29,7 @@ from pyportainer.models.docker import (
     DockerSystemDF,
     ImageInformation,
     LocalImageInformation,
+    PortainerImageUpdateStatus,
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
@@ -429,6 +430,36 @@ class Portainer:
         image = await self._request(f"endpoints/{endpoint_id}/docker/images/{image_id}/json")
 
         return LocalImageInformation.from_dict(image)
+
+    async def container_image_status(self, endpoint_id: int, image: str) -> PortainerImageUpdateStatus:
+        """Check whether a newer version of a Docker image is available in the registry.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            image: The image name (with optional tag) to check.
+
+        Returns:
+        -------
+            A PortainerImageUpdateStatus with the comparison result and digests.
+
+        """
+        local, remote = await asyncio.gather(
+            self.get_image(endpoint_id, image),
+            self.get_image_information(endpoint_id, image),
+        )
+
+        registry_digest = remote.descriptor.digest if remote.descriptor else None
+        local_digest = next(
+            (digest.split("@")[-1] for digest in (local.repo_digests or []) if "@" in digest),
+            None,
+        )
+
+        return PortainerImageUpdateStatus(
+            update_available=bool(registry_digest and registry_digest != local_digest),
+            local_digest=local_digest,
+            registry_digest=registry_digest,
+        )
 
     async def image_recreate(self, endpoint_id: int, image_id: str, timeout: timedelta = timedelta(minutes=5)) -> Any:
         """Recreate a Docker image.

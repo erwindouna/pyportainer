@@ -227,3 +227,65 @@ async def test_portainer_system_df(
 
     system_df = await portainer_client.docker_system_df(endpoint_id=1)
     assert system_df == snapshot
+
+
+async def test_container_image_status_update_available(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test container_image_status when the registry digest differs from the local digest."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/distribution/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_information.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    status = await portainer_client.container_image_status(endpoint_id=1, image_id="nginx:latest")
+    assert status.update_available is True
+    assert status.registry_digest == "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96"
+
+
+async def test_container_image_status_up_to_date(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test container_image_status when the registry digest matches the local digest."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/distribution/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_information_up_to_date.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    status = await portainer_client.container_image_status(endpoint_id=1, image_id="nginx:latest")
+    assert status.update_available is False
+    assert status.registry_digest == "sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb"
