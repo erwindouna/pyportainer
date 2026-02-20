@@ -703,7 +703,7 @@ class Portainer:
         )
         return [DockerContainer.from_dict(container) for container in containers]
 
-    async def start_stack(self, stack_id: int, endpoint_id: int, timeout: timedelta = timedelta(minutes=5)) -> Stack:
+    async def start_stack(self, endpoint_id: int, stack_id: int, timeout: timedelta = timedelta(minutes=5)) -> Stack:
         """Start a stopped stack.
 
         Args:
@@ -725,7 +725,7 @@ class Portainer:
         )
         return Stack.from_dict(stack)
 
-    async def stop_stack(self, stack_id: int, endpoint_id: int, timeout: timedelta = timedelta(minutes=5)) -> Stack:
+    async def stop_stack(self, endpoint_id: int, stack_id: int, timeout: timedelta = timedelta(minutes=5)) -> Stack:
         """Stop a running stack.
 
         Args:
