@@ -104,7 +104,6 @@ class PortainerImageWatcher:
         while True:
             try:
                 await self._check_all()
-                self._last_check = time.time()
             except PortainerTimeoutError:
                 _LOGGER.exception("Timeout during image check")
             except PortainerConnectionError:
@@ -113,6 +112,8 @@ class PortainerImageWatcher:
                 _LOGGER.exception("Authentication error during image check")
             except PortainerError:
                 _LOGGER.exception("Error during image check")
+            finally:
+                self._last_check = time.time()
 
             await asyncio.sleep(self._interval.total_seconds())
 
@@ -130,7 +131,11 @@ class PortainerImageWatcher:
             endpoint_ids = [endpoint.id for endpoint in endpoints]
 
         for endpoint_id in endpoint_ids:
-            containers = await self._portainer.get_containers(endpoint_id)
+            try:
+                containers = await self._portainer.get_containers(endpoint_id)
+            except PortainerError:
+                _LOGGER.warning("Failed to fetch containers for endpoint %s, skipping", endpoint_id)
+                continue
 
             image_containers = defaultdict(list)
             for container in containers:
