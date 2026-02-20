@@ -4,13 +4,13 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 from typing import TYPE_CHECKING
 
 import pytest
 from aresponses import ResponsesMockServer
 from syrupy.assertion import SnapshotAssertion
 
-from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerNotFoundError
 from pyportainer.watcher import PortainerImageWatcher
 from tests import load_fixtures
 
@@ -18,11 +18,13 @@ if TYPE_CHECKING:
     from pyportainer import Portainer
 
 IMAGE = "docker.io/library/ubuntu:latest"
+CONTAINER_ID = "aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf"
 
 
 async def test_image_watcher_check_all(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
 ) -> None:
     """Test that _check_all populates results with the update status per image."""
     aresponses.add(
@@ -59,9 +61,7 @@ async def test_image_watcher_check_all(
     watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
     await watcher._check_all()
 
-    assert IMAGE in watcher.results
-    assert watcher.results[IMAGE].update_available is True
-    assert watcher.results[IMAGE].registry_digest == ("sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96")
+    assert watcher.results == snapshot
 
 
 async def test_image_watcher_results_copy(
@@ -208,30 +208,16 @@ async def test_image_watcher_start_idempotent(
 
 
 @pytest.mark.parametrize(
-    ("status_code", "expected_exception"),
-    [
-        (401, PortainerAuthenticationError),
-        (404, PortainerNotFoundError),
-        (500, PortainerConnectionError),
-    ],
+    "status_code",
+    [401, 404, 500],
 )
 async def test_image_watcher_check_all_exceptions(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
     status_code: int,
-    expected_exception: type[Exception],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test that errors during _check_all are logged but don't stop the watcher."""
-    aresponses.add(
-        "localhost:9000",
-        "/api/endpoints",
-        "GET",
-        aresponses.Response(
-            status=200,
-            headers={"Content-Type": "application/json"},
-            text=load_fixtures("endpoints.json"),
-        ),
-    )
+    """Test that per-image errors during _check_all are logged but don't stop the watcher."""
     aresponses.add(
         "localhost:9000",
         "/api/endpoints/1/docker/containers/json",
@@ -259,8 +245,9 @@ async def test_image_watcher_check_all_exceptions(
         ),
     )
 
-    watcher = PortainerImageWatcher(portainer_client)
-    with pytest.raises(expected_exception):
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    with caplog.at_level(logging.WARNING):
         await watcher._check_all()
 
     assert not watcher.results
+    assert "Failed to check image" in caplog.text

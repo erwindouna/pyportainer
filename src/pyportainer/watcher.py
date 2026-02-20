@@ -5,17 +5,28 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
+from collections import defaultdict
+from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
-from pyportainer.models.docker import PortainerImageUpdateStatus
 
 if TYPE_CHECKING:
+    from pyportainer.models.docker import PortainerImageUpdateStatus
     from pyportainer.pyportainer import Portainer
 
 
 _LOGGER = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class PortainerImageWatcherResult:
+    """Represents the status of an image watcher."""
+
+    endpoint_id: int | None = None
+    container_id: str | None = None
+    status: PortainerImageUpdateStatus | None = None
 
 
 class PortainerImageWatcher:
@@ -44,7 +55,7 @@ class PortainerImageWatcher:
         self._portainer = portainer
         self._endpoint_id = endpoint_id
         self._interval = interval
-        self._results: dict[str, PortainerImageUpdateStatus] = {}
+        self._results: list[PortainerImageWatcherResult] = []
         self._task: asyncio.Task[None] | None = None
         self._last_check: float | None = None
 
@@ -66,9 +77,9 @@ class PortainerImageWatcher:
         return self._last_check
 
     @property
-    def results(self) -> dict[str, PortainerImageUpdateStatus]:
-        """Latest update status keyed by image name, as of the last check."""
-        return dict(self._results)
+    def results(self) -> list[PortainerImageWatcherResult]:
+        """Latest update status as of the last check."""
+        return self._results
 
     def start(self) -> None:
         """Start the background polling loop.
@@ -120,17 +131,29 @@ class PortainerImageWatcher:
 
         for endpoint_id in endpoint_ids:
             containers = await self._portainer.get_containers(endpoint_id)
-            unique_images = {container.image for container in containers if container.image}
 
-            _LOGGER.debug("Checking %d unique images for endpoint %s...", len(unique_images), endpoint_id)
+            image_containers = defaultdict(list)
+            for container in containers:
+                if container.image and container.state == "running":
+                    image_containers[container.image].append(container.id)
+
+            _LOGGER.debug("Checking %d unique images for endpoint %s...", len(image_containers), endpoint_id)
 
             statuses = await asyncio.gather(
-                *(self._portainer.container_image_status(endpoint_id, image) for image in unique_images),
+                *(self._portainer.container_image_status(endpoint_id, image) for image in image_containers),
                 return_exceptions=True,
             )
-            for image, status in zip(unique_images, statuses, strict=False):
-                if isinstance(status, PortainerImageUpdateStatus):
-                    self._results[image] = status
-                    _LOGGER.debug("Checked image %s on endpoint %s: %s", image, endpoint_id, status)
-                elif isinstance(status, PortainerError):
-                    raise status
+            for image, status in zip(image_containers, statuses, strict=False):
+                if isinstance(status, BaseException):
+                    _LOGGER.warning("Failed to check image %s on endpoint %s: %s", image, endpoint_id, status)
+                    continue
+                for container_id in image_containers[image]:
+                    self._results.append(
+                        PortainerImageWatcherResult(
+                            endpoint_id=endpoint_id,
+                            container_id=container_id,
+                            status=status,
+                        )
+                    )
+
+                    _LOGGER.debug("Checked image %s on endpoint %s for container %s", image, endpoint_id, container_id)
