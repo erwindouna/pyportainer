@@ -633,7 +633,6 @@ class Portainer:
 
     async def get_stacks(
         self,
-        *,
         endpoint_id: int | None = None,
         swarm_id: str | None = None,
     ) -> list[Stack]:

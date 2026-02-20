@@ -71,5 +71,5 @@
       "installTools": false
     }
   },
-  "postCreateCommand": "uv sync --all-groups && pre-commit install"
+  "postCreateCommand": "uv sync --all-groups && uv tool install prek && pre-commit install"
 }
