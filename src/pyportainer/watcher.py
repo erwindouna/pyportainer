@@ -55,7 +55,7 @@ class PortainerImageWatcher:
         self._portainer = portainer
         self._endpoint_id = endpoint_id
         self._interval = interval
-        self._results: list[PortainerImageWatcherResult] = []
+        self._results: dict[str, PortainerImageWatcherResult] = {}
         self._task: asyncio.Task[None] | None = None
         self._last_check: float | None = None
 
@@ -77,7 +77,7 @@ class PortainerImageWatcher:
         return self._last_check
 
     @property
-    def results(self) -> list[PortainerImageWatcherResult]:
+    def results(self) -> dict[str, PortainerImageWatcherResult]:
         """Latest update status as of the last check."""
         return self._results
 
@@ -148,12 +148,10 @@ class PortainerImageWatcher:
                     _LOGGER.warning("Failed to check image %s on endpoint %s: %s", image, endpoint_id, status)
                     continue
                 for container_id in image_containers[image]:
-                    self._results.append(
-                        PortainerImageWatcherResult(
-                            endpoint_id=endpoint_id,
-                            container_id=container_id,
-                            status=status,
-                        )
+                    self._results[f"{endpoint_id}_{container_id}"] = PortainerImageWatcherResult(
+                        endpoint_id=endpoint_id,
+                        container_id=container_id,
+                        status=status,
                     )
 
                     _LOGGER.debug("Checked image %s on endpoint %s for container %s", image, endpoint_id, container_id)
