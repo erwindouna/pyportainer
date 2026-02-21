@@ -8,7 +8,7 @@ import socket
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from importlib import metadata
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 from urllib.parse import urlparse
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
@@ -25,6 +25,7 @@ from pyportainer.exceptions import (
 from pyportainer.models.docker import (
     DockerContainer,
     DockerContainerStats,
+    DockerEvent,
     DockerImagePruneResponse,
     DockerSystemDF,
     ImageInformation,
@@ -34,6 +35,9 @@ from pyportainer.models.docker import (
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint
 from pyportainer.models.stacks import Stack
+
+if TYPE_CHECKING:
+    from collections.abc import AsyncGenerator
 
 try:
     VERSION = metadata.version(__package__)
@@ -183,6 +187,180 @@ class Portainer:
             return events
 
         return await response.json()
+
+    async def _stream_request(
+        self,
+        uri: str,
+        *,
+        params: dict[str, Any] | None = None,
+    ) -> AsyncGenerator[dict[str, Any], None]:
+        """Open a persistent streaming connection and yield JSON events as they arrive.
+
+        Unlike :meth:`_request`, this method does not buffer the full response.
+        The connection remains open until cancelled or the server closes it.
+        The connection-establishment step is subject to the normal request timeout;
+        the ongoing stream is not time-limited.
+
+        Args:
+        ----
+            uri: Request URI, without '/api/'.
+            params: Query parameters to include in the request.
+
+        Yields:
+        ------
+            Parsed JSON objects, one per newline-delimited event.
+
+        Raises:
+        ------
+            PortainerTimeoutError: If the connection cannot be established within the timeout.
+            PortainerAuthenticationError: If the API key is invalid.
+            PortainerConnectionError: On network errors.
+
+        """
+        url = URL.build(
+            scheme=self._api_scheme,
+            host=self._api_host,
+            port=self._api_port,
+            path=f"{self._api_base_path}/api/",
+        ).join(URL(uri))
+
+        headers = {
+            "Accept": "application/json, text/plain",
+            "User-Agent": f"PythonPortainer/{VERSION}",
+            "X-API-Key": self._api_key,
+        }
+
+        if self._session is None:
+            self._session = ClientSession()
+            self._close_session = True
+
+        try:
+            async with asyncio.timeout(self._request_timeout):
+                response = await self._session.request(
+                    METH_GET,
+                    url,
+                    headers=headers,
+                    params=params,
+                )
+                response.raise_for_status()
+        except TimeoutError as err:
+            msg = f"Timeout error while connecting to {url}: {err}"
+            raise PortainerTimeoutError(msg) from err
+        except ClientResponseError as err:
+            match err.status:
+                case 401:
+                    msg = f"Authentication failed for {url}: Invalid API key"
+                    raise PortainerAuthenticationError(msg) from err
+                case 404:
+                    msg = f"Resource not found at {url}: {err}"
+                    raise PortainerNotFoundError(msg) from err
+                case _:
+                    msg = f"Connection error for {url}: {err}"
+                    raise PortainerConnectionError(msg) from err
+        except (ClientError, socket.gaierror) as err:
+            msg = f"Unexpected error connecting to {url}: {err}"
+            raise PortainerConnectionError(msg) from err
+
+        try:
+            buffer = b""
+            async for chunk in response.content:
+                buffer += chunk
+                while b"\n" in buffer:
+                    line, buffer = buffer.split(b"\n", 1)
+                    stripped = line.strip()
+                    if stripped:
+                        yield json.loads(stripped)
+        finally:
+            response.release()
+
+    async def get_events(
+        self,
+        endpoint_id: int,
+        *,
+        since: datetime | None = None,
+        until: datetime | None = None,
+        filters: dict[str, list[str]] | None = None,
+    ) -> AsyncGenerator[DockerEvent, None]:
+        """Stream Docker events from an endpoint in real time.
+
+        Opens a persistent connection to the Docker events endpoint and yields
+        :class:`~pyportainer.models.docker.DockerEvent` objects as they are emitted.
+        When ``until`` is provided the Docker daemon closes the connection once
+        all matching events have been sent, making this suitable for bounded
+        queries as well as infinite streams.
+
+        Args:
+        ----
+            endpoint_id: The ID of the Portainer endpoint to stream events from.
+            since: Only return events after this timestamp. If timezone-naive,
+                UTC is assumed.
+            until: Only return events before this timestamp. If timezone-naive,
+                UTC is assumed. When supplied, the stream ends automatically.
+            filters: Optional Docker event filters, e.g.
+                ``{"type": ["container"], "event": ["start", "die"]}``.
+
+        Yields:
+        ------
+            :class:`~pyportainer.models.docker.DockerEvent` objects.
+
+        """
+        params: dict[str, Any] = {}
+        if since is not None:
+            params["since"] = int(since.timestamp())
+        if until is not None:
+            params["until"] = int(until.timestamp())
+        if filters is not None:
+            params["filters"] = json.dumps(filters)
+
+        async for raw in self._stream_request(
+            f"endpoints/{endpoint_id}/docker/events",
+            params=params or None,
+        ):
+            yield DockerEvent.from_dict(raw)
+
+    async def get_recent_events(
+        self,
+        endpoint_id: int,
+        *,
+        since: datetime,
+        until: datetime | None = None,
+        filters: dict[str, list[str]] | None = None,
+    ) -> list[DockerEvent]:
+        """Return Docker events from an endpoint for a bounded time window.
+
+        Unlike :meth:`get_events`, this method collects all matching events into
+        a list and returns once the time window is exhausted. It is a thin
+        wrapper around :meth:`get_events` that passes ``until`` (defaulting to
+        now) so the Docker daemon closes the connection automatically.
+
+        Args:
+        ----
+            endpoint_id: The ID of the Portainer endpoint to query.
+            since: Only return events after this timestamp. If timezone-naive,
+                UTC is assumed.
+            until: Only return events before this timestamp. Defaults to the
+                current UTC time if not provided.
+            filters: Optional Docker event filters, e.g.
+                ``{"type": ["container"], "event": ["start", "die"]}``.
+
+        Returns:
+        -------
+            A list of :class:`~pyportainer.models.docker.DockerEvent` objects,
+            ordered as received from the Docker daemon.
+
+        """
+        if until is None:
+            until = datetime.now(UTC)
+
+        return [
+            event
+            async for event in self.get_events(
+                endpoint_id,
+                since=since,
+                until=until,
+                filters=filters,
+            )
+        ]
 
     async def get_endpoints(self) -> list[Endpoint]:
         """Get the list of endpoints from the Portainer API.

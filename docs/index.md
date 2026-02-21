@@ -75,6 +75,43 @@ if __name__ == "__main__":
 
 See the [Image Update Watcher](watcher.md) page for the full documentation, including all configuration options, callback usage, and runtime controls.
 
+## Event Listener
+
+`pyportainer` also includes a `PortainerEventListener` that maintains a **persistent streaming connection** to the Docker events endpoint. Unlike the image watcher, it reacts in real time as events occur — no polling interval needed.
+
+```python
+import asyncio
+
+from pyportainer import Portainer, PortainerEventListener
+from pyportainer.listener import PortainerEventListenerResult
+
+
+async def on_event(result: PortainerEventListenerResult) -> None:
+    """Handle an incoming Docker event."""
+    print(f"[endpoint {result.endpoint_id}] {result.event.type} {result.event.action}")
+
+
+async def main() -> None:
+    """Run the example."""
+    async with Portainer(
+        api_url="http://localhost:9000",
+        api_key="YOUR_API_KEY",
+    ) as portainer:
+        listener = PortainerEventListener(portainer, event_types=["container"])
+        listener.register_callback(on_event)
+        listener.start()
+
+        await asyncio.sleep(60)
+
+        listener.stop()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+See the [Event Listener](listener.md) page for the full documentation, including filtering, callbacks, reconnect behaviour, and how to query events directly.
+
 ## Support
 
 If you like my opensource work, you can support me via the following ways:
