@@ -114,6 +114,26 @@ if __name__ == "__main__":
 
 You can also inspect `watcher.last_check` to get the Unix timestamp of the most recent completed poll, or update `watcher.interval` at runtime to change the polling frequency.
 
+### Callbacks
+
+Register a callback to be notified automatically after each poll cycle rather than polling `watcher.results` yourself. Both sync and async callables are supported:
+
+```python
+from pyportainer.watcher import PortainerImageWatcherResult
+
+
+async def on_result(result: PortainerImageWatcherResult) -> None:
+    if result.status and result.status.update_available:
+        print(f"Update available for {result.container_id}")
+
+
+watcher.register_callback(on_result)
+# Later, to remove it:
+watcher.unregister_callback(on_result)
+```
+
+Callbacks receive one `PortainerImageWatcherResult` per container per cycle. Exceptions raised inside a callback are logged and do not stop the watcher.
+
 ## Documentation
 
 The full documentation, including API reference, can be found at: [https://erwindouna.github.io/pyportainer/](https://erwindouna.github.io/pyportainer/)

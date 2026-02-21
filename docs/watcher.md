@@ -96,6 +96,61 @@ Each `PortainerImageWatcherResult` contains:
 | `local_digest`     | `str \| None` | Digest of the locally running image                  |
 | `registry_digest`  | `str \| None` | Digest of the latest image in the registry           |
 
+## Callbacks
+
+Instead of polling `watcher.results` yourself, you can register callbacks that are invoked automatically after each poll cycle, once per container result. Both sync and async callables are supported.
+
+### Registering a callback
+
+```python
+from pyportainer import Portainer, PortainerImageWatcher
+from pyportainer.watcher import PortainerImageWatcherResult
+
+
+def on_result(result: PortainerImageWatcherResult) -> None:
+    if result.status and result.status.update_available:
+        print(f"Update available for container {result.container_id}")
+
+
+watcher = PortainerImageWatcher(portainer, interval=timedelta(hours=6))
+watcher.register_callback(on_result)
+watcher.start()
+```
+
+### Async callbacks
+
+```python
+async def on_result(result: PortainerImageWatcherResult) -> None:
+    if result.status and result.status.update_available:
+        # Follow up with an async action, e.g. send a notification
+        await notify(result.container_id)
+
+watcher.register_callback(on_result)
+```
+
+### Filtering for updates only
+
+Callbacks receive every result, including containers where no update is available. Filter inside the callback:
+
+```python
+def on_result(result: PortainerImageWatcherResult) -> None:
+    if not result.status or not result.status.update_available:
+        return
+    # Handle update ...
+```
+
+### Unregistering a callback
+
+```python
+watcher.unregister_callback(on_result)
+```
+
+### Notes
+
+- Registering the same callable twice is a no-go; it will only be called once per result.
+- Exceptions raised inside a callback are logged but do not stop the watcher or prevent other callbacks from running.
+- The `WatcherCallback` type alias is exported from `pyportainer` for type annotations: `from pyportainer import WatcherCallback`.
+
 ## Runtime control
 
 ### Changing the interval
