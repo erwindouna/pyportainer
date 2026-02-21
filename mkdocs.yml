@@ -6,6 +6,7 @@ repo_url: https://github.com/erwindouna/pyportainer
 nav:
   - Home: index.md
   - Image Update Watcher: watcher.md
+  - Event Listener: listener.md
   - API Reference: api/reference.md
 
 theme:

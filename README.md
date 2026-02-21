@@ -134,6 +134,76 @@ watcher.unregister_callback(on_result)
 
 Callbacks receive one `PortainerImageWatcherResult` per container per cycle. Exceptions raised inside a callback are logged and do not stop the watcher.
 
+## Event Listener
+
+`pyportainer` also includes a `PortainerEventListener` that maintains a streaming connection to the Docker events endpoint. Unlike the image watcher, it reacts in real time as events occur; container starts, stops, crashes, image pulls, and more.
+
+### Basic usage
+
+```python
+import asyncio
+
+from pyportainer import Portainer, PortainerEventListener
+from pyportainer.listener import PortainerEventListenerResult
+
+
+async def on_event(result: PortainerEventListenerResult) -> None:
+    print(f"[endpoint {result.endpoint_id}] {result.event.type} {result.event.action}")
+
+
+async def main() -> None:
+    async with Portainer(
+        api_url="http://localhost:9000",
+        api_key="YOUR_API_KEY",
+    ) as portainer:
+        listener = PortainerEventListener(
+            portainer,
+            event_types=["container"],  # only container events
+        )
+        listener.register_callback(on_event)
+        listener.start()
+
+        await asyncio.sleep(60)
+
+        listener.stop()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Configuration
+
+| Parameter            | Type                | Default   | Description                                                     |
+| -------------------- | ------------------- | --------- | --------------------------------------------------------------- |
+| `portainer`          | `Portainer`         | —         | The Portainer client instance                                   |
+| `endpoint_id`        | `int \| None`       | `None`    | Endpoint to listen to. `None` listens to all endpoints          |
+| `event_types`        | `list[str] \| None` | `None`    | Docker event types to filter on. `None` means all types         |
+| `reconnect_interval` | `timedelta`         | 5 seconds | How long to wait before reconnecting after a dropped connection |
+| `debug`              | `bool`              | `False`   | Enable debug-level logging                                      |
+
+Connections are automatically re-established after transient errors. Authentication errors stop the listener for the affected endpoint without retrying.
+
+### Querying past events
+
+Use `get_recent_events` to fetch a bounded list of past events without starting a persistent listener:
+
+```python
+from datetime import UTC, datetime, timedelta
+
+events = await portainer.get_recent_events(
+    endpoint_id=1,
+    since=datetime.now(UTC) - timedelta(hours=1),
+)
+```
+
+Or stream events in real time directly with `get_events`:
+
+```python
+async for event in portainer.get_events(endpoint_id=1, filters={"type": ["container"]}):
+    print(event.action, event.actor.id)
+```
+
 ## Documentation
 
 The full documentation, including API reference, can be found at: [https://erwindouna.github.io/pyportainer/](https://erwindouna.github.io/pyportainer/)

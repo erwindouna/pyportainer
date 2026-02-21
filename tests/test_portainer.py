@@ -2,10 +2,12 @@
 
 # pylint: disable=protected-access
 import asyncio
+from datetime import UTC, datetime
 from unittest.mock import patch
 
 import pytest
 from aiohttp import ClientError, ClientResponse, ClientSession
+from aiohttp.web import Request
 from aresponses import Response, ResponsesMockServer
 
 from pyportainer import Portainer
@@ -16,7 +18,7 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer
+from pyportainer.models.docker import DockerContainer, DockerEvent
 from tests import load_fixtures
 
 
@@ -369,3 +371,127 @@ async def test_container_recreate(
 
     response = await portainer_client.container_recreate(1, "container_id")
     assert isinstance(response, DockerContainer)
+
+
+async def test_get_recent_events(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that get_recent_events returns a list of DockerEvent objects."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/events",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_event.json"),
+        ),
+    )
+
+    since = datetime(2023, 11, 14, tzinfo=UTC)
+    until = datetime(2023, 11, 15, tzinfo=UTC)
+    events = await portainer_client.get_recent_events(1, since=since, until=until)
+
+    assert isinstance(events, list)
+    assert len(events) == 1
+    assert isinstance(events[0], DockerEvent)
+    assert events[0].type == "container"
+    assert events[0].action == "start"
+
+
+async def test_get_recent_events_until_defaults_to_now(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that get_recent_events defaults until to the current time."""
+    received_params: list[str] = []
+
+    async def capturing_handler(request: Request) -> aresponses.Response:
+        """Capture query params and return a single event."""
+        received_params.append(str(request.rel_url))
+        return aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_event.json"),
+        )
+
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/events",
+        "GET",
+        capturing_handler,
+    )
+
+    since = datetime(2023, 11, 14, tzinfo=UTC)
+    await portainer_client.get_recent_events(1, since=since)
+
+    assert len(received_params) == 1
+    assert "since" in received_params[0]
+    assert "until" in received_params[0]
+
+
+async def test_get_events_since_until_params(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that get_events passes since/until as Unix timestamps."""
+    received_params: list[str] = []
+
+    async def capturing_handler(request: Request) -> aresponses.Response:
+        """Capture query params and return a single event."""
+        received_params.append(str(request.rel_url))
+        return aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_event.json"),
+        )
+
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/events",
+        "GET",
+        capturing_handler,
+    )
+
+    since = datetime(2023, 11, 14, tzinfo=UTC)
+    until = datetime(2023, 11, 15, tzinfo=UTC)
+    async for _ in portainer_client.get_events(1, since=since, until=until):
+        pass
+
+    assert len(received_params) == 1
+    assert f"since={int(since.timestamp())}" in received_params[0]
+    assert f"until={int(until.timestamp())}" in received_params[0]
+
+
+async def test_get_events_with_filters(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that get_events passes filters as a JSON-encoded query param."""
+    received_params: list[str] = []
+
+    async def capturing_handler(request: Request) -> aresponses.Response:
+        """Capture query params and return a single event."""
+        received_params.append(str(request.rel_url))
+        return aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_event.json"),
+        )
+
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/events",
+        "GET",
+        capturing_handler,
+    )
+
+    filters = {"type": ["container"], "event": ["start", "die"]}
+    async for _ in portainer_client.get_events(1, filters=filters):
+        pass
+
+    assert len(received_params) == 1
+    assert "filters" in received_params[0]
+    # The filter values should be URL-encoded in the query string
+    assert "container" in received_params[0]
