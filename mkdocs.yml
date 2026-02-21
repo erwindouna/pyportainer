@@ -3,6 +3,11 @@ site_name: pyportainer
 site_url: https://erwindouna.github.io/pyportainer/
 repo_url: https://github.com/erwindouna/pyportainer
 
+nav:
+  - Home: index.md
+  - Image Update Watcher: watcher.md
+  - API Reference: api/reference.md
+
 theme:
   name: material
   logo: assets/t2f.png
