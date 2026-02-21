@@ -10,8 +10,6 @@ nav:
 
 theme:
   name: material
-  logo: assets/t2f.png
-  favicon: assets/favicon.png
   palette:
     scheme: default
     primary: blue
