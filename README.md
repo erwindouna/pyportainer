@@ -1,4 +1,5 @@
 <!-- PROJECT SHIELDS -->
+
 [![GitHub Release][releases-shield]][releases]
 [![Python Versions][python-versions-shield]][pypi]
 ![Project Stage][project-stage-shield]
@@ -13,7 +14,6 @@
 [![Build Status][build-shield]][build-url]
 [![Typing Status][typing-shield]][typing-url]
 [![Code Coverage][codecov-shield]][codecov-url]
-
 
 Asynchronous Python client for Python Portainer.
 
@@ -54,7 +54,68 @@ if __name__ == "__main__":
 
 More examples can be found in the [examples folder](./examples/).
 
+## Image Update Watcher
+
+`pyportainer` includes a built-in background watcher that continuously monitors your Docker containers for available image updates. It polls Portainer at a configurable interval, checks each running container's local image digest against the registry, and exposes the results for easy consumption.
+
+### Basic usage
+
+```python
+import asyncio
+from datetime import timedelta
+
+from pyportainer import Portainer, PortainerImageWatcher
+
+
+async def main() -> None:
+    async with Portainer(
+        api_url="http://localhost:9000",
+        api_key="YOUR_API_KEY",
+    ) as portainer:
+        watcher = PortainerImageWatcher(
+            portainer,
+            interval=timedelta(hours=6),
+        )
+
+        watcher.start()
+
+        await asyncio.sleep(30)  # Let the first check complete
+
+        for (endpoint_id, container_id), result in watcher.results.items():
+            if result.status and result.status.update_available:
+                print(f"Update available for container {container_id} on endpoint {endpoint_id}")
+
+        watcher.stop()
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### Configuration
+
+| Parameter     | Type          | Default  | Description                                       |
+| ------------- | ------------- | -------- | ------------------------------------------------- |
+| `portainer`   | `Portainer`   | —        | The Portainer client instance                     |
+| `endpoint_id` | `int \| None` | `None`   | Endpoint to monitor. `None` watches all endpoints |
+| `interval`    | `timedelta`   | 12 hours | How often to poll for updates                     |
+| `debug`       | `bool`        | `False`  | Enable debug-level logging                        |
+
+### Results
+
+`watcher.results` returns a dictionary keyed by `(endpoint_id, container_id)` tuples. Each value is a `PortainerImageWatcherResult` containing:
+
+- `endpoint_id` — the endpoint the container belongs to
+- `container_id` — the container ID
+- `status` — a `PortainerImageUpdateStatus` with:
+  - `update_available` (`bool`) — whether a newer image is available in the registry
+  - `local_digest` (`str | None`) — digest of the locally running image
+  - `registry_digest` (`str | None`) — digest of the latest image in the registry
+
+You can also inspect `watcher.last_check` to get the Unix timestamp of the most recent completed poll, or update `watcher.interval` at runtime to change the polling frequency.
+
 ## Documentation
+
 The full documentation, including API reference, can be found at: [https://erwindouna.github.io/pyportainer/](https://erwindouna.github.io/pyportainer/)
 
 ## Contributing
@@ -77,7 +138,6 @@ By clicking the button below you immediately start a Dev Container in Visual Stu
 
 This Python project relies on [UV][poetry] as its dependency manager,
 providing comprehensive management and control over project dependencies.
-
 
 ### Installation
 
@@ -142,11 +202,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-
 <!-- LINKS FROM PLATFORM -->
 
-
 <!-- MARKDOWN LINKS & IMAGES -->
+
 [build-shield]: https://github.com/erwindouna/pyportainer/actions/workflows/tests.yaml/badge.svg
 [build-url]: https://github.com/erwindouna/pyportainer/actions/workflows/tests.yaml
 [codecov-shield]: https://codecov.io/gh/erwindouna/pyportainer/branch/main/graph/badge.svg?token=TOKEN
@@ -167,6 +226,5 @@ SOFTWARE.
 [releases]: https://github.com/erwindouna/pyportainer/releases
 [typing-shield]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml/badge.svg
 [typing-url]: https://github.com/erwindouna/pyportainer/actions/workflows/typing.yaml
-
 [uv]: https://docs.astral.sh/uv/
 [pre-commit]: https://pre-commit.com
