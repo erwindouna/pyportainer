@@ -7,7 +7,7 @@ from .exceptions import (
     PortainerTimeoutError,
 )
 from .pyportainer import Portainer
-from .watcher import PortainerImageWatcher
+from .watcher import PortainerImageWatcher, WatcherCallback
 
 __all__ = [
     "Portainer",
@@ -16,4 +16,5 @@ __all__ = [
     "PortainerError",
     "PortainerImageWatcher",
     "PortainerTimeoutError",
+    "WatcherCallback",
 ]

@@ -6,6 +6,7 @@ import asyncio
 import logging
 import time
 from collections import defaultdict
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING
@@ -18,6 +19,8 @@ if TYPE_CHECKING:
 
 
 _LOGGER = logging.getLogger(__name__)
+
+WatcherCallback = Callable[["PortainerImageWatcherResult"], Awaitable[None] | None]
 
 
 @dataclass(frozen=True)
@@ -58,6 +61,7 @@ class PortainerImageWatcher:
         self._results: dict[tuple[int, str], PortainerImageWatcherResult] = {}
         self._task: asyncio.Task[None] | None = None
         self._last_check: float | None = None
+        self._callbacks: list[WatcherCallback] = []
 
         _LOGGER.setLevel(logging.DEBUG if debug else logging.INFO)
 
@@ -95,11 +99,49 @@ class PortainerImageWatcher:
         if self._task and not self._task.done():
             self._task.cancel()
 
+    def register_callback(self, callback: WatcherCallback) -> None:
+        """Register a callback to be invoked for every result after each poll cycle.
+
+        Both synchronous and async callables are supported. The callback receives a
+        single :class:`PortainerImageWatcherResult` argument. Each unique callable
+        is only registered once; duplicate registrations are silently ignored.
+
+        Args:
+        ----
+            callback: A sync or async callable that accepts a
+                :class:`PortainerImageWatcherResult`.
+
+        """
+        if callback not in self._callbacks:
+            self._callbacks.append(callback)
+
+    def unregister_callback(self, callback: WatcherCallback) -> None:
+        """Remove a previously registered callback.
+
+        Args:
+        ----
+            callback: The callable to remove. Raises :exc:`ValueError` if it was not registered.
+
+        """
+        self._callbacks.remove(callback)
+
+    async def _fire_callbacks(self, result: PortainerImageWatcherResult) -> None:
+        """Invoke all registered callbacks for a single result.
+
+        Exceptions raised by individual callbacks are logged but not blocking.
+        """
+        for callback in list(self._callbacks):
+            try:
+                ret = callback(result)
+                if asyncio.iscoroutine(ret):
+                    await ret
+            except Exception:  # pylint: disable=broad-except
+                _LOGGER.exception("Callback raised an exception for container %s", result.container_id)
+
     async def _run(self) -> None:
         """Loop that checks immediately, then sleep for the interval, then repeat.
 
-        Errors during checks are logged but don't stop the watcher, allowing
-        recovery from transient issues.
+        Errors during checks are logged but don't stop the watcher, allowing recovery from transient issues.
         """
         while True:
             try:
@@ -164,3 +206,6 @@ class PortainerImageWatcher:
                     _LOGGER.debug("Checked image %s on endpoint %s for container %s", image, endpoint_id, container_id)
 
         self._results = fresh
+
+        if self._callbacks and fresh:
+            await asyncio.gather(*(self._fire_callbacks(result) for result in fresh.values()))

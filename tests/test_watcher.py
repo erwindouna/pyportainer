@@ -11,7 +11,7 @@ import pytest
 from aresponses import ResponsesMockServer
 from syrupy.assertion import SnapshotAssertion
 
-from pyportainer.watcher import PortainerImageWatcher
+from pyportainer.watcher import PortainerImageWatcher, PortainerImageWatcherResult
 from tests import load_fixtures
 
 if TYPE_CHECKING:
@@ -251,3 +251,137 @@ async def test_image_watcher_check_all_exceptions(
 
     assert not watcher.results
     assert "Failed to check image" in caplog.text
+
+
+def _add_image_check_responses(aresponses: ResponsesMockServer) -> None:
+    """Add the standard three responses needed for a single image check."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("containers.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/distribution/{IMAGE}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_information.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/images/{IMAGE}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+
+async def test_image_watcher_sync_callback(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that a synchronous callback is invoked for each result."""
+    _add_image_check_responses(aresponses)
+
+    received: list[PortainerImageWatcherResult] = []
+
+    def my_callback(result: PortainerImageWatcherResult) -> None:
+        """Append result to the received list."""
+        received.append(result)
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    watcher.register_callback(my_callback)
+    await watcher._check_all()
+
+    assert len(received) == len(watcher.results)
+    assert all(r in watcher.results.values() for r in received)
+
+
+async def test_image_watcher_async_callback(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that an async callback is awaited for each result."""
+    _add_image_check_responses(aresponses)
+
+    received: list[PortainerImageWatcherResult] = []
+
+    async def my_async_callback(result: PortainerImageWatcherResult) -> None:
+        """Append result to the received list."""
+        received.append(result)
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    watcher.register_callback(my_async_callback)
+    await watcher._check_all()
+
+    assert len(received) == len(watcher.results)
+
+
+async def test_image_watcher_callback_duplicate_ignored(
+    portainer_client: Portainer,
+) -> None:
+    """Test that registering the same callback twice only calls it once per result."""
+
+    def my_callback(result: PortainerImageWatcherResult) -> None:  # pylint: disable=unused-argument
+        """Do nothing; used to test duplicate registration handling."""
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    watcher.register_callback(my_callback)
+    watcher.register_callback(my_callback)
+
+    assert watcher._callbacks.count(my_callback) == 1
+
+
+async def test_image_watcher_unregister_callback(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that an unregistered callback is no longer called."""
+    _add_image_check_responses(aresponses)
+
+    received: list[PortainerImageWatcherResult] = []
+
+    def my_callback(result: PortainerImageWatcherResult) -> None:
+        """Append result to the received list."""
+        received.append(result)
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    watcher.register_callback(my_callback)
+    watcher.unregister_callback(my_callback)
+    await watcher._check_all()
+
+    assert received is None or len(received) == 0
+
+
+async def test_image_watcher_callback_exception_logged(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that a callback exception is logged but does not stop the watcher."""
+    _add_image_check_responses(aresponses)
+
+    def bad_callback(result: PortainerImageWatcherResult) -> None:  # noqa: ARG001  # pylint: disable=unused-argument
+        """Raise an exception to test error handling."""
+        msg = "boom"
+        raise RuntimeError(msg)
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    watcher.register_callback(bad_callback)
+
+    with caplog.at_level(logging.ERROR):
+        await watcher._check_all()
+
+    assert watcher.results  # Results still populated despite callback failure
+    assert "Callback raised an exception" in caplog.text
