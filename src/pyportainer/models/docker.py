@@ -272,6 +272,15 @@ class DockerContainerStats(DataClassORJSONMixin):
 
 
 @dataclass
+class PortainerImageUpdateStatus:
+    """Represents the result of checking if a Docker image has an update available."""
+
+    update_available: bool
+    local_digest: str | None = None
+    registry_digest: str | None = None
+
+
+@dataclass
 class DockerImagePruneResponse(DataClassORJSONMixin):
     """Represents the response from pruning Docker images."""
 
