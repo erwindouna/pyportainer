@@ -1,0 +1,2277 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://erwindouna.github.io/pyportainer/listener/">
+      
+      
+        <link rel="prev" href="../watcher/">
+      
+      
+        <link rel="next" href="../api/reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.3">
+    
+    
+      
+        <title>Event Listener - pyportainer</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#event-listener" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyportainer" class="md-header__button md-logo" aria-label="pyportainer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyportainer
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Event Listener
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/erwindouna/pyportainer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../watcher/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Image Update Watcher
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Event Listener
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../api/reference/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  API Reference
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyportainer" class="md-nav__button md-logo" aria-label="pyportainer" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyportainer
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/erwindouna/pyportainer" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../watcher/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Image Update Watcher
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event Listener
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Event Listener
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#listening-to-a-specific-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listening to a specific endpoint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-by-event-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering by event type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#event-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callbacks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callbacks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async callbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-inside-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering inside a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unregistering-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unregistering a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stopping-and-restarting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stopping and restarting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-the-reconnect-interval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the reconnect interval
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#querying-events-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Querying events directly
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Querying events directly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stream-events-in-real-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream events in real time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetch-a-bounded-list-of-past-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetch a bounded list of past events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        listener
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PortainerEventListener
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PortainerEventListener">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.register_callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.unregister_callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unregister_callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListenerResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PortainerEventListenerResult
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-it-works" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How it works
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#listening-to-a-specific-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Listening to a specific endpoint
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filtering-by-event-type" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering by event type
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#event-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Callbacks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Callbacks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registering-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Async callbacks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-inside-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering inside a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unregistering-a-callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unregistering a callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#runtime-control" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runtime control
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Runtime control">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stopping-and-restarting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stopping and restarting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#changing-the-reconnect-interval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changing the reconnect interval
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#querying-events-directly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Querying events directly
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Querying events directly">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stream-events-in-real-time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stream events in real time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetch-a-bounded-list-of-past-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fetch a bounded list of past events
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        listener
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PortainerEventListener
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PortainerEventListener">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.__init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        __init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.register_callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.stop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListener.unregister_callback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unregister_callback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyportainer.listener.PortainerEventListenerResult" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PortainerEventListenerResult
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="event-listener">Event Listener</h1>
+<p><code>pyportainer</code> includes a built-in <code>PortainerEventListener</code> that maintains a streaming connection to the Docker events endpoint. Unlike the image watcher, which polls on a fixed interval, the event listener reacts in real time as events occur; container starts, stops, crashes, image pulls, network changes, and more.</p>
+<h2 id="how-it-works">How it works</h2>
+<ol>
+<li>On <code>start()</code>, a background asyncio task is created.</li>
+<li>The task resolves which endpoints to listen to (all, or a specific one).</li>
+<li>One persistent HTTP streaming connection is opened per endpoint, concurrently.</li>
+<li>Each incoming Docker event is parsed and delivered to registered callbacks immediately.</li>
+<li>If a connection drops (network error, server restart), it is automatically re-established after <code>reconnect_interval</code>.</li>
+<li>Authentication errors are treated as fatal for that endpoint — no retry is attempted.</li>
+</ol>
+<h2 id="basic-usage">Basic usage</h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyportainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Portainer</span><span class="p">,</span> <span class="n">PortainerEventListener</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyportainer.listener</span><span class="w"> </span><span class="kn">import</span> <span class="n">PortainerEventListenerResult</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">PortainerEventListenerResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handle an incoming Docker event.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[endpoint </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">endpoint_id</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">Portainer</span><span class="p">(</span>
+        <span class="n">api_url</span><span class="o">=</span><span class="s2">&quot;http://localhost:9000&quot;</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="o">=</span><span class="s2">&quot;YOUR_API_KEY&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="k">as</span> <span class="n">portainer</span><span class="p">:</span>
+        <span class="n">listener</span> <span class="o">=</span> <span class="n">PortainerEventListener</span><span class="p">(</span><span class="n">portainer</span><span class="p">)</span>
+        <span class="n">listener</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">on_event</span><span class="p">)</span>
+        <span class="n">listener</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>  <span class="c1"># Listen for a while</span>
+
+        <span class="n">listener</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="listening-to-a-specific-endpoint">Listening to a specific endpoint</h2>
+<p>Pass <code>endpoint_id</code> to open a stream to a single Portainer endpoint instead of all:</p>
+<div class="highlight"><pre><span></span><code><span class="n">listener</span> <span class="o">=</span> <span class="n">PortainerEventListener</span><span class="p">(</span><span class="n">portainer</span><span class="p">,</span> <span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="filtering-by-event-type">Filtering by event type</h2>
+<p>Use <code>event_types</code> to receive only the Docker event categories you care about. Accepted values match the Docker API's <code>type</code> filter: <code>container</code>, <code>image</code>, <code>volume</code>, <code>network</code>, <code>daemon</code>, <code>plugin</code>, <code>node</code>, <code>service</code>, <code>secret</code>, <code>config</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">listener</span> <span class="o">=</span> <span class="n">PortainerEventListener</span><span class="p">(</span>
+    <span class="n">portainer</span><span class="p">,</span>
+    <span class="n">event_types</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;container&quot;</span><span class="p">,</span> <span class="s2">&quot;image&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="configuration">Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>portainer</code></td>
+<td><code>Portainer</code></td>
+<td>—</td>
+<td>The Portainer client instance</td>
+</tr>
+<tr>
+<td><code>endpoint_id</code></td>
+<td><code>int \| None</code></td>
+<td><code>None</code></td>
+<td>Endpoint to listen to. <code>None</code> listens to all endpoints</td>
+</tr>
+<tr>
+<td><code>event_types</code></td>
+<td><code>list[str] \| None</code></td>
+<td><code>None</code></td>
+<td>Docker event types to filter on. <code>None</code> means all types</td>
+</tr>
+<tr>
+<td><code>reconnect_interval</code></td>
+<td><code>timedelta</code></td>
+<td>5 seconds</td>
+<td>How long to wait before reconnecting after a dropped connection</td>
+</tr>
+<tr>
+<td><code>debug</code></td>
+<td><code>bool</code></td>
+<td><code>False</code></td>
+<td>Enable debug-level logging</td>
+</tr>
+</tbody>
+</table>
+<h2 id="event-data">Event data</h2>
+<p>Each callback receives a <code>PortainerEventListenerResult</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>endpoint_id</code></td>
+<td><code>int</code></td>
+<td>The endpoint the event came from</td>
+</tr>
+<tr>
+<td><code>event</code></td>
+<td><code>DockerEvent</code></td>
+<td>The Docker event payload</td>
+</tr>
+</tbody>
+</table>
+<p><code>DockerEvent</code> fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type</code></td>
+<td><code>str \| None</code></td>
+<td>Event category: <code>container</code>, <code>image</code>, etc.</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td><code>str \| None</code></td>
+<td>What happened: <code>start</code>, <code>stop</code>, <code>die</code>, etc.</td>
+</tr>
+<tr>
+<td><code>actor</code></td>
+<td><code>DockerEventActor \| None</code></td>
+<td>The object the event is about</td>
+</tr>
+<tr>
+<td><code>scope</code></td>
+<td><code>str \| None</code></td>
+<td><code>local</code> or <code>swarm</code></td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>int \| None</code></td>
+<td>Unix timestamp (seconds)</td>
+</tr>
+<tr>
+<td><code>time_nano</code></td>
+<td><code>int \| None</code></td>
+<td>Unix timestamp (nanoseconds)</td>
+</tr>
+</tbody>
+</table>
+<p><code>DockerEventActor</code> fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td><code>str \| None</code></td>
+<td>ID of the object (container ID, image name, etc.)</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td><code>dict[str, str] \| None</code></td>
+<td>Extra metadata (image name, container name, etc.)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="callbacks">Callbacks</h2>
+<p>Register a callback to be invoked for every event received. Both sync and async callables are supported.</p>
+<h3 id="registering-a-callback">Registering a callback</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">pyportainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">PortainerEventListener</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyportainer.listener</span><span class="w"> </span><span class="kn">import</span> <span class="n">PortainerEventListenerResult</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">PortainerEventListenerResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2"> — </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">listener</span> <span class="o">=</span> <span class="n">PortainerEventListener</span><span class="p">(</span><span class="n">portainer</span><span class="p">,</span> <span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">listener</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">on_event</span><span class="p">)</span>
+<span class="n">listener</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="async-callbacks">Async callbacks</h3>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">PortainerEventListenerResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;die&quot;</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">alert</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Container </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> has stopped unexpectedly&quot;</span><span class="p">)</span>
+
+
+<span class="n">listener</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span><span class="n">on_event</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="filtering-inside-a-callback">Filtering inside a callback</h3>
+<p>Callbacks receive every event that passes the <code>event_types</code> filter. Add further logic inside the callback:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">on_event</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">PortainerEventListenerResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;die&quot;</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Container </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="unregistering-a-callback">Unregistering a callback</h3>
+<div class="highlight"><pre><span></span><code><span class="n">listener</span><span class="o">.</span><span class="n">unregister_callback</span><span class="p">(</span><span class="n">on_event</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="notes">Notes</h3>
+<ul>
+<li>Registering the same callable twice is silently ignored; it is only called once per event.</li>
+<li>Exceptions raised inside a callback are logged but do not stop the listener or prevent other callbacks from running.</li>
+<li>The <code>EventListenerCallback</code> type alias is exported from <code>pyportainer</code> for type annotations: <code>from pyportainer import EventListenerCallback</code>.</li>
+</ul>
+<h2 id="runtime-control">Runtime control</h2>
+<h3 id="stopping-and-restarting">Stopping and restarting</h3>
+<div class="highlight"><pre><span></span><code><span class="n">listener</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>   <span class="c1"># Cancels all streaming connections</span>
+<span class="n">listener</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># Reconnects and starts listening again</span>
+</code></pre></div>
+<h3 id="changing-the-reconnect-interval">Changing the reconnect interval</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+
+<span class="n">listener</span><span class="o">.</span><span class="n">_reconnect_interval</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="querying-events-directly">Querying events directly</h2>
+<p>The underlying <code>get_events</code> and <code>get_recent_events</code> methods on the <code>Portainer</code> client are also available directly, without using <code>PortainerEventListener</code>.</p>
+<h3 id="stream-events-in-real-time">Stream events in real time</h3>
+<p><code>get_events</code> is an async generator that keeps the connection open and yields events as they arrive:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">portainer</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+</code></pre></div>
+<p>Pass <code>since</code> to replay events from a specific point, or <code>until</code> to close the stream automatically at a timestamp:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">portainer</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span>
+    <span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">since</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;container&quot;</span><span class="p">],</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;die&quot;</span><span class="p">]},</span>
+<span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">actor</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="fetch-a-bounded-list-of-past-events">Fetch a bounded list of past events</h3>
+<p><code>get_recent_events</code> collects all events in a time window into a list and returns once the window is exhausted:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">UTC</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="n">events</span> <span class="o">=</span> <span class="k">await</span> <span class="n">portainer</span><span class="o">.</span><span class="n">get_recent_events</span><span class="p">(</span>
+    <span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">since</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">UTC</span><span class="p">)</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="p">)</span>
+</code></pre></div>
+<p><code>until</code> defaults to now, so the connection closes automatically. You can also pass an explicit end time:</p>
+<div class="highlight"><pre><span></span><code><span class="n">events</span> <span class="o">=</span> <span class="k">await</span> <span class="n">portainer</span><span class="o">.</span><span class="n">get_recent_events</span><span class="p">(</span>
+    <span class="n">endpoint_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">since</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+    <span class="n">until</span><span class="o">=</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">UTC</span><span class="p">),</span>
+    <span class="n">filters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]},</span>
+<span class="p">)</span>
+</code></pre></div>
+<h2 id="api-reference">API reference</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="pyportainer.listener"></a>
+    <div class="doc doc-contents first">
+
+        <p>Background Docker event listener.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pyportainer.listener.PortainerEventListener" class="doc doc-heading">
+            <code>PortainerEventListener</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Maintains persistent streaming connections to Docker event endpoints.</p>
+<p>One streaming connection is opened per endpoint. Events are delivered to
+registered callbacks as they arrive, in real time. If a connection drops,
+it is automatically re-established after <code>reconnect_interval</code>.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span>
+<span class="normal">188</span>
+<span class="normal">189</span>
+<span class="normal">190</span>
+<span class="normal">191</span>
+<span class="normal">192</span>
+<span class="normal">193</span>
+<span class="normal">194</span>
+<span class="normal">195</span>
+<span class="normal">196</span>
+<span class="normal">197</span>
+<span class="normal">198</span>
+<span class="normal">199</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PortainerEventListener</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Maintains persistent streaming connections to Docker event endpoints.</span>
+
+<span class="sd">    One streaming connection is opened per endpoint. Events are delivered to</span>
+<span class="sd">    registered callbacks as they arrive, in real time. If a connection drops,</span>
+<span class="sd">    it is automatically re-established after ``reconnect_interval``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments,too-many-instance-attributes</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">portainer</span><span class="p">:</span> <span class="n">Portainer</span><span class="p">,</span>
+        <span class="n">endpoint_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">event_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reconnect_interval</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the PortainerEventListener.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ----</span>
+<span class="sd">            portainer: An authenticated Portainer client instance.</span>
+<span class="sd">            endpoint_id: The ID of the endpoint to listen to. If None, all</span>
+<span class="sd">                endpoints are monitored concurrently.</span>
+<span class="sd">            event_types: Docker event types to filter on, e.g.</span>
+<span class="sd">                ``[&quot;container&quot;, &quot;image&quot;]``. If None, all event types are</span>
+<span class="sd">                delivered.</span>
+<span class="sd">            reconnect_interval: How long to wait before reconnecting after a</span>
+<span class="sd">                dropped connection. Defaults to 5 seconds.</span>
+<span class="sd">            debug: Enable debug logging.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_portainer</span> <span class="o">=</span> <span class="n">portainer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_id</span> <span class="o">=</span> <span class="n">endpoint_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_types</span> <span class="o">=</span> <span class="n">event_types</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span> <span class="o">=</span> <span class="n">reconnect_interval</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EventListenerCallback</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">_LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start listening for Docker events.</span>
+
+<span class="sd">        Opens streaming connections immediately. Must be called from within a</span>
+<span class="sd">        running asyncio event loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop all streaming connections.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">EventListenerCallback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register a callback to be invoked for every Docker event received.</span>
+
+<span class="sd">        Both synchronous and async callables are supported. The callback</span>
+<span class="sd">        receives a single :class:`PortainerEventListenerResult` argument.</span>
+<span class="sd">        Each unique callable is only registered once; duplicates are ignored.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ----</span>
+<span class="sd">            callback: A sync or async callable that accepts a</span>
+<span class="sd">                :class:`PortainerEventListenerResult`.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">unregister_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">EventListenerCallback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove a previously registered callback.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ----</span>
+<span class="sd">            callback: The callable to remove. Raises :exc:`ValueError` if it</span>
+<span class="sd">                was not registered.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_fire_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span> <span class="n">PortainerEventListenerResult</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Invoke all registered callbacks for a single event.</span>
+
+<span class="sd">        Exceptions raised by individual callbacks are logged but do not stop</span>
+<span class="sd">        the listener.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ret</span> <span class="o">=</span> <span class="n">callback</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutine</span><span class="p">(</span><span class="n">ret</span><span class="p">):</span>
+                    <span class="k">await</span> <span class="n">ret</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
+                <span class="n">_LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Callback raised an exception for event </span><span class="si">%s</span><span class="s2"> on endpoint </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">action</span><span class="p">,</span>
+                    <span class="n">result</span><span class="o">.</span><span class="n">endpoint_id</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_listen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream events from a single endpoint and fire callbacks for each.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ----</span>
+<span class="sd">            endpoint_id: The endpoint to stream events from.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_types</span><span class="p">}</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_types</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_portainer</span><span class="o">.</span><span class="n">get_events</span><span class="p">(</span><span class="n">endpoint_id</span><span class="p">,</span> <span class="n">filters</span><span class="o">=</span><span class="n">filters</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">PortainerEventListenerResult</span><span class="p">(</span><span class="n">endpoint_id</span><span class="o">=</span><span class="n">endpoint_id</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fire_callbacks</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_listen_with_reconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stream events from an endpoint, reconnecting on transient errors.</span>
+
+<span class="sd">        Authentication errors are treated as fatal and stop the listener for</span>
+<span class="sd">        that endpoint. All other :class:`~pyportainer.exceptions.PortainerError`</span>
+<span class="sd">        subclasses trigger a reconnect after ``reconnect_interval``.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        ----</span>
+<span class="sd">            endpoint_id: The endpoint to stream events from.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listen</span><span class="p">(</span><span class="n">endpoint_id</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">PortainerAuthenticationError</span><span class="p">:</span>
+                <span class="n">_LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Authentication error for endpoint </span><span class="si">%s</span><span class="s2">, stopping listener&quot;</span><span class="p">,</span>
+                    <span class="n">endpoint_id</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">except</span> <span class="n">PortainerTimeoutError</span><span class="p">:</span>
+                <span class="n">_LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Timeout on endpoint </span><span class="si">%s</span><span class="s2">, reconnecting in </span><span class="si">%s</span><span class="s2">s&quot;</span><span class="p">,</span>
+                    <span class="n">endpoint_id</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">PortainerConnectionError</span><span class="p">:</span>
+                <span class="n">_LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;Connection lost on endpoint </span><span class="si">%s</span><span class="s2">, reconnecting in </span><span class="si">%s</span><span class="s2">s&quot;</span><span class="p">,</span>
+                    <span class="n">endpoint_id</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="n">PortainerError</span><span class="p">:</span>
+                <span class="n">_LOGGER</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                    <span class="s2">&quot;Error on endpoint </span><span class="si">%s</span><span class="s2">, reconnecting in </span><span class="si">%s</span><span class="s2">s&quot;</span><span class="p">,</span>
+                    <span class="n">endpoint_id</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span>
+                <span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Resolve endpoints and open a streaming connection to each.</span>
+
+<span class="sd">        Runs all per-endpoint listeners concurrently via :func:`asyncio.gather`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">endpoint_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_id</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;No endpoint_id specified, fetching all endpoints to listen to.&quot;</span><span class="p">)</span>
+            <span class="n">endpoints</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_portainer</span><span class="o">.</span><span class="n">get_endpoints</span><span class="p">()</span>
+            <span class="n">endpoint_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">endpoint</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">endpoint</span> <span class="ow">in</span> <span class="n">endpoints</span><span class="p">]</span>
+
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_listen_with_reconnect</span><span class="p">(</span><span class="n">ep_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ep_id</span> <span class="ow">in</span> <span class="n">endpoint_ids</span><span class="p">))</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyportainer.listener.PortainerEventListener.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">portainer</span><span class="p">,</span> <span class="n">endpoint_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">event_types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reconnect_interval</span><span class="o">=</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initialize the PortainerEventListener.</p>
+        <hr />
+<pre><code>portainer: An authenticated Portainer client instance.
+endpoint_id: The ID of the endpoint to listen to. If None, all
+    endpoints are monitored concurrently.
+event_types: Docker event types to filter on, e.g.
+    ``["container", "image"]``. If None, all event types are
+    delivered.
+reconnect_interval: How long to wait before reconnecting after a
+    dropped connection. Defaults to 5 seconds.
+debug: Enable debug logging.
+</code></pre>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>  <span class="c1"># pylint: disable=too-many-arguments,too-many-instance-attributes</span>
+    <span class="bp">self</span><span class="p">,</span>
+    <span class="n">portainer</span><span class="p">:</span> <span class="n">Portainer</span><span class="p">,</span>
+    <span class="n">endpoint_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">event_types</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">reconnect_interval</span><span class="p">:</span> <span class="n">timedelta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+    <span class="n">debug</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize the PortainerEventListener.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        portainer: An authenticated Portainer client instance.</span>
+<span class="sd">        endpoint_id: The ID of the endpoint to listen to. If None, all</span>
+<span class="sd">            endpoints are monitored concurrently.</span>
+<span class="sd">        event_types: Docker event types to filter on, e.g.</span>
+<span class="sd">            ``[&quot;container&quot;, &quot;image&quot;]``. If None, all event types are</span>
+<span class="sd">            delivered.</span>
+<span class="sd">        reconnect_interval: How long to wait before reconnecting after a</span>
+<span class="sd">            dropped connection. Defaults to 5 seconds.</span>
+<span class="sd">        debug: Enable debug logging.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_portainer</span> <span class="o">=</span> <span class="n">portainer</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_endpoint_id</span> <span class="o">=</span> <span class="n">endpoint_id</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_event_types</span> <span class="o">=</span> <span class="n">event_types</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_reconnect_interval</span> <span class="o">=</span> <span class="n">reconnect_interval</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">EventListenerCallback</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">_LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyportainer.listener.PortainerEventListener.register_callback" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">register_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Register a callback to be invoked for every Docker event received.</p>
+<p>Both synchronous and async callables are supported. The callback
+receives a single :class:<code>PortainerEventListenerResult</code> argument.
+Each unique callable is only registered once; duplicates are ignored.</p>
+        <hr />
+<pre><code>callback: A sync or async callable that accepts a
+    :class:`PortainerEventListenerResult`.
+</code></pre>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">register_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">EventListenerCallback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a callback to be invoked for every Docker event received.</span>
+
+<span class="sd">    Both synchronous and async callables are supported. The callback</span>
+<span class="sd">    receives a single :class:`PortainerEventListenerResult` argument.</span>
+<span class="sd">    Each unique callable is only registered once; duplicates are ignored.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        callback: A sync or async callable that accepts a</span>
+<span class="sd">            :class:`PortainerEventListenerResult`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">callback</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyportainer.listener.PortainerEventListener.start" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">start</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Start listening for Docker events.</p>
+<p>Opens streaming connections immediately. Must be called from within a
+running asyncio event loop.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Start listening for Docker events.</span>
+
+<span class="sd">    Opens streaming connections immediately. Must be called from within a</span>
+<span class="sd">    running asyncio event loop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run</span><span class="p">())</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyportainer.listener.PortainerEventListener.stop" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">stop</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Stop all streaming connections.</p>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stop all streaming connections.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pyportainer.listener.PortainerEventListener.unregister_callback" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unregister_callback</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Remove a previously registered callback.</p>
+        <hr />
+<pre><code>callback: The callable to remove. Raises :exc:`ValueError` if it
+    was not registered.
+</code></pre>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">unregister_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">EventListenerCallback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove a previously registered callback.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    ----</span>
+<span class="sd">        callback: The callable to remove. Raises :exc:`ValueError` if it</span>
+<span class="sd">            was not registered.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_callbacks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="pyportainer.listener.PortainerEventListenerResult" class="doc doc-heading">
+            <code>PortainerEventListenerResult</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Represents a single Docker event received from an endpoint.</p>
+
+
+
+
+
+
+
+
+              <details class="mkdocstrings-source">
+                <summary>Source code in <code>src/pyportainer/listener.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PortainerEventListenerResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a single Docker event received from an endpoint.&quot;&quot;&quot;</span>
+
+    <span class="n">endpoint_id</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">event</span><span class="p">:</span> <span class="n">DockerEvent</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../watcher/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Image Update Watcher">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Image Update Watcher
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../api/reference/" class="md-footer__link md-footer__link--next" aria-label="Next: API Reference">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                API Reference
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright © 2025 Erwin Douna
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/erwindouna" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/erwindouna/" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.top", "navigation.footer", "navigation.expand", "navigation.sections", "navigation.instant", "navigation.tracking", "navigation.search.highlight", "navigation.search.suggest", "navigation.search.share"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
