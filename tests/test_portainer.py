@@ -3,12 +3,12 @@
 # pylint: disable=protected-access
 import asyncio
 from datetime import UTC, datetime
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 
 import pytest
-from aiohttp import ClientError, ClientResponse, ClientSession
+from aiohttp import ClientError, ClientSession
 from aiohttp.web import Request
-from aresponses import Response, ResponsesMockServer
+from aresponses import ResponsesMockServer
 
 from pyportainer import Portainer
 from pyportainer.exceptions import (
@@ -52,30 +52,16 @@ async def test_internal_session(aresponses: ResponsesMockServer) -> None:
         assert response == {}
 
 
-async def test_timeout(aresponses: ResponsesMockServer) -> None:
+async def test_timeout() -> None:
     """Test request timeout from Portainer API."""
-
-    # Faking a timeout by sleeping
-    async def response_handler(_: ClientResponse) -> Response:
-        await asyncio.sleep(0.2)
-        return aresponses.Response(
-            status=200,
-            headers={"Content-Type": "application/json"},
-            text="{}",
-        )
-
-    aresponses.add(
-        "localhost:9000",
-        "/api/test",
-        "GET",
-        response_handler,
-    )
-
     async with ClientSession() as session:
-        client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session, request_timeout=0.1)
-        with pytest.raises(PortainerTimeoutError):
-            await client._request("test")
-        await session.close()
+        with (
+            patch.object(session, "request", side_effect=asyncio.TimeoutError),
+            patch("asyncio.sleep", new_callable=AsyncMock),
+        ):
+            client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session, request_timeout=0.1)
+            with pytest.raises(PortainerTimeoutError):
+                await client._request("test")
 
 
 async def test_content_type(
