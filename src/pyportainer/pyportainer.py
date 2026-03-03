@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 from aiohttp import ClientError, ClientResponseError, ClientSession
 from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST
+from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 from yarl import URL
 
 from pyportainer.exceptions import (
@@ -93,6 +94,7 @@ class Portainer:
         json_body: dict[str, Any] | None = None,
         timeout: float | None = None,
         parse: bool = True,
+        max_retries: int = 3,
     ) -> Any:
         """Handle a request to the Python Portainer API.
 
@@ -103,6 +105,9 @@ class Portainer:
             params: Extra options to improve or limit the response.
             timeout: Timeout for the request (in seconds).
             parse: Whether to parse the response as JSON.
+            max_retries: Maximum number of retry attempts on transient errors
+                (``PortainerConnectionError`` and ``PortainerTimeoutError``).
+                Set to 0 to disable retries. Defaults to 3.
 
         Returns:
         -------
@@ -135,33 +140,40 @@ class Portainer:
         if timeout is None:
             timeout = self._request_timeout
 
-        try:
-            async with asyncio.timeout(timeout):
-                response = await self._session.request(
-                    method,
-                    url,
-                    headers=headers,
-                    params=params,
-                    json=json_body,
-                )
-                response.raise_for_status()
-        except TimeoutError as err:
-            msg = f"Timeout error while accessing {method} {url}: {err}"
-            raise PortainerTimeoutError(msg) from err
-        except ClientResponseError as err:
-            match err.status:
-                case 401:
-                    msg = f"Authentication failed for {method} {url}: Invalid API key"
-                    raise PortainerAuthenticationError(msg) from err
-                case 404:
-                    msg = f"Resource not found at {method} {url}: {err}"
-                    raise PortainerNotFoundError(msg) from err
-                case _:
-                    msg = f"Connection error for {method} {url}: {err}"
+        async for attempt in AsyncRetrying(
+            retry=retry_if_exception_type((PortainerConnectionError, PortainerTimeoutError)),
+            wait=wait_exponential(multiplier=1, min=1, max=10),
+            stop=stop_after_attempt(max_retries + 1),
+            reraise=True,
+        ):
+            with attempt:
+                try:
+                    async with asyncio.timeout(timeout):
+                        response = await self._session.request(
+                            method,
+                            url,
+                            headers=headers,
+                            params=params,
+                            json=json_body,
+                        )
+                        response.raise_for_status()
+                except TimeoutError as err:
+                    msg = f"Timeout error while accessing {method} {url}: {err}"
+                    raise PortainerTimeoutError(msg) from err
+                except ClientResponseError as err:
+                    match err.status:
+                        case 401:
+                            msg = f"Authentication failed for {method} {url}: Invalid API key"
+                            raise PortainerAuthenticationError(msg) from err
+                        case 404:
+                            msg = f"Resource not found at {method} {url}: {err}"
+                            raise PortainerNotFoundError(msg) from err
+                        case _:
+                            msg = f"Connection error for {method} {url}: {err}"
+                            raise PortainerConnectionError(msg) from err
+                except (ClientError, socket.gaierror) as err:
+                    msg = f"Unexpected error during {method} {url}: {err}"
                     raise PortainerConnectionError(msg) from err
-        except (ClientError, socket.gaierror) as err:
-            msg = f"Unexpected error during {method} {url}: {err}"
-            raise PortainerConnectionError(msg) from err
 
         if response.status in (204, 304):
             return None
