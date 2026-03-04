@@ -3,10 +3,10 @@
 # pylint: disable=protected-access
 import asyncio
 from datetime import UTC, datetime
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from aiohttp import ClientError, ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession
 from aiohttp.web import Request
 from aresponses import ResponsesMockServer
 
@@ -95,6 +95,95 @@ async def test_client_error() -> None:
             pytest.raises(PortainerConnectionError),
         ):
             assert await client._request("test")
+        await session.close()
+
+
+async def test_retry_succeeds_after_transient_failure() -> None:
+    """Test that a transient connection error is retried and eventually succeeds."""
+    async with ClientSession() as session:
+        client = Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            max_retries=2,
+        )
+        success_response = MagicMock()
+        success_response.status = 200
+        success_response.headers = {"Content-Type": "application/json"}
+        success_response.json = AsyncMock(return_value={"ok": True})
+        success_response.raise_for_status = MagicMock()
+
+        call_count = 0
+        err_msg = "transient error"
+
+        async def side_effect(*_args: object, **_kwargs: object) -> MagicMock:
+            """Simulate two transient errors followed by a successful response."""
+            nonlocal call_count
+            call_count += 1
+            if call_count < 3:
+                raise ClientError(err_msg)
+            return success_response
+
+        with (
+            patch.object(session, "request", side_effect=side_effect),
+            patch("asyncio.sleep", new_callable=AsyncMock),
+        ):
+            result = await client._request("test")
+            assert result == {"ok": True}
+            assert call_count == 3
+
+        await session.close()
+
+
+async def test_retry_exhausted_raises() -> None:
+    """Test that PortainerConnectionError is raised after all retries are exhausted."""
+    async with ClientSession() as session:
+        client = Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            max_retries=2,
+        )
+        with (
+            patch.object(session, "request", side_effect=ClientError("persistent error")),
+            patch("asyncio.sleep", new_callable=AsyncMock),
+            pytest.raises(PortainerConnectionError),
+        ):
+            await client._request("test")
+
+        await session.close()
+
+
+async def test_non_retryable_error_does_not_retry() -> None:
+    """Test that authentication errors are not retried."""
+    async with ClientSession() as session:
+        client = Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            max_retries=3,
+        )
+        call_count = 0
+
+        auth_error_response = MagicMock()
+        auth_error_response.status = 401
+        auth_error_response.headers = {"Content-Type": "application/json"}
+        auth_error_response.raise_for_status = MagicMock(side_effect=ClientResponseError(MagicMock(), (), status=401))
+
+        async def side_effect(*_args: object, **_kwargs: object) -> MagicMock:
+            nonlocal call_count
+            call_count += 1
+            return auth_error_response
+
+        with (
+            patch.object(session, "request", side_effect=side_effect),
+            patch("asyncio.sleep", new_callable=AsyncMock),
+            pytest.raises(PortainerAuthenticationError),
+        ):
+            await client._request("test")
+
+        assert call_count == 1
+
         await session.close()
 
 
