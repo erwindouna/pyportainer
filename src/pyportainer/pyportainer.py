@@ -55,13 +55,14 @@ class Portainer:
 
     _close_session: bool = False
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         api_url: str,
         api_key: str,
         *,
         request_timeout: float = 10.0,
         session: ClientSession | None = None,
+        max_retries: int = 3,
     ) -> None:
         """Initialize the Portainer object.
 
@@ -71,11 +72,13 @@ class Portainer:
             api_key: API key for authentication.
             request_timeout: Timeout for requests (in seconds).
             session: Optional aiohttp session to use.
+            max_retries: Maximum number of retry attempts on transient errors.
 
         """
         self._api_key = api_key
         self._request_timeout = request_timeout
         self._session = session
+        self._max_retries = max_retries
 
         parsed_url = urlparse(api_url)
         self._api_host = parsed_url.hostname or ""
@@ -94,7 +97,6 @@ class Portainer:
         json_body: dict[str, Any] | None = None,
         timeout: float | None = None,
         parse: bool = True,
-        max_retries: int = 3,
     ) -> Any:
         """Handle a request to the Python Portainer API.
 
@@ -105,9 +107,6 @@ class Portainer:
             params: Extra options to improve or limit the response.
             timeout: Timeout for the request (in seconds).
             parse: Whether to parse the response as JSON.
-            max_retries: Maximum number of retry attempts on transient errors
-                (``PortainerConnectionError`` and ``PortainerTimeoutError``).
-                Set to 0 to disable retries. Defaults to 3.
 
         Returns:
         -------
@@ -143,7 +142,7 @@ class Portainer:
         async for attempt in AsyncRetrying(
             retry=retry_if_exception_type((PortainerConnectionError, PortainerTimeoutError)),
             wait=wait_exponential(multiplier=1, min=1, max=10),
-            stop=stop_after_attempt(max_retries + 1),
+            stop=stop_after_attempt(self._max_retries + 1),
             reraise=True,
         ):
             with attempt:
