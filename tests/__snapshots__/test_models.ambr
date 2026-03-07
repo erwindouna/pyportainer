@@ -39,3 +39,6 @@
 # name: test_portainer_system_df
   DockerSystemDF(image_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), container_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), volume_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), build_cache_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None))
 # ---
+# name: test_portainer_system_status
+  PortainerSystemStatus(instance_id='299ab403-70a8-4c05-92f7-bf7a994d50df', version='2.0.0')
+# ---

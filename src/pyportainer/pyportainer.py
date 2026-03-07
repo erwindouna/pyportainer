@@ -34,7 +34,7 @@ from pyportainer.models.docker import (
     PortainerImageUpdateStatus,
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
-from pyportainer.models.portainer import Endpoint
+from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
 from pyportainer.models.stacks import Stack
 
 if TYPE_CHECKING:
@@ -851,6 +851,18 @@ class Portainer:
         )
 
         return DockerSystemDF.from_dict(response)
+
+    async def portainer_system_status(self) -> PortainerSystemStatus:
+        """Get the system status of the Portainer instance.
+
+        Returns
+        -------
+            A PortainerSystemStatus object with the system status data.
+
+        """
+        status = await self._request("system/status")
+
+        return PortainerSystemStatus.from_dict(status)
 
     async def get_stacks(
         self,

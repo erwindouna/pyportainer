@@ -108,3 +108,11 @@ class Endpoint(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attri
     last_check_in_date: int | None = field(default=None, metadata=field_options(alias="lastCheckInDate"))
     query_date: int | None = field(default=None, metadata=field_options(alias="queryDate"))
     security_settings: SecuritySettings | None = field(default=None, metadata=field_options(alias="securitySettings"))
+
+
+@dataclass
+class PortainerSystemStatus(DataClassORJSONMixin):
+    """Represents the system status of Portainer."""
+
+    instance_id: str | None = field(default=None, metadata=field_options(alias="InstanceID"))
+    version: str | None = field(default=None, metadata=field_options(alias="Version"))
