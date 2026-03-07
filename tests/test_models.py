@@ -120,6 +120,27 @@ async def test_portainer_docker_info(
     assert docker_info == snapshot
 
 
+async def test_portainer_system_status(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer system status."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/system/status",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("portainer_system_status.json"),
+        ),
+    )
+
+    system_status = await portainer_client.portainer_system_status()
+    assert system_status == snapshot
+
+
 async def test_portainer_container_stats(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
