@@ -3,10 +3,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
 from typing import Any
 
 from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
+
+
+class DockerDFType(StrEnum):
+    """Resource type filter for Docker system df."""
+
+    CONTAINER = "container"
+    IMAGE = "image"
+    VOLUME = "volume"
+    BUILD_CACHE = "build-cache"
 
 
 @dataclass
