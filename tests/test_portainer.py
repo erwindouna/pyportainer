@@ -85,7 +85,7 @@ async def test_content_type(
 async def test_client_error() -> None:
     """Test request client error from Autarco API."""
     async with ClientSession() as session:
-        client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session)
+        client = Portainer(api_url="http://localhost:9000", api_key="test_api_key", session=session, max_retries=0)
         with (
             patch.object(
                 session,

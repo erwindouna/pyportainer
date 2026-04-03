@@ -18,6 +18,7 @@ async def client() -> AsyncGenerator[Portainer, None]:
             api_key="test_api_key",
             session=session,
             request_timeout=10.0,
+            max_retries=0,
         ) as portainer_client,
     ):
         yield portainer_client
