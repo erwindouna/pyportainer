@@ -310,3 +310,45 @@ async def test_container_image_status_up_to_date(
 
     status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
     assert status == snapshot
+
+
+async def test_portainer_volumes(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer volumes."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/volumes",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("volumes.json"),
+        ),
+    )
+
+    volumes = await portainer_client.get_volumes(1)
+    assert volumes == snapshot
+
+
+async def test_portainer_volume_inspect(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer volume inspect."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/volumes/tardis",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("volume_inspect.json"),
+        ),
+    )
+
+    volume = await portainer_client.inspect_volume(1, "tardis")
+    assert volume == snapshot

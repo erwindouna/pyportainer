@@ -29,6 +29,7 @@ from pyportainer.models.docker import (
     DockerEvent,
     DockerImagePruneResponse,
     DockerSystemDF,
+    DockerVolume,
     ImageInformation,
     LocalImageInformation,
     PortainerImageUpdateStatus,
@@ -1004,6 +1005,55 @@ class Portainer:
             method=METH_DELETE,
             params=params,
         )
+
+    async def get_volumes(self, endpoint_id: int) -> list[DockerVolume]:
+        """Get the list of volumes from the Portainer API.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint to get volumes from.
+
+        Returns:
+        -------
+            A list of DockerVolume objects.
+
+        """
+        volumes = await self._request(f"endpoints/{endpoint_id}/docker/volumes")
+
+        return [DockerVolume.from_dict(volume) for volume in (volumes.get("Volumes") or [])]
+
+    async def inspect_volume(self, endpoint_id: int, volume_name: str) -> DockerVolume:
+        """Inspect a volume on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            volume_name: The name of the volume to inspect.
+
+        Returns:
+        -------
+            A DockerVolume object with the inspected volume data.
+
+        """
+        volume = await self._request(f"endpoints/{endpoint_id}/docker/volumes/{volume_name}")
+
+        return DockerVolume.from_dict(volume)
+
+    async def prune_volumes(self, endpoint_id: int, *, all_volumes: bool = False) -> Any:
+        """Prune unused volumes on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            all_volumes: Set to True to prune all volumes, not just unused ones.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params = {"endpointId": endpoint_id, "all": str(all_volumes).lower()}
+        return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
 
     async def close(self) -> None:
         """Close open client session."""

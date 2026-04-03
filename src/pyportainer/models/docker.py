@@ -327,3 +327,103 @@ class DockerEvent(DataClassORJSONMixin):
     scope: str | None = field(default=None, metadata=field_options(alias="scope"))
     time: int | None = field(default=None, metadata=field_options(alias="time"))
     time_nano: int | None = field(default=None, metadata=field_options(alias="timeNano"))
+
+
+@dataclass
+class DockerVolumeUsageData(DataClassORJSONMixin):
+    """Represents usage data for a Docker volume."""
+
+    size: int | None = field(default=None, metadata=field_options(alias="Size"))
+    ref_count: int | None = field(default=None, metadata=field_options(alias="RefCount"))
+
+
+@dataclass
+class DockerClusterVolumeSecret(DataClassORJSONMixin):
+    """Represents a secret for a cluster volume access mode."""
+
+    key: str | None = field(default=None, metadata=field_options(alias="Key"))
+    secret: str | None = field(default=None, metadata=field_options(alias="Secret"))
+
+
+@dataclass
+class DockerClusterVolumeCapacityRange(DataClassORJSONMixin):
+    """Represents a capacity range for a cluster volume."""
+
+    required_bytes: int | None = field(default=None, metadata=field_options(alias="RequiredBytes"))
+    limit_bytes: int | None = field(default=None, metadata=field_options(alias="LimitBytes"))
+
+
+@dataclass
+class DockerClusterVolumeAccessMode(DataClassORJSONMixin):
+    """Represents the access mode for a cluster volume."""
+
+    scope: str | None = field(default=None, metadata=field_options(alias="Scope"))
+    sharing: str | None = field(default=None, metadata=field_options(alias="Sharing"))
+    mount_volume: dict[str, Any] | None = field(default=None, metadata=field_options(alias="MountVolume"))
+    secrets: list[DockerClusterVolumeSecret] | None = field(default=None, metadata=field_options(alias="Secrets"))
+    accessibility_requirements: dict[str, Any] | None = field(default=None, metadata=field_options(alias="AccessibilityRequirements"))
+    capacity_range: DockerClusterVolumeCapacityRange | None = field(default=None, metadata=field_options(alias="CapacityRange"))
+    availability: str | None = field(default=None, metadata=field_options(alias="Availability"))
+
+
+@dataclass
+class DockerClusterVolumeSpec(DataClassORJSONMixin):
+    """Represents the spec of a cluster volume."""
+
+    group: str | None = field(default=None, metadata=field_options(alias="Group"))
+    access_mode: DockerClusterVolumeAccessMode | None = field(default=None, metadata=field_options(alias="AccessMode"))
+
+
+@dataclass
+class DockerClusterVolumeInfo(DataClassORJSONMixin):
+    """Represents the info of a cluster volume."""
+
+    capacity_bytes: int | None = field(default=None, metadata=field_options(alias="CapacityBytes"))
+    volume_context: dict[str, str] | None = field(default=None, metadata=field_options(alias="VolumeContext"))
+    volume_id: str | None = field(default=None, metadata=field_options(alias="VolumeID"))
+    accessible_topology: list[dict[str, str]] | None = field(default=None, metadata=field_options(alias="AccessibleTopology"))
+
+
+@dataclass
+class DockerClusterVolumePublishStatus(DataClassORJSONMixin):
+    """Represents the publish status of a cluster volume."""
+
+    node_id: str | None = field(default=None, metadata=field_options(alias="NodeID"))
+    state: str | None = field(default=None, metadata=field_options(alias="State"))
+    publish_context: dict[str, str] | None = field(default=None, metadata=field_options(alias="PublishContext"))
+
+
+@dataclass
+class DockerClusterVolumeVersion(DataClassORJSONMixin):
+    """Represents the version of a cluster volume."""
+
+    index: int | None = field(default=None, metadata=field_options(alias="Index"))
+
+
+@dataclass
+class DockerClusterVolume(DataClassORJSONMixin):
+    """Represents a cluster volume attached to a Docker volume."""
+
+    id: str | None = field(default=None, metadata=field_options(alias="ID"))
+    version: DockerClusterVolumeVersion | None = field(default=None, metadata=field_options(alias="Version"))
+    created_at: str | None = field(default=None, metadata=field_options(alias="CreatedAt"))
+    updated_at: str | None = field(default=None, metadata=field_options(alias="UpdatedAt"))
+    spec: DockerClusterVolumeSpec | None = field(default=None, metadata=field_options(alias="Spec"))
+    info: DockerClusterVolumeInfo | None = field(default=None, metadata=field_options(alias="Info"))
+    publish_status: list[DockerClusterVolumePublishStatus] | None = field(default=None, metadata=field_options(alias="PublishStatus"))
+
+
+@dataclass
+class DockerVolume(DataClassORJSONMixin):
+    """Represents a Docker volume."""
+
+    name: str = field(metadata=field_options(alias="Name"))
+    driver: str | None = field(default=None, metadata=field_options(alias="Driver"))
+    mountpoint: str | None = field(default=None, metadata=field_options(alias="Mountpoint"))
+    created_at: str | None = field(default=None, metadata=field_options(alias="CreatedAt"))
+    status: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Status"))
+    labels: dict[str, str] | None = field(default=None, metadata=field_options(alias="Labels"))
+    scope: str | None = field(default=None, metadata=field_options(alias="Scope"))
+    cluster_volume: DockerClusterVolume | None = field(default=None, metadata=field_options(alias="ClusterVolume"))
+    options: dict[str, str] | None = field(default=None, metadata=field_options(alias="Options"))
+    usage_data: DockerVolumeUsageData | None = field(default=None, metadata=field_options(alias="UsageData"))

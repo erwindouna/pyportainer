@@ -1,0 +1,88 @@
+{
+  "Name": "tardis",
+  "Driver": "custom",
+  "Mountpoint": "/var/lib/docker/volumes/tardis",
+  "CreatedAt": "2016-06-07T20:31:11.853781916Z",
+  "Status": {
+    "hello": "world"
+  },
+  "Labels": {
+    "com.example.some-label": "some-value",
+    "com.example.some-other-label": "some-other-value"
+  },
+  "Scope": "local",
+  "ClusterVolume": {
+    "ID": "string",
+    "Version": {
+      "Index": 373531
+    },
+    "CreatedAt": "string",
+    "UpdatedAt": "string",
+    "Spec": {
+      "Group": "string",
+      "AccessMode": {
+        "Scope": "single",
+        "Sharing": "none",
+        "MountVolume": {},
+        "Secrets": [
+          {
+            "Key": "string",
+            "Secret": "string"
+          }
+        ],
+        "AccessibilityRequirements": {
+          "Requisite": [
+            {
+              "property1": "string",
+              "property2": "string"
+            }
+          ],
+          "Preferred": [
+            {
+              "property1": "string",
+              "property2": "string"
+            }
+          ]
+        },
+        "CapacityRange": {
+          "RequiredBytes": 0,
+          "LimitBytes": 0
+        },
+        "Availability": "active"
+      }
+    },
+    "Info": {
+      "CapacityBytes": 0,
+      "VolumeContext": {
+        "property1": "string",
+        "property2": "string"
+      },
+      "VolumeID": "string",
+      "AccessibleTopology": [
+        {
+          "property1": "string",
+          "property2": "string"
+        }
+      ]
+    },
+    "PublishStatus": [
+      {
+        "NodeID": "string",
+        "State": "pending-publish",
+        "PublishContext": {
+          "property1": "string",
+          "property2": "string"
+        }
+      }
+    ]
+  },
+  "Options": {
+    "device": "tmpfs",
+    "o": "size=100m,uid=1000",
+    "type": "tmpfs"
+  },
+  "UsageData": {
+    "Size": -1,
+    "RefCount": -1
+  }
+}
