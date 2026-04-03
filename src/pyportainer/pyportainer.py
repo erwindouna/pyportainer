@@ -26,6 +26,7 @@ from pyportainer.exceptions import (
 from pyportainer.models.docker import (
     DockerContainer,
     DockerContainerStats,
+    DockerDFType,
     DockerEvent,
     DockerImagePruneResponse,
     DockerSystemDF,
@@ -833,21 +834,28 @@ class Portainer:
 
         return DockerImagePruneResponse.from_dict(response)
 
-    async def docker_system_df(self, endpoint_id: int) -> Any:
+    async def docker_system_df(self, endpoint_id: int, data_type: DockerDFType | None = None, *, verbose: bool = False) -> Any:
         """Get Docker system disk usage on the specified endpoint.
 
         Args:
         ----
             endpoint_id: The ID of the endpoint.
+            data_type: The type of resource to filter by. Use DockerDFType enum values.
+            verbose: If True, include detailed information.
 
         Returns:
         -------
             The response from the Portainer API.
 
         """
+        params: dict[str, Any] = {"verbose": str(verbose).lower()}
+        if data_type is not None:
+            params["type"] = data_type
+
         response = await self._request(
             f"endpoints/{endpoint_id}/docker/system/df",
             method="GET",
+            params=params,
         )
 
         return DockerSystemDF.from_dict(response)
