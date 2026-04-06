@@ -3,11 +3,45 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import StrEnum
+from enum import IntEnum, StrEnum
 from typing import Any
 
 from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
+
+
+class DockerContainerState(StrEnum):
+    """Possible states of a Docker container."""
+
+    CREATED = "created"
+    RESTARTING = "restarting"
+    RUNNING = "running"
+    REMOVING = "removing"
+    PAUSED = "paused"
+    EXITED = "exited"
+    DEAD = "dead"
+
+
+class EndpointStatus(IntEnum):
+    """Portainer endpoint status."""
+
+    UP = 1
+    DOWN = 2
+
+
+class StackStatus(IntEnum):
+    """Portainer stack status."""
+
+    ACTIVE = 1
+    INACTIVE = 2
+
+
+class StackType(IntEnum):
+    """Portainer stack type."""
+
+    SWARM = 1
+    COMPOSE = 2
+    KUBERNETES = 3
 
 
 class DockerDFType(StrEnum):

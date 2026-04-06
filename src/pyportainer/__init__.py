@@ -7,12 +7,14 @@ from .exceptions import (
     PortainerTimeoutError,
 )
 from .listener import EventListenerCallback, PortainerEventListener, PortainerEventListenerResult
-from .models.docker import DockerDFType
+from .models.docker import DockerContainerState, DockerDFType, EndpointStatus, StackStatus, StackType
 from .pyportainer import Portainer
 from .watcher import PortainerImageWatcher, WatcherCallback
 
 __all__ = [
+    "DockerContainerState",
     "DockerDFType",
+    "EndpointStatus",
     "EventListenerCallback",
     "Portainer",
     "PortainerAuthenticationError",
@@ -22,5 +24,7 @@ __all__ = [
     "PortainerEventListenerResult",
     "PortainerImageWatcher",
     "PortainerTimeoutError",
+    "StackStatus",
+    "StackType",
     "WatcherCallback",
 ]

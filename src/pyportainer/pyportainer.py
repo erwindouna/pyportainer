@@ -780,6 +780,9 @@ class Portainer:
             timeout=timeout.total_seconds(),
         )
 
+        if isinstance(container.get("State"), dict):
+            container["State"] = container["State"].get("Status")
+
         return DockerContainer.from_dict(container)
 
     async def container_create(self, endpoint_id: int, name: str, image: str, config: dict[str, Any]) -> DockerContainer:
