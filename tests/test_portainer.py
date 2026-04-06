@@ -19,6 +19,7 @@ from pyportainer.exceptions import (
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import DockerContainer, DockerEvent
+from pyportainer.models.docker_inspect import DockerInspect
 from tests import load_fixtures
 
 
@@ -445,7 +446,7 @@ async def test_container_recreate(
     )
 
     response = await portainer_client.container_recreate(1, "container_id")
-    assert isinstance(response, DockerContainer)
+    assert isinstance(response, DockerInspect)
 
 
 async def test_get_recent_events(

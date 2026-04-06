@@ -10,6 +10,18 @@ from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
 
 
+class DockerContainerState(StrEnum):
+    """Possible states of a Docker container."""
+
+    CREATED = "created"
+    RESTARTING = "restarting"
+    RUNNING = "running"
+    REMOVING = "removing"
+    PAUSED = "paused"
+    EXITED = "exited"
+    DEAD = "dead"
+
+
 class DockerDFType(StrEnum):
     """Resource type filter for Docker system df."""
 
@@ -159,7 +171,7 @@ class DockerContainer(DataClassORJSONMixin):
     created: str | None = field(default=None, metadata=field_options(alias="Created"))
     ports: list[Port] | None = field(default=None, metadata=field_options(alias="Ports"))
     labels: dict[str, str] | None = field(default=None, metadata=field_options(alias="Labels"))
-    state: str | None = field(default=None, metadata=field_options(alias="State"))
+    state: DockerContainerState | None = field(default=None, metadata=field_options(alias="State"))
     status: str | None = field(default=None, metadata=field_options(alias="Status"))
     mounts: list[Mount] | None = field(default=None, metadata=field_options(alias="Mounts"))
 

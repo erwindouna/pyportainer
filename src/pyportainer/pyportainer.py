@@ -757,7 +757,7 @@ class Portainer:
 
     async def container_recreate(
         self, endpoint_id: int, container_id: str, timeout: timedelta = timedelta(minutes=5), *, pull_image: bool = False
-    ) -> DockerContainer:
+    ) -> DockerInspect:
         """Recreate a Docker container.
 
         Args:
@@ -780,7 +780,7 @@ class Portainer:
             timeout=timeout.total_seconds(),
         )
 
-        return DockerContainer.from_dict(container)
+        return DockerInspect.from_dict(container)
 
     async def container_create(self, endpoint_id: int, name: str, image: str, config: dict[str, Any]) -> DockerContainer:
         """Create a Docker container.
