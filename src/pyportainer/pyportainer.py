@@ -1084,35 +1084,34 @@ class Portainer:
         """
         stats = await self.container_stats(endpoint_id, container_id, stream=False)
 
-        # If there's a previous cache, we can calculate a more accurate CPU percentage based on the change in total CPU usage and system CPU usage.
-        docker_stats: DockerContainerCPUStats = None
-        if self._prev_container_stats is not None:
-            if prev_stats := self._prev_container_stats.get((endpoint_id, container_id)):
-                cpu_delta = stats.cpu_total_usage - prev_stats.cpu_total_usage
-                system_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
-                if system_delta > 0 and cpu_delta > 0:
-                    num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
-                    docker_stats.cpu_percentage = (cpu_delta / system_delta) * num_cpus * 100.0
+        docker_stats = DockerContainerCPUStats()
+        num_cpus = len(stats.cpu_stats.cpu_usage.percpu_usage) if stats.cpu_stats.cpu_usage.percpu_usage else 1
 
-                cpu_kernel_delta = stats.cpu_usage_in_kernelmode - prev_stats.cpu_usage_in_kernelmode
+        if self._prev_container_stats is not None and (prev_stats := self._prev_container_stats.get((endpoint_id, container_id))):
+            docker_stats.container_prev_stats = prev_stats
 
+            cpu_delta = stats.cpu_stats.cpu_usage.total_usage - prev_stats.cpu_stats.cpu_usage.total_usage
+            system_delta = stats.cpu_stats.system_cpu_usage - prev_stats.cpu_stats.system_cpu_usage
+            cpu_kernel_delta = stats.cpu_stats.cpu_usage.usage_in_kernelmode - prev_stats.cpu_stats.cpu_usage.usage_in_kernelmode
+            cpu_user_delta = stats.cpu_stats.cpu_usage.usage_in_usermode - prev_stats.cpu_stats.cpu_usage.usage_in_usermode
+
+            if system_delta > 0:
+                scale = num_cpus * 100.0 / system_delta
+                if cpu_delta > 0:
+                    docker_stats.cpu_system_percentage = cpu_delta * scale
                 if cpu_kernel_delta > 0:
-                    total_usage_delta = cpu_kernel_delta + cpu_user_delta
-                    system_total_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
-                    if system_total_delta > 0:
-                        num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
-                        docker_stats.cpu_kernel_percentage = (total_usage_delta / system_total_delta) * num_cpus * 100.0
-
-                cpu_user_delta = stats.cpu_usage_in_usermode - prev_stats.cpu_usage_in_usermode
+                    docker_stats.cpu_kernel_percentage = (cpu_kernel_delta + cpu_user_delta) * scale
                 if cpu_user_delta > 0:
-                    total_usage_delta = cpu_user_delta + cpu_kernel_delta
-                    system_total_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
-                    if system_total_delta > 0:
-                        num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
-                        docker_stats.cpu_user_percentage = (total_usage_delta / system_total_delta) * num_cpus * 100.0
+                    docker_stats.cpu_user_percentage = (cpu_user_delta + cpu_kernel_delta) * scale
 
-            # Set new cache
-            self._prev_container_stats[(endpoint_id, container_id)] = stats
+        docker_stats.cpu_system_usage = float(stats.cpu_stats.system_cpu_usage)
+        docker_stats.online_cpus = stats.cpu_stats.online_cpus
+        docker_stats.cpu_kernel_usage = float(stats.cpu_stats.cpu_usage.usage_in_kernelmode)
+        docker_stats.cpu_user_usage = float(stats.cpu_stats.cpu_usage.usage_in_usermode)
+        docker_stats.container_stats = stats
+
+        self._prev_container_stats = self._prev_container_stats or {}
+        self._prev_container_stats[(endpoint_id, container_id)] = stats
 
         return docker_stats
 

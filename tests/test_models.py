@@ -6,6 +6,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from aresponses import ResponsesMockServer
+from freezegun import freeze_time
 from syrupy.assertion import SnapshotAssertion
 
 from tests import load_fixtures
@@ -352,3 +353,60 @@ async def test_portainer_volume_inspect(
 
     volume = await portainer_client.inspect_volume(1, "tardis")
     assert volume == snapshot
+
+
+async def test_get_container_cpu_usage(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test the Portainer get_container_cpu_usage."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/stats",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_stats.json"),
+        ),
+    )
+
+    cpu_usage = await portainer_client.get_container_cpu_usage(endpoint_id=1, container_id="test_container")
+    assert cpu_usage == snapshot
+
+
+async def test_get_container_cpu_usage_with_percentage(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test that CPU percentages are calculated correctly on the second call."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/stats",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_stats.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/stats",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("container_stats_2.json"),
+        ),
+    )
+
+    with freeze_time("2015-01-08T22:57:31Z"):
+        await portainer_client.get_container_cpu_usage(endpoint_id=1, container_id="test_container")
+
+    with freeze_time("2015-01-08T22:57:32Z"):
+        cpu_usage = await portainer_client.get_container_cpu_usage(endpoint_id=1, container_id="test_container")
+
+    assert cpu_usage == snapshot
