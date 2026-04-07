@@ -53,6 +53,23 @@ class DockerDFType(StrEnum):
     BUILD_CACHE = "build-cache"
 
 
+@dataclass(slots=True, kw_only=True)
+class DockerContainerCPUStats:
+    """Represents CPU statistics for a Docker container."""
+
+    cpu_usage: float | None = None
+    system_cpu_usage: float | None = None
+    online_cpus: int | None = None
+
+    cpu_kernel_usage: float | None = None
+    cpu_kernel_percentage: float | None = None
+    cpu_user_usage: float | None = None
+    cpu_user_percentage: float | None = None
+
+    container_stats: Any
+    container_prev_stats: Any
+
+
 @dataclass
 class LocalImageInformation(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
     """Represents the local image information, from the Docker daemon."""

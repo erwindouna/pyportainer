@@ -25,6 +25,7 @@ from pyportainer.exceptions import (
 )
 from pyportainer.models.docker import (
     DockerContainer,
+    DockerContainerCPUStats,
     DockerContainerStats,
     DockerDFType,
     DockerEvent,
@@ -88,6 +89,8 @@ class Portainer:
         self._api_port = parsed_url.port
 
         self._api_base_path = (parsed_url.path or "").rstrip("/")
+
+        self._prev_container_stats: dict[tuple[int, str], DockerContainerStats] | None = None
 
     # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     async def _request(
@@ -1065,6 +1068,53 @@ class Portainer:
         """
         params = {"endpointId": endpoint_id, "all": str(all_volumes).lower()}
         return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
+
+    async def get_container_cpu_usage(self, endpoint_id: int, container_id: str) -> DockerContainerCPUStats:
+        """Get the current CPU usage percentage for the specified container.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container.
+
+        Returns:
+        -------
+            The current CPU usage as a percentage.
+
+        """
+        stats = await self.container_stats(endpoint_id, container_id, stream=False)
+
+        # If there's a previous cache, we can calculate a more accurate CPU percentage based on the change in total CPU usage and system CPU usage.
+        docker_stats: DockerContainerCPUStats = None
+        if self._prev_container_stats is not None:
+            if prev_stats := self._prev_container_stats.get((endpoint_id, container_id)):
+                cpu_delta = stats.cpu_total_usage - prev_stats.cpu_total_usage
+                system_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
+                if system_delta > 0 and cpu_delta > 0:
+                    num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
+                    docker_stats.cpu_percentage = (cpu_delta / system_delta) * num_cpus * 100.0
+
+                cpu_kernel_delta = stats.cpu_usage_in_kernelmode - prev_stats.cpu_usage_in_kernelmode
+
+                if cpu_kernel_delta > 0:
+                    total_usage_delta = cpu_kernel_delta + cpu_user_delta
+                    system_total_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
+                    if system_total_delta > 0:
+                        num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
+                        docker_stats.cpu_kernel_percentage = (total_usage_delta / system_total_delta) * num_cpus * 100.0
+
+                cpu_user_delta = stats.cpu_usage_in_usermode - prev_stats.cpu_usage_in_usermode
+                if cpu_user_delta > 0:
+                    total_usage_delta = cpu_user_delta + cpu_kernel_delta
+                    system_total_delta = stats.system_cpu_usage - prev_stats.system_cpu_usage
+                    if system_total_delta > 0:
+                        num_cpus = len(stats.cpu_percpu_usage) if stats.cpu_percpu_usage else 1
+                        docker_stats.cpu_user_percentage = (total_usage_delta / system_total_delta) * num_cpus * 100.0
+
+            # Set new cache
+            self._prev_container_stats[(endpoint_id, container_id)] = stats
+
+        return docker_stats
 
     async def close(self) -> None:
         """Close open client session."""
