@@ -25,6 +25,7 @@ from pyportainer.exceptions import (
 )
 from pyportainer.models.docker import (
     DockerContainer,
+    DockerContainerCPUStats,
     DockerContainerStats,
     DockerDFType,
     DockerEvent,
@@ -88,6 +89,8 @@ class Portainer:
         self._api_port = parsed_url.port
 
         self._api_base_path = (parsed_url.path or "").rstrip("/")
+
+        self._prev_container_stats: dict[tuple[int, str], DockerContainerStats] | None = None
 
     # pylint: disable=too-many-arguments, too-many-locals, too-many-branches
     async def _request(
@@ -1065,6 +1068,52 @@ class Portainer:
         """
         params = {"endpointId": endpoint_id, "all": str(all_volumes).lower()}
         return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
+
+    async def get_container_cpu_usage(self, endpoint_id: int, container_id: str) -> DockerContainerCPUStats:
+        """Get the current CPU usage percentage for the specified container.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            container_id: The ID of the container.
+
+        Returns:
+        -------
+            The current CPU usage as a percentage.
+
+        """
+        stats = await self.container_stats(endpoint_id, container_id, stream=False)
+
+        docker_stats = DockerContainerCPUStats()
+        num_cpus = len(stats.cpu_stats.cpu_usage.percpu_usage) if stats.cpu_stats.cpu_usage.percpu_usage else 1
+
+        if self._prev_container_stats is not None and (prev_stats := self._prev_container_stats.get((endpoint_id, container_id))):
+            docker_stats.container_prev_stats = prev_stats
+
+            cpu_delta = stats.cpu_stats.cpu_usage.total_usage - prev_stats.cpu_stats.cpu_usage.total_usage
+            system_delta = stats.cpu_stats.system_cpu_usage - prev_stats.cpu_stats.system_cpu_usage
+            cpu_kernel_delta = stats.cpu_stats.cpu_usage.usage_in_kernelmode - prev_stats.cpu_stats.cpu_usage.usage_in_kernelmode
+            cpu_user_delta = stats.cpu_stats.cpu_usage.usage_in_usermode - prev_stats.cpu_stats.cpu_usage.usage_in_usermode
+
+            if system_delta > 0:
+                scale = num_cpus * 100.0 / system_delta
+                if cpu_delta > 0:
+                    docker_stats.cpu_system_percentage = cpu_delta * scale
+                if cpu_kernel_delta > 0:
+                    docker_stats.cpu_kernel_percentage = (cpu_kernel_delta + cpu_user_delta) * scale
+                if cpu_user_delta > 0:
+                    docker_stats.cpu_user_percentage = (cpu_user_delta + cpu_kernel_delta) * scale
+
+        docker_stats.cpu_system_usage = float(stats.cpu_stats.system_cpu_usage)
+        docker_stats.online_cpus = stats.cpu_stats.online_cpus
+        docker_stats.cpu_kernel_usage = float(stats.cpu_stats.cpu_usage.usage_in_kernelmode)
+        docker_stats.cpu_user_usage = float(stats.cpu_stats.cpu_usage.usage_in_usermode)
+        docker_stats.container_stats = stats
+
+        self._prev_container_stats = self._prev_container_stats or {}
+        self._prev_container_stats[(endpoint_id, container_id)] = stats
+
+        return docker_stats
 
     async def close(self) -> None:
         """Close open client session."""
