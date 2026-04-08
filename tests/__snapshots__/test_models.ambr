@@ -1,58 +1,1776 @@
 # serializer version: 1
 # name: test_container_image_status_up_to_date
-  PortainerImageUpdateStatus(update_available=False, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb')
+  dict({
+    'local_digest': 'sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
+    'registry_digest': 'sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
+    'update_available': False,
+  })
 # ---
 # name: test_container_image_status_update_available
-  PortainerImageUpdateStatus(update_available=True, local_digest='sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', registry_digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96')
+  dict({
+    'local_digest': 'sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
+    'registry_digest': 'sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96',
+    'update_available': True,
+  })
 # ---
 # name: test_get_container_cpu_usage
-  DockerContainerCPUStats(cpu_system_usage=739306590000000.0, cpu_system_percentage=None, online_cpus=4, cpu_kernel_usage=30000000.0, cpu_kernel_percentage=None, cpu_user_usage=50000000.0, cpu_user_percentage=None, container_stats=DockerContainerStats(read='2015-01-08T22:57:31.547920715Z', preread='', pids_stats=PidsStats(current=3), networks={'eth0': NetworkStats(rx_bytes=5338, rx_dropped=0, rx_errors=0, rx_packets=36, tx_bytes=648, tx_dropped=0, tx_errors=0, tx_packets=8), 'eth5': NetworkStats(rx_bytes=4641, rx_dropped=0, rx_errors=0, rx_packets=26, tx_bytes=690, tx_dropped=0, tx_errors=0, tx_packets=9)}, memory_stats=MemoryStats(stats=MemoryStatsDetails(total_pgmajfault=0, cache=0, mapped_file=0, total_inactive_file=0, pgpgout=414, rss=6537216, total_mapped_file=0, writeback=0, unevictable=0, pgpgin=477, total_unevictable=0, pgmajfault=0, total_rss=6537216, total_rss_huge=6291456, total_writeback=0, total_inactive_anon=0, rss_huge=6291456, hierarchical_memory_limit=67108864, total_pgfault=964, total_active_file=0, active_anon=6537216, total_active_anon=6537216, total_pgpgout=414, total_cache=0, inactive_anon=0, active_file=0, pgfault=964, inactive_file=0, total_pgpgin=477), max_usage=6651904, usage=6537216, failcnt=0, limit=67108864), blkio_stats={}, cpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100215355, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24472255, 36438778, 30657443]), system_cpu_usage=739306590000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0)), precpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100093996, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24350896, 36438778, 30657443]), system_cpu_usage=9492140000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0))), container_prev_stats=None)
+  dict({
+    'container_prev_stats': None,
+    'container_stats': dict({
+      'blkio_stats': dict({
+      }),
+      'cpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            8646879,
+            24472255,
+            36438778,
+            30657443,
+          ]),
+          'total_usage': 100215355,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 739306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'memory_stats': dict({
+        'failcnt': 0,
+        'limit': 67108864,
+        'max_usage': 6651904,
+        'stats': dict({
+          'active_anon': 6537216,
+          'active_file': 0,
+          'cache': 0,
+          'hierarchical_memory_limit': 67108864,
+          'inactive_anon': 0,
+          'inactive_file': 0,
+          'mapped_file': 0,
+          'pgfault': 964,
+          'pgmajfault': 0,
+          'pgpgin': 477,
+          'pgpgout': 414,
+          'rss': 6537216,
+          'rss_huge': 6291456,
+          'total_active_anon': 6537216,
+          'total_active_file': 0,
+          'total_cache': 0,
+          'total_inactive_anon': 0,
+          'total_inactive_file': 0,
+          'total_mapped_file': 0,
+          'total_pgfault': 964,
+          'total_pgmajfault': 0,
+          'total_pgpgin': 477,
+          'total_pgpgout': 414,
+          'total_rss': 6537216,
+          'total_rss_huge': 6291456,
+          'total_unevictable': 0,
+          'total_writeback': 0,
+          'unevictable': 0,
+          'writeback': 0,
+        }),
+        'usage': 6537216,
+      }),
+      'networks': dict({
+        'eth0': dict({
+          'rx_bytes': 5338,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 36,
+          'tx_bytes': 648,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 8,
+        }),
+        'eth5': dict({
+          'rx_bytes': 4641,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 26,
+          'tx_bytes': 690,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 9,
+        }),
+      }),
+      'pids_stats': dict({
+        'current': 3,
+      }),
+      'precpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            8646879,
+            24350896,
+            36438778,
+            30657443,
+          ]),
+          'total_usage': 100093996,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 9492140000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'preread': '',
+      'read': '2015-01-08T22:57:31.547920715Z',
+    }),
+    'cpu_kernel_percentage': None,
+    'cpu_kernel_usage': 30000000.0,
+    'cpu_system_percentage': None,
+    'cpu_system_usage': 739306590000000.0,
+    'cpu_user_percentage': None,
+    'cpu_user_usage': 50000000.0,
+    'online_cpus': 4,
+  })
 # ---
 # name: test_get_container_cpu_usage_with_percentage
-  DockerContainerCPUStats(cpu_system_usage=743306590000000.0, cpu_system_percentage=0.0400216355, online_cpus=4, cpu_kernel_usage=60000000.0, cpu_kernel_percentage=0.01, cpu_user_usage=120000000.0, cpu_user_percentage=0.01, container_stats=DockerContainerStats(read='2015-01-08T22:57:32.547920715Z', preread='', pids_stats=PidsStats(current=3), networks={'eth0': NetworkStats(rx_bytes=5338, rx_dropped=0, rx_errors=0, rx_packets=36, tx_bytes=648, tx_dropped=0, tx_errors=0, tx_packets=8), 'eth5': NetworkStats(rx_bytes=4641, rx_dropped=0, rx_errors=0, rx_packets=26, tx_bytes=690, tx_dropped=0, tx_errors=0, tx_packets=9)}, memory_stats=MemoryStats(stats=MemoryStatsDetails(total_pgmajfault=0, cache=0, mapped_file=0, total_inactive_file=0, pgpgout=414, rss=6537216, total_mapped_file=0, writeback=0, unevictable=0, pgpgin=477, total_unevictable=0, pgmajfault=0, total_rss=6537216, total_rss_huge=6291456, total_writeback=0, total_inactive_anon=0, rss_huge=6291456, hierarchical_memory_limit=67108864, total_pgfault=964, total_active_file=0, active_anon=6537216, total_active_anon=6537216, total_pgpgout=414, total_cache=0, inactive_anon=0, active_file=0, pgfault=964, inactive_file=0, total_pgpgin=477), max_usage=6651904, usage=6537216, failcnt=0, limit=67108864), blkio_stats={}, cpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=500431710, usage_in_kernelmode=60000000, usage_in_usermode=120000000, percpu_usage=[108646879, 124472255, 136438778, 130657443]), system_cpu_usage=743306590000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0)), precpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100215355, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24472255, 36438778, 30657443]), system_cpu_usage=739306590000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0))), container_prev_stats=DockerContainerStats(read='2015-01-08T22:57:31.547920715Z', preread='', pids_stats=PidsStats(current=3), networks={'eth0': NetworkStats(rx_bytes=5338, rx_dropped=0, rx_errors=0, rx_packets=36, tx_bytes=648, tx_dropped=0, tx_errors=0, tx_packets=8), 'eth5': NetworkStats(rx_bytes=4641, rx_dropped=0, rx_errors=0, rx_packets=26, tx_bytes=690, tx_dropped=0, tx_errors=0, tx_packets=9)}, memory_stats=MemoryStats(stats=MemoryStatsDetails(total_pgmajfault=0, cache=0, mapped_file=0, total_inactive_file=0, pgpgout=414, rss=6537216, total_mapped_file=0, writeback=0, unevictable=0, pgpgin=477, total_unevictable=0, pgmajfault=0, total_rss=6537216, total_rss_huge=6291456, total_writeback=0, total_inactive_anon=0, rss_huge=6291456, hierarchical_memory_limit=67108864, total_pgfault=964, total_active_file=0, active_anon=6537216, total_active_anon=6537216, total_pgpgout=414, total_cache=0, inactive_anon=0, active_file=0, pgfault=964, inactive_file=0, total_pgpgin=477), max_usage=6651904, usage=6537216, failcnt=0, limit=67108864), blkio_stats={}, cpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100215355, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24472255, 36438778, 30657443]), system_cpu_usage=739306590000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0)), precpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100093996, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24350896, 36438778, 30657443]), system_cpu_usage=9492140000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0))))
+  dict({
+    'container_prev_stats': dict({
+      'blkio_stats': dict({
+      }),
+      'cpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            8646879,
+            24472255,
+            36438778,
+            30657443,
+          ]),
+          'total_usage': 100215355,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 739306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'memory_stats': dict({
+        'failcnt': 0,
+        'limit': 67108864,
+        'max_usage': 6651904,
+        'stats': dict({
+          'active_anon': 6537216,
+          'active_file': 0,
+          'cache': 0,
+          'hierarchical_memory_limit': 67108864,
+          'inactive_anon': 0,
+          'inactive_file': 0,
+          'mapped_file': 0,
+          'pgfault': 964,
+          'pgmajfault': 0,
+          'pgpgin': 477,
+          'pgpgout': 414,
+          'rss': 6537216,
+          'rss_huge': 6291456,
+          'total_active_anon': 6537216,
+          'total_active_file': 0,
+          'total_cache': 0,
+          'total_inactive_anon': 0,
+          'total_inactive_file': 0,
+          'total_mapped_file': 0,
+          'total_pgfault': 964,
+          'total_pgmajfault': 0,
+          'total_pgpgin': 477,
+          'total_pgpgout': 414,
+          'total_rss': 6537216,
+          'total_rss_huge': 6291456,
+          'total_unevictable': 0,
+          'total_writeback': 0,
+          'unevictable': 0,
+          'writeback': 0,
+        }),
+        'usage': 6537216,
+      }),
+      'networks': dict({
+        'eth0': dict({
+          'rx_bytes': 5338,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 36,
+          'tx_bytes': 648,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 8,
+        }),
+        'eth5': dict({
+          'rx_bytes': 4641,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 26,
+          'tx_bytes': 690,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 9,
+        }),
+      }),
+      'pids_stats': dict({
+        'current': 3,
+      }),
+      'precpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            8646879,
+            24350896,
+            36438778,
+            30657443,
+          ]),
+          'total_usage': 100093996,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 9492140000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'preread': '',
+      'read': '2015-01-08T22:57:31.547920715Z',
+    }),
+    'container_stats': dict({
+      'blkio_stats': dict({
+      }),
+      'cpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            108646879,
+            124472255,
+            136438778,
+            130657443,
+          ]),
+          'total_usage': 500431710,
+          'usage_in_kernelmode': 60000000,
+          'usage_in_usermode': 120000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 743306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'memory_stats': dict({
+        'failcnt': 0,
+        'limit': 67108864,
+        'max_usage': 6651904,
+        'stats': dict({
+          'active_anon': 6537216,
+          'active_file': 0,
+          'cache': 0,
+          'hierarchical_memory_limit': 67108864,
+          'inactive_anon': 0,
+          'inactive_file': 0,
+          'mapped_file': 0,
+          'pgfault': 964,
+          'pgmajfault': 0,
+          'pgpgin': 477,
+          'pgpgout': 414,
+          'rss': 6537216,
+          'rss_huge': 6291456,
+          'total_active_anon': 6537216,
+          'total_active_file': 0,
+          'total_cache': 0,
+          'total_inactive_anon': 0,
+          'total_inactive_file': 0,
+          'total_mapped_file': 0,
+          'total_pgfault': 964,
+          'total_pgmajfault': 0,
+          'total_pgpgin': 477,
+          'total_pgpgout': 414,
+          'total_rss': 6537216,
+          'total_rss_huge': 6291456,
+          'total_unevictable': 0,
+          'total_writeback': 0,
+          'unevictable': 0,
+          'writeback': 0,
+        }),
+        'usage': 6537216,
+      }),
+      'networks': dict({
+        'eth0': dict({
+          'rx_bytes': 5338,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 36,
+          'tx_bytes': 648,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 8,
+        }),
+        'eth5': dict({
+          'rx_bytes': 4641,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 26,
+          'tx_bytes': 690,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 9,
+        }),
+      }),
+      'pids_stats': dict({
+        'current': 3,
+      }),
+      'precpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+            8646879,
+            24472255,
+            36438778,
+            30657443,
+          ]),
+          'total_usage': 100215355,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 739306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'preread': '',
+      'read': '2015-01-08T22:57:32.547920715Z',
+    }),
+    'cpu_kernel_percentage': 0.01,
+    'cpu_kernel_usage': 60000000.0,
+    'cpu_system_percentage': 0.0400216355,
+    'cpu_system_usage': 743306590000000.0,
+    'cpu_user_percentage': 0.01,
+    'cpu_user_usage': 120000000.0,
+    'online_cpus': 4,
+  })
 # ---
 # name: test_portainer_container_inspect
-  DockerInspect(id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', created='2025-02-17T17:43:39.64001363Z', path='/bin/sh', args=['-c', 'exit 9'], state=State(status='running', running=True, paused=False, restarting=False, oom_killed=False, dead=False, pid=1234, exit_code=0, error='string', started_at='2020-01-06T09:06:59.461876391Z', finished_at='2020-01-06T09:07:59.461876391Z', health=Health(status='healthy', failing_streak=0, log=[HealthLog(start='2020-01-04T10:44:24.496525531Z', end='2020-01-04T10:45:21.364524523Z', exit_code=0, output='string')])), image='sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782', resolv_conf_path='/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/resolv.conf', hostname_path='/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/hostname', hosts_path='/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/hosts', log_path='/var/lib/docker/containers/5b7c7e2b992aa426584ce6c47452756066be0e503a08b4516a433a54d2f69e59/5b7c7e2b992aa426584ce6c47452756066be0e503a08b4516a433a54d2f69e59-json.log', name='/funny_chatelet', restart_count=0, driver='overlayfs', platform='linux', image_manifest_descriptor=ImageManifestDescriptor(media_type='application/vnd.oci.image.manifest.v1+json', digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96', size=424, urls=['http://example.com'], annotations={'com.docker.official-images.bashbrew.arch': 'amd64', 'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8', 'org.opencontainers.image.base.name': 'scratch', 'org.opencontainers.image.created': '2025-01-27T00:00:00Z', 'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79', 'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base', 'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu', 'org.opencontainers.image.version': '24.04'}, data=None, platform=ImageManifestDescriptorPlatform(architecture='arm', os='windows', variant='v7', os_version='10.0.19041.1165', os_features=['win32k']), artifact_type=None), mount_label='', process_label='', app_armor_profile='', exec_ids=['b35395de42bc8abd327f9dd65d913b9ba28c74d2f0734eeeae84fa1c616a0fca', '3fc1232e5cd20c8de182ed81178503dc6437f4e7ef12b52cc5e8de020652f1c4'], graph_driver=GraphDriver(name='overlay2', data={'MergedDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/merged', 'UpperDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/diff', 'WorkDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/work'}), config=DockerInspectConfig(hostname='439f4e91bd1d', domainname='string', user='123:456', attach_stdin=False, attach_stdout=True, attach_stderr=True, tty=False, open_stdin=False, stdin_once=False, env=['PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'], cmd=['/bin/sh'], image='example-image:1.0', working_dir='/public/', entrypoint=[], labels={'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, healthcheck={'Test': ['string'], 'Interval': 0, 'Timeout': 0, 'Retries': 0, 'StartPeriod': 0, 'StartInterval': 0}, mac_address='string', network_disabled=True, volumes={'property1': {}, 'property2': {}}, stop_signal='SIGTERM', stop_timeout=10), host_config=DockerInspectHostConfig(maximum_iops=None, maximum_iobps=None, blkio_weight=1000, blkio_weight_device=[{'Path': 'string', 'Weight': 0}], blkio_device_read_bps=[{'Path': 'string', 'Rate': 0}], blkio_device_write_bps=[{'Path': 'string', 'Rate': 0}], blkio_device_read_iops=[{'Path': 'string', 'Rate': 0}], blkio_device_write_iops=[{'Path': 'string', 'Rate': 0}], container_id_file='', cpuset_cpus='0-3', cpuset_mems='string', cpu_percent=0, network_mode='string', port_bindings={'443/tcp': [{'HostIp': '127.0.0.1', 'HostPort': '4443'}], '80/tcp': [{'HostIp': '0.0.0.0', 'HostPort': '80'}, {'HostIp': '0.0.0.0', 'HostPort': '8080'}], '80/udp': [{'HostIp': '0.0.0.0', 'HostPort': '80'}], '53/udp': [{'HostIp': '0.0.0.0', 'HostPort': '53'}]}, binds=['string'], restart_policy={'Name': '', 'MaximumRetryCount': 0}, cpu_shares=0, cpu_period=0, cpu_realtime_period=0, cpu_realtime_runtime=0, memory=0, memory_swap=0, memory_reservation=0, cgroup_parent='string', devices=[{'PathOnHost': '/dev/deviceName', 'PathInContainer': '/dev/deviceName', 'CgroupPermissions': 'mrw'}], device_requests=[{'Driver': 'nvidia', 'Count': -1, 'DeviceIDs': ['0', '1', 'GPU-fef8089b-4820-abfc-e83e-94318197576e'], 'Capabilities': [['gpu', 'nvidia', 'compute']], 'Options': {'property1': 'string', 'property2': 'string'}}], ipc_mode='string', dns=['string'], dns_search=['string'], oom_kill_disable=True, oom_score_adj=500, privileged=True, pid_mode='string', volume_driver='string', readonly_rootfs=True, publish_all_ports=True, log_config={'Type': 'local', 'Config': {'max-file': '5', 'max-size': '10m'}}, sysctls={'net.ipv4.ip_forward': '1'}, ulimits=[{'Name': 'string', 'Soft': 0, 'Hard': 0}], shm_size=0), network_settings=DockerInspectNetworkSettings(bridge='docker0', sandbox_id='9d12daf2c33f5959c8bf90aa513e4f65b561738661003029ec84830cd503a0c3', hairpin_mode=False, link_local_ipv6_address='', sandbox_key='/var/run/docker/netns/8ab54b426c38', endpoint_id='b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b', gateway='172.17.0.1', global_ipv6_address='2001:db8::5689', ip_address='172.17.0.4', ipv6_gateway='2001:db8:2::100', mac_address='02:42:ac:11:00:04', networks={'property1': {'IPAMConfig': {'IPv4Address': '172.20.30.33', 'IPv6Address': '2001:db8:abcd::3033', 'LinkLocalIPs': ['169.254.34.68', 'fe80::3468']}, 'Links': ['container_1', 'container_2'], 'MacAddress': '02:42:ac:11:00:04', 'Aliases': ['server_x', 'server_y'], 'DriverOpts': {'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, 'GwPriority': [10], 'NetworkID': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a', 'EndpointID': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b', 'Gateway': '172.17.0.1', 'IPAddress': '172.17.0.4', 'IPPrefixLen': 16, 'IPv6Gateway': '2001:db8:2::100', 'GlobalIPv6Address': '2001:db8::5689', 'GlobalIPv6PrefixLen': 64, 'DNSNames': ['foobar', 'server_x', 'server_y', 'my.ctr']}, 'property2': {'IPAMConfig': {'IPv4Address': '172.20.30.33', 'IPv6Address': '2001:db8:abcd::3033', 'LinkLocalIPs': ['169.254.34.68', 'fe80::3468']}, 'Links': ['container_1', 'container_2'], 'MacAddress': '02:42:ac:11:00:04', 'Aliases': ['server_x', 'server_y'], 'DriverOpts': {'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, 'GwPriority': [10], 'NetworkID': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a', 'EndpointID': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b', 'Gateway': '172.17.0.1', 'IPAddress': '172.17.0.4', 'IPPrefixLen': 16, 'IPv6Gateway': '2001:db8:2::100', 'GlobalIPv6Address': '2001:db8::5689', 'GlobalIPv6PrefixLen': 64, 'DNSNames': ['foobar', 'server_x', 'server_y', 'my.ctr']}}), mounts=[{'Type': 'volume', 'Name': 'myvolume', 'Source': '/var/lib/docker/volumes/myvolume/_data', 'Destination': '/usr/share/nginx/html/', 'Driver': 'local', 'Mode': 'z', 'RW': True, 'Propagation': ''}])
+  dict({
+    'app_armor_profile': '',
+    'args': list([
+      '-c',
+      'exit 9',
+    ]),
+    'config': dict({
+      'attach_stderr': True,
+      'attach_stdin': False,
+      'attach_stdout': True,
+      'cmd': list([
+        '/bin/sh',
+      ]),
+      'domainname': 'string',
+      'entrypoint': list([
+      ]),
+      'env': list([
+        'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      ]),
+      'healthcheck': dict({
+        'Interval': 0,
+        'Retries': 0,
+        'StartInterval': 0,
+        'StartPeriod': 0,
+        'Test': list([
+          'string',
+        ]),
+        'Timeout': 0,
+      }),
+      'hostname': '439f4e91bd1d',
+      'image': 'example-image:1.0',
+      'labels': dict({
+        'com.example.some-label': 'some-value',
+        'com.example.some-other-label': 'some-other-value',
+      }),
+      'mac_address': 'string',
+      'network_disabled': True,
+      'open_stdin': False,
+      'stdin_once': False,
+      'stop_signal': 'SIGTERM',
+      'stop_timeout': 10,
+      'tty': False,
+      'user': '123:456',
+      'volumes': dict({
+        'property1': dict({
+        }),
+        'property2': dict({
+        }),
+      }),
+      'working_dir': '/public/',
+    }),
+    'created': '2025-02-17T17:43:39.64001363Z',
+    'driver': 'overlayfs',
+    'exec_ids': list([
+      'b35395de42bc8abd327f9dd65d913b9ba28c74d2f0734eeeae84fa1c616a0fca',
+      '3fc1232e5cd20c8de182ed81178503dc6437f4e7ef12b52cc5e8de020652f1c4',
+    ]),
+    'graph_driver': dict({
+      'data': dict({
+        'MergedDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/merged',
+        'UpperDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/diff',
+        'WorkDir': '/var/lib/docker/overlay2/ef749362d13333e65fc95c572eb525abbe0052e16e086cb64bc3b98ae9aa6d74/work',
+      }),
+      'name': 'overlay2',
+    }),
+    'host_config': dict({
+      'binds': list([
+        'string',
+      ]),
+      'blkio_device_read_bps': list([
+        dict({
+          'Path': 'string',
+          'Rate': 0,
+        }),
+      ]),
+      'blkio_device_read_iops': list([
+        dict({
+          'Path': 'string',
+          'Rate': 0,
+        }),
+      ]),
+      'blkio_device_write_bps': list([
+        dict({
+          'Path': 'string',
+          'Rate': 0,
+        }),
+      ]),
+      'blkio_device_write_iops': list([
+        dict({
+          'Path': 'string',
+          'Rate': 0,
+        }),
+      ]),
+      'blkio_weight': 1000,
+      'blkio_weight_device': list([
+        dict({
+          'Path': 'string',
+          'Weight': 0,
+        }),
+      ]),
+      'cgroup_parent': 'string',
+      'container_id_file': '',
+      'cpu_percent': 0,
+      'cpu_period': 0,
+      'cpu_realtime_period': 0,
+      'cpu_realtime_runtime': 0,
+      'cpu_shares': 0,
+      'cpuset_cpus': '0-3',
+      'cpuset_mems': 'string',
+      'device_requests': list([
+        dict({
+          'Capabilities': list([
+            list([
+              'gpu',
+              'nvidia',
+              'compute',
+            ]),
+          ]),
+          'Count': -1,
+          'DeviceIDs': list([
+            '0',
+            '1',
+            'GPU-fef8089b-4820-abfc-e83e-94318197576e',
+          ]),
+          'Driver': 'nvidia',
+          'Options': dict({
+            'property1': 'string',
+            'property2': 'string',
+          }),
+        }),
+      ]),
+      'devices': list([
+        dict({
+          'CgroupPermissions': 'mrw',
+          'PathInContainer': '/dev/deviceName',
+          'PathOnHost': '/dev/deviceName',
+        }),
+      ]),
+      'dns': list([
+        'string',
+      ]),
+      'dns_search': list([
+        'string',
+      ]),
+      'ipc_mode': 'string',
+      'log_config': dict({
+        'Config': dict({
+          'max-file': '5',
+          'max-size': '10m',
+        }),
+        'Type': 'local',
+      }),
+      'maximum_iobps': None,
+      'maximum_iops': None,
+      'memory': 0,
+      'memory_reservation': 0,
+      'memory_swap': 0,
+      'network_mode': 'string',
+      'oom_kill_disable': True,
+      'oom_score_adj': 500,
+      'pid_mode': 'string',
+      'port_bindings': dict({
+        '443/tcp': list([
+          dict({
+            'HostIp': '127.0.0.1',
+            'HostPort': '4443',
+          }),
+        ]),
+        '53/udp': list([
+          dict({
+            'HostIp': '0.0.0.0',
+            'HostPort': '53',
+          }),
+        ]),
+        '80/tcp': list([
+          dict({
+            'HostIp': '0.0.0.0',
+            'HostPort': '80',
+          }),
+          dict({
+            'HostIp': '0.0.0.0',
+            'HostPort': '8080',
+          }),
+        ]),
+        '80/udp': list([
+          dict({
+            'HostIp': '0.0.0.0',
+            'HostPort': '80',
+          }),
+        ]),
+      }),
+      'privileged': True,
+      'publish_all_ports': True,
+      'readonly_rootfs': True,
+      'restart_policy': dict({
+        'MaximumRetryCount': 0,
+        'Name': '',
+      }),
+      'shm_size': 0,
+      'sysctls': dict({
+        'net.ipv4.ip_forward': '1',
+      }),
+      'ulimits': list([
+        dict({
+          'Hard': 0,
+          'Name': 'string',
+          'Soft': 0,
+        }),
+      ]),
+      'volume_driver': 'string',
+    }),
+    'hostname_path': '/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/hostname',
+    'hosts_path': '/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/hosts',
+    'id': 'aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf',
+    'image': 'sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782',
+    'image_manifest_descriptor': dict({
+      'annotations': dict({
+        'com.docker.official-images.bashbrew.arch': 'amd64',
+        'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8',
+        'org.opencontainers.image.base.name': 'scratch',
+        'org.opencontainers.image.created': '2025-01-27T00:00:00Z',
+        'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79',
+        'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base',
+        'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu',
+        'org.opencontainers.image.version': '24.04',
+      }),
+      'artifact_type': None,
+      'data': None,
+      'digest': 'sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96',
+      'media_type': 'application/vnd.oci.image.manifest.v1+json',
+      'platform': dict({
+        'architecture': 'arm',
+        'os': 'windows',
+        'os_features': list([
+          'win32k',
+        ]),
+        'os_version': '10.0.19041.1165',
+        'variant': 'v7',
+      }),
+      'size': 424,
+      'urls': list([
+        'http://example.com',
+      ]),
+    }),
+    'log_path': '/var/lib/docker/containers/5b7c7e2b992aa426584ce6c47452756066be0e503a08b4516a433a54d2f69e59/5b7c7e2b992aa426584ce6c47452756066be0e503a08b4516a433a54d2f69e59-json.log',
+    'mount_label': '',
+    'mounts': list([
+      dict({
+        'Destination': '/usr/share/nginx/html/',
+        'Driver': 'local',
+        'Mode': 'z',
+        'Name': 'myvolume',
+        'Propagation': '',
+        'RW': True,
+        'Source': '/var/lib/docker/volumes/myvolume/_data',
+        'Type': 'volume',
+      }),
+    ]),
+    'name': '/funny_chatelet',
+    'network_settings': dict({
+      'bridge': 'docker0',
+      'endpoint_id': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b',
+      'gateway': '172.17.0.1',
+      'global_ipv6_address': '2001:db8::5689',
+      'hairpin_mode': False,
+      'ip_address': '172.17.0.4',
+      'ipv6_gateway': '2001:db8:2::100',
+      'link_local_ipv6_address': '',
+      'mac_address': '02:42:ac:11:00:04',
+      'networks': dict({
+        'property1': dict({
+          'Aliases': list([
+            'server_x',
+            'server_y',
+          ]),
+          'DNSNames': list([
+            'foobar',
+            'server_x',
+            'server_y',
+            'my.ctr',
+          ]),
+          'DriverOpts': dict({
+            'com.example.some-label': 'some-value',
+            'com.example.some-other-label': 'some-other-value',
+          }),
+          'EndpointID': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b',
+          'Gateway': '172.17.0.1',
+          'GlobalIPv6Address': '2001:db8::5689',
+          'GlobalIPv6PrefixLen': 64,
+          'GwPriority': list([
+            10,
+          ]),
+          'IPAMConfig': dict({
+            'IPv4Address': '172.20.30.33',
+            'IPv6Address': '2001:db8:abcd::3033',
+            'LinkLocalIPs': list([
+              '169.254.34.68',
+              'fe80::3468',
+            ]),
+          }),
+          'IPAddress': '172.17.0.4',
+          'IPPrefixLen': 16,
+          'IPv6Gateway': '2001:db8:2::100',
+          'Links': list([
+            'container_1',
+            'container_2',
+          ]),
+          'MacAddress': '02:42:ac:11:00:04',
+          'NetworkID': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a',
+        }),
+        'property2': dict({
+          'Aliases': list([
+            'server_x',
+            'server_y',
+          ]),
+          'DNSNames': list([
+            'foobar',
+            'server_x',
+            'server_y',
+            'my.ctr',
+          ]),
+          'DriverOpts': dict({
+            'com.example.some-label': 'some-value',
+            'com.example.some-other-label': 'some-other-value',
+          }),
+          'EndpointID': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b',
+          'Gateway': '172.17.0.1',
+          'GlobalIPv6Address': '2001:db8::5689',
+          'GlobalIPv6PrefixLen': 64,
+          'GwPriority': list([
+            10,
+          ]),
+          'IPAMConfig': dict({
+            'IPv4Address': '172.20.30.33',
+            'IPv6Address': '2001:db8:abcd::3033',
+            'LinkLocalIPs': list([
+              '169.254.34.68',
+              'fe80::3468',
+            ]),
+          }),
+          'IPAddress': '172.17.0.4',
+          'IPPrefixLen': 16,
+          'IPv6Gateway': '2001:db8:2::100',
+          'Links': list([
+            'container_1',
+            'container_2',
+          ]),
+          'MacAddress': '02:42:ac:11:00:04',
+          'NetworkID': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a',
+        }),
+      }),
+      'sandbox_id': '9d12daf2c33f5959c8bf90aa513e4f65b561738661003029ec84830cd503a0c3',
+      'sandbox_key': '/var/run/docker/netns/8ab54b426c38',
+    }),
+    'path': '/bin/sh',
+    'platform': 'linux',
+    'process_label': '',
+    'resolv_conf_path': '/var/lib/docker/containers/aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf/resolv.conf',
+    'restart_count': 0,
+    'state': dict({
+      'dead': False,
+      'error': 'string',
+      'exit_code': 0,
+      'finished_at': '2020-01-06T09:07:59.461876391Z',
+      'health': dict({
+        'failing_streak': 0,
+        'log': list([
+          dict({
+            'end': '2020-01-04T10:45:21.364524523Z',
+            'exit_code': 0,
+            'output': 'string',
+            'start': '2020-01-04T10:44:24.496525531Z',
+          }),
+        ]),
+        'status': 'healthy',
+      }),
+      'oom_killed': False,
+      'paused': False,
+      'pid': 1234,
+      'restarting': False,
+      'running': True,
+      'started_at': '2020-01-06T09:06:59.461876391Z',
+      'status': 'running',
+    }),
+  })
 # ---
 # name: test_portainer_container_stats
-  DockerContainerStats(read='2015-01-08T22:57:31.547920715Z', preread='', pids_stats=PidsStats(current=3), networks={'eth0': NetworkStats(rx_bytes=5338, rx_dropped=0, rx_errors=0, rx_packets=36, tx_bytes=648, tx_dropped=0, tx_errors=0, tx_packets=8), 'eth5': NetworkStats(rx_bytes=4641, rx_dropped=0, rx_errors=0, rx_packets=26, tx_bytes=690, tx_dropped=0, tx_errors=0, tx_packets=9)}, memory_stats=MemoryStats(stats=MemoryStatsDetails(total_pgmajfault=0, cache=0, mapped_file=0, total_inactive_file=0, pgpgout=414, rss=6537216, total_mapped_file=0, writeback=0, unevictable=0, pgpgin=477, total_unevictable=0, pgmajfault=0, total_rss=6537216, total_rss_huge=6291456, total_writeback=0, total_inactive_anon=0, rss_huge=6291456, hierarchical_memory_limit=67108864, total_pgfault=964, total_active_file=0, active_anon=6537216, total_active_anon=6537216, total_pgpgout=414, total_cache=0, inactive_anon=0, active_file=0, pgfault=964, inactive_file=0, total_pgpgin=477), max_usage=6651904, usage=6537216, failcnt=0, limit=67108864), blkio_stats={}, cpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100215355, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24472255, 36438778, 30657443]), system_cpu_usage=739306590000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0)), precpu_stats=CpuStats(cpu_usage=CpuUsage(total_usage=100093996, usage_in_kernelmode=30000000, usage_in_usermode=50000000, percpu_usage=[8646879, 24350896, 36438778, 30657443]), system_cpu_usage=9492140000000, online_cpus=4, throttling_data=ThrottlingData(periods=0, throttled_periods=0, throttled_time=0)))
+  dict({
+    'blkio_stats': dict({
+    }),
+    'cpu_stats': dict({
+      'cpu_usage': dict({
+        'percpu_usage': list([
+          8646879,
+          24472255,
+          36438778,
+          30657443,
+        ]),
+        'total_usage': 100215355,
+        'usage_in_kernelmode': 30000000,
+        'usage_in_usermode': 50000000,
+      }),
+      'online_cpus': 4,
+      'system_cpu_usage': 739306590000000,
+      'throttling_data': dict({
+        'periods': 0,
+        'throttled_periods': 0,
+        'throttled_time': 0,
+      }),
+    }),
+    'memory_stats': dict({
+      'failcnt': 0,
+      'limit': 67108864,
+      'max_usage': 6651904,
+      'stats': dict({
+        'active_anon': 6537216,
+        'active_file': 0,
+        'cache': 0,
+        'hierarchical_memory_limit': 67108864,
+        'inactive_anon': 0,
+        'inactive_file': 0,
+        'mapped_file': 0,
+        'pgfault': 964,
+        'pgmajfault': 0,
+        'pgpgin': 477,
+        'pgpgout': 414,
+        'rss': 6537216,
+        'rss_huge': 6291456,
+        'total_active_anon': 6537216,
+        'total_active_file': 0,
+        'total_cache': 0,
+        'total_inactive_anon': 0,
+        'total_inactive_file': 0,
+        'total_mapped_file': 0,
+        'total_pgfault': 964,
+        'total_pgmajfault': 0,
+        'total_pgpgin': 477,
+        'total_pgpgout': 414,
+        'total_rss': 6537216,
+        'total_rss_huge': 6291456,
+        'total_unevictable': 0,
+        'total_writeback': 0,
+        'unevictable': 0,
+        'writeback': 0,
+      }),
+      'usage': 6537216,
+    }),
+    'networks': dict({
+      'eth0': dict({
+        'rx_bytes': 5338,
+        'rx_dropped': 0,
+        'rx_errors': 0,
+        'rx_packets': 36,
+        'tx_bytes': 648,
+        'tx_dropped': 0,
+        'tx_errors': 0,
+        'tx_packets': 8,
+      }),
+      'eth5': dict({
+        'rx_bytes': 4641,
+        'rx_dropped': 0,
+        'rx_errors': 0,
+        'rx_packets': 26,
+        'tx_bytes': 690,
+        'tx_dropped': 0,
+        'tx_errors': 0,
+        'tx_packets': 9,
+      }),
+    }),
+    'pids_stats': dict({
+      'current': 3,
+    }),
+    'precpu_stats': dict({
+      'cpu_usage': dict({
+        'percpu_usage': list([
+          8646879,
+          24350896,
+          36438778,
+          30657443,
+        ]),
+        'total_usage': 100093996,
+        'usage_in_kernelmode': 30000000,
+        'usage_in_usermode': 50000000,
+      }),
+      'online_cpus': 4,
+      'system_cpu_usage': 9492140000000,
+      'throttling_data': dict({
+        'periods': 0,
+        'throttled_periods': 0,
+        'throttled_time': 0,
+      }),
+    }),
+    'preread': '',
+    'read': '2015-01-08T22:57:31.547920715Z',
+  })
 # ---
 # name: test_portainer_containers
   list([
-    DockerContainer(id='aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf', names=['/funny_chatelet'], image='docker.io/library/ubuntu:latest', command='/bin/bash', created='1739811096', ports=[Port(private_port=8080, public_port=80, type='tcp')], labels={'com.example.vendor': 'Acme', 'com.example.license': 'GPL', 'com.example.version': '1.0'}, state='running', status='Up 4 days', mounts=[Mount(type='volume', name='myvolume', source='/var/lib/docker/volumes/myvolume/_data', destination='/usr/share/nginx/html/', driver='local', mode='z', rw=True, propagation='')], image_id='sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782', image_manifest_descriptor=ImageManifestDescriptor(digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96', size=424, urls=['http://example.com'], annotations={'com.docker.official-images.bashbrew.arch': 'amd64', 'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8', 'org.opencontainers.image.base.name': 'scratch', 'org.opencontainers.image.created': '2025-01-27T00:00:00Z', 'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79', 'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base', 'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu', 'org.opencontainers.image.version': '24.04'}, data=None, platform=ImageManifestDescriptorPlatform(architecture='arm', os='windows', variant='v7', os_version='10.0.19041.1165', os_features=['win32k']), media_type='application/vnd.oci.image.manifest.v1+json', artifact_type=None), size_rw='122880', size_root_fs='1653948416', host_config=HostConfig(annotations=None, network_mode='mynetwork'), network_settings=NetworkSettings(networks={'property1': Network(endpoint_id='b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b', links=['container_1', 'container_2'], aliases=['server_x', 'server_y'], gateway='172.17.0.1', ipam_config=IPAMConfig(ipv4_address='172.20.30.33', ipv6_address='2001:db8:abcd::3033', link_local_ips=['169.254.34.68', 'fe80::3468']), mac_address='02:42:ac:11:00:04', driver_opts={'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, network_id='08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a', ip_address='172.17.0.4', ip_prefix_len=16, ipv6_gateway='2001:db8:2::100', global_ipv6_address='2001:db8::5689', global_ipv6_prefix_len=64, dns_names=['foobar', 'server_x', 'server_y', 'my.ctr']), 'property2': Network(endpoint_id='b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b', links=['container_1', 'container_2'], aliases=['server_x', 'server_y'], gateway='172.17.0.1', ipam_config=IPAMConfig(ipv4_address='172.20.30.33', ipv6_address='2001:db8:abcd::3033', link_local_ips=['169.254.34.68', 'fe80::3468']), mac_address='02:42:ac:11:00:04', driver_opts={'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, network_id='08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a', ip_address='172.17.0.4', ip_prefix_len=16, ipv6_gateway='2001:db8:2::100', global_ipv6_address='2001:db8::5689', global_ipv6_prefix_len=64, dns_names=['foobar', 'server_x', 'server_y', 'my.ctr'])})),
+    dict({
+      'command': '/bin/bash',
+      'created': '1739811096',
+      'host_config': dict({
+        'annotations': None,
+        'network_mode': 'mynetwork',
+      }),
+      'id': 'aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf',
+      'image': 'docker.io/library/ubuntu:latest',
+      'image_id': 'sha256:72297848456d5d37d1262630108ab308d3e9ec7ed1c3286a32fe09856619a782',
+      'image_manifest_descriptor': dict({
+        'annotations': dict({
+          'com.docker.official-images.bashbrew.arch': 'amd64',
+          'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8',
+          'org.opencontainers.image.base.name': 'scratch',
+          'org.opencontainers.image.created': '2025-01-27T00:00:00Z',
+          'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79',
+          'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base',
+          'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu',
+          'org.opencontainers.image.version': '24.04',
+        }),
+        'artifact_type': None,
+        'data': None,
+        'digest': 'sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96',
+        'media_type': 'application/vnd.oci.image.manifest.v1+json',
+        'platform': dict({
+          'architecture': 'arm',
+          'os': 'windows',
+          'os_features': list([
+            'win32k',
+          ]),
+          'os_version': '10.0.19041.1165',
+          'variant': 'v7',
+        }),
+        'size': 424,
+        'urls': list([
+          'http://example.com',
+        ]),
+      }),
+      'labels': dict({
+        'com.example.license': 'GPL',
+        'com.example.vendor': 'Acme',
+        'com.example.version': '1.0',
+      }),
+      'mounts': list([
+        dict({
+          'destination': '/usr/share/nginx/html/',
+          'driver': 'local',
+          'mode': 'z',
+          'name': 'myvolume',
+          'propagation': '',
+          'rw': True,
+          'source': '/var/lib/docker/volumes/myvolume/_data',
+          'type': 'volume',
+        }),
+      ]),
+      'names': list([
+        '/funny_chatelet',
+      ]),
+      'network_settings': dict({
+        'networks': dict({
+          'property1': dict({
+            'aliases': list([
+              'server_x',
+              'server_y',
+            ]),
+            'dns_names': list([
+              'foobar',
+              'server_x',
+              'server_y',
+              'my.ctr',
+            ]),
+            'driver_opts': dict({
+              'com.example.some-label': 'some-value',
+              'com.example.some-other-label': 'some-other-value',
+            }),
+            'endpoint_id': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b',
+            'gateway': '172.17.0.1',
+            'global_ipv6_address': '2001:db8::5689',
+            'global_ipv6_prefix_len': 64,
+            'ip_address': '172.17.0.4',
+            'ip_prefix_len': 16,
+            'ipam_config': dict({
+              'ipv4_address': '172.20.30.33',
+              'ipv6_address': '2001:db8:abcd::3033',
+              'link_local_ips': list([
+                '169.254.34.68',
+                'fe80::3468',
+              ]),
+            }),
+            'ipv6_gateway': '2001:db8:2::100',
+            'links': list([
+              'container_1',
+              'container_2',
+            ]),
+            'mac_address': '02:42:ac:11:00:04',
+            'network_id': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a',
+          }),
+          'property2': dict({
+            'aliases': list([
+              'server_x',
+              'server_y',
+            ]),
+            'dns_names': list([
+              'foobar',
+              'server_x',
+              'server_y',
+              'my.ctr',
+            ]),
+            'driver_opts': dict({
+              'com.example.some-label': 'some-value',
+              'com.example.some-other-label': 'some-other-value',
+            }),
+            'endpoint_id': 'b88f5b905aabf2893f3cbc4ee42d1ea7980bbc0a92e2c8922b1e1795298afb0b',
+            'gateway': '172.17.0.1',
+            'global_ipv6_address': '2001:db8::5689',
+            'global_ipv6_prefix_len': 64,
+            'ip_address': '172.17.0.4',
+            'ip_prefix_len': 16,
+            'ipam_config': dict({
+              'ipv4_address': '172.20.30.33',
+              'ipv6_address': '2001:db8:abcd::3033',
+              'link_local_ips': list([
+                '169.254.34.68',
+                'fe80::3468',
+              ]),
+            }),
+            'ipv6_gateway': '2001:db8:2::100',
+            'links': list([
+              'container_1',
+              'container_2',
+            ]),
+            'mac_address': '02:42:ac:11:00:04',
+            'network_id': '08754567f1f40222263eab4102e1c733ae697e8e354aa9cd6e18d7402835292a',
+          }),
+        }),
+      }),
+      'ports': list([
+        dict({
+          'private_port': 8080,
+          'public_port': 80,
+          'type': 'tcp',
+        }),
+      ]),
+      'size_root_fs': '1653948416',
+      'size_rw': '122880',
+      'state': 'running',
+      'status': 'Up 4 days',
+    }),
   ])
 # ---
 # name: test_portainer_docker_info
-  DockerInfo(id='7TRN:IPZB:QYBB:VPBQ:UMPP:KARE:6ZNR:XE6T:7EWV:PKF4:ZOJD:TPYS', containers=14, containers_running=3, containers_paused=1, containers_stopped=10, images=508, driver='overlay2', driver_status=[['Backing Filesystem', 'extfs'], ['Supports d_type', 'true'], ['Native Overlay Diff', 'true']], docker_root_dir='/var/lib/docker', plugins=PluginsInfo(volume=[], network=[], authorization=[], log=[]), memory_limit=True, swap_limit=True, kernel_memory_tcp=True, cpu_cfs_period=True, cpu_cfs_quota=True, cpu_shares=True, cpu_set=True, pids_limit=True, oom_kill_disable=True, ipv4_forwarding=True, bridge_nf_iptables=True, bridge_nf_ip6tables=True, debug=True, nfd=64, ngoroutines=174, system_time='2017-08-08T20:28:29.06202363Z', logging_driver='json-file', cgroup_driver='cgroupfs', cgroup_version='1', nevents_listener=30, kernel_version='4.9.38-moby', operating_system='Alpine Linux v3.5', os_version='16.04', os_type='linux', architecture='x86_64', ncpu=4, mem_total=2095882240, index_server_address='https://index.docker.io/v1/', registry_config=RegistryConfig(allow_nondistributable_artifacts_cidrs=[], allow_nondistributable_artifacts_hostnames=[], insecure_registry_cidrs=[], index_configs={}, mirrors=[]), generic_resources=[{}, {}, {}], http_proxy='http://xxxxx:xxxxx@proxy.corp.example.com:8080', https_proxy='https://xxxxx:xxxxx@proxy.corp.example.com:4443', no_proxy='*.local, 169.254/16', name='node5.corp.example.com', labels=['storage=ssd', 'production'], experimental_build=True, server_version='24.0.2', runtimes={'runc': {}, 'runc-master': {}, 'custom': {}}, default_runtime='runc', swarm=SwarmInfo(node_id='k67qz4598weg5unwwffg6z1m1', node_addr='10.0.0.46', local_node_state='active', control_available=True, error='', remote_managers=[], nodes=4, managers=3, cluster={}), live_restore_enabled=False, isolation='default', init_binary='docker-init', containerd_commit=CommitInfo(id='cfb82a876ecc11b5ca0977d1733adbe58599088a', expected='2d41c047c83e09a6d61d464906feb2a2f3c52aa4'), runc_commit=CommitInfo(id='cfb82a876ecc11b5ca0977d1733adbe58599088a', expected='2d41c047c83e09a6d61d464906feb2a2f3c52aa4'), init_commit=CommitInfo(id='cfb82a876ecc11b5ca0977d1733adbe58599088a', expected='2d41c047c83e09a6d61d464906feb2a2f3c52aa4'), security_options=['name=apparmor', 'name=seccomp,profile=default', 'name=selinux', 'name=userns', 'name=rootless'], product_license='Community Engine', default_address_pools=[{}], warnings=['WARNING: No memory limit support'])
+  dict({
+    'architecture': 'x86_64',
+    'bridge_nf_ip6tables': True,
+    'bridge_nf_iptables': True,
+    'cgroup_driver': 'cgroupfs',
+    'cgroup_version': '1',
+    'containerd_commit': dict({
+      'expected': '2d41c047c83e09a6d61d464906feb2a2f3c52aa4',
+      'id': 'cfb82a876ecc11b5ca0977d1733adbe58599088a',
+    }),
+    'containers': 14,
+    'containers_paused': 1,
+    'containers_running': 3,
+    'containers_stopped': 10,
+    'cpu_cfs_period': True,
+    'cpu_cfs_quota': True,
+    'cpu_set': True,
+    'cpu_shares': True,
+    'debug': True,
+    'default_address_pools': list([
+      dict({
+      }),
+    ]),
+    'default_runtime': 'runc',
+    'docker_root_dir': '/var/lib/docker',
+    'driver': 'overlay2',
+    'driver_status': list([
+      list([
+        'Backing Filesystem',
+        'extfs',
+      ]),
+      list([
+        'Supports d_type',
+        'true',
+      ]),
+      list([
+        'Native Overlay Diff',
+        'true',
+      ]),
+    ]),
+    'experimental_build': True,
+    'generic_resources': list([
+      dict({
+      }),
+      dict({
+      }),
+      dict({
+      }),
+    ]),
+    'http_proxy': 'http://xxxxx:xxxxx@proxy.corp.example.com:8080',
+    'https_proxy': 'https://xxxxx:xxxxx@proxy.corp.example.com:4443',
+    'id': '7TRN:IPZB:QYBB:VPBQ:UMPP:KARE:6ZNR:XE6T:7EWV:PKF4:ZOJD:TPYS',
+    'images': 508,
+    'index_server_address': 'https://index.docker.io/v1/',
+    'init_binary': 'docker-init',
+    'init_commit': dict({
+      'expected': '2d41c047c83e09a6d61d464906feb2a2f3c52aa4',
+      'id': 'cfb82a876ecc11b5ca0977d1733adbe58599088a',
+    }),
+    'ipv4_forwarding': True,
+    'isolation': 'default',
+    'kernel_memory_tcp': True,
+    'kernel_version': '4.9.38-moby',
+    'labels': list([
+      'storage=ssd',
+      'production',
+    ]),
+    'live_restore_enabled': False,
+    'logging_driver': 'json-file',
+    'mem_total': 2095882240,
+    'memory_limit': True,
+    'name': 'node5.corp.example.com',
+    'ncpu': 4,
+    'nevents_listener': 30,
+    'nfd': 64,
+    'ngoroutines': 174,
+    'no_proxy': '*.local, 169.254/16',
+    'oom_kill_disable': True,
+    'operating_system': 'Alpine Linux v3.5',
+    'os_type': 'linux',
+    'os_version': '16.04',
+    'pids_limit': True,
+    'plugins': dict({
+      'authorization': list([
+      ]),
+      'log': list([
+      ]),
+      'network': list([
+      ]),
+      'volume': list([
+      ]),
+    }),
+    'product_license': 'Community Engine',
+    'registry_config': dict({
+      'allow_nondistributable_artifacts_cidrs': list([
+      ]),
+      'allow_nondistributable_artifacts_hostnames': list([
+      ]),
+      'index_configs': dict({
+      }),
+      'insecure_registry_cidrs': list([
+      ]),
+      'mirrors': list([
+      ]),
+    }),
+    'runc_commit': dict({
+      'expected': '2d41c047c83e09a6d61d464906feb2a2f3c52aa4',
+      'id': 'cfb82a876ecc11b5ca0977d1733adbe58599088a',
+    }),
+    'runtimes': dict({
+      'custom': dict({
+      }),
+      'runc': dict({
+      }),
+      'runc-master': dict({
+      }),
+    }),
+    'security_options': list([
+      'name=apparmor',
+      'name=seccomp,profile=default',
+      'name=selinux',
+      'name=userns',
+      'name=rootless',
+    ]),
+    'server_version': '24.0.2',
+    'swap_limit': True,
+    'swarm': dict({
+      'cluster': dict({
+      }),
+      'control_available': True,
+      'error': '',
+      'local_node_state': 'active',
+      'managers': 3,
+      'node_addr': '10.0.0.46',
+      'node_id': 'k67qz4598weg5unwwffg6z1m1',
+      'nodes': 4,
+      'remote_managers': list([
+      ]),
+    }),
+    'system_time': '2017-08-08T20:28:29.06202363Z',
+    'warnings': list([
+      'WARNING: No memory limit support',
+    ]),
+  })
 # ---
 # name: test_portainer_docker_version
-  DockerVersion(platform=DockerVersion.PlatformInfo(name='string'), version='19.03.12', api_version='1.40', min_api_version='1.12', git_commit='48a66213fe', go_version='go1.13.14', os='linux', arch='amd64', kernel_version='4.19.76-linuxkit', build_time='2020-06-22T15:49:27.000000000+00:00', experimental=True, components=[{}], warnings=None)
+  dict({
+    'api_version': '1.40',
+    'arch': 'amd64',
+    'build_time': '2020-06-22T15:49:27.000000000+00:00',
+    'components': list([
+      dict({
+      }),
+    ]),
+    'experimental': True,
+    'git_commit': '48a66213fe',
+    'go_version': 'go1.13.14',
+    'kernel_version': '4.19.76-linuxkit',
+    'min_api_version': '1.12',
+    'os': 'linux',
+    'platform': dict({
+      'name': 'string',
+    }),
+    'version': '19.03.12',
+    'warnings': None,
+  })
 # ---
 # name: test_portainer_endpoints
   list([
-    Endpoint(id=1, amt_device_guid='4c4c4544-004b-3910-8037-b6c04f504633', authorized_teams=[1], authorized_users=[1], azure_credentials={'ApplicationID': 'eag7cdo9-o09l-9i83-9dO9-f0b23oe78db4', 'AuthenticationKey': 'cOrXoK/1D35w8YQ8nH1/8ZGwzz45JIYD5jxHKXEQknk=', 'TenantID': '34ddc78d-4fel-2358-8cc1-df84c8o839f5'}, compose_syntax_max_version='3.8', container_engine='docker', edge_checkin_interval=5, edge_id='string', edge_key='string', enable_gpu_management=True, gpus=[{'name': 'name', 'value': 'value'}], group_id=1, heartbeat=True, is_edge_device=True, kubernetes={'Configuration': {'AllowNoneIngressClass': True, 'EnableResourceOverCommit': True, 'IngressAvailabilityPerNamespace': True, 'IngressClasses': [{'Blocked': True, 'BlockedNamespaces': ['string'], 'Name': 'string', 'Type': 'string'}], 'ResourceOverCommitPercentage': 0, 'RestrictDefaultNamespace': True, 'StorageClasses': [{'AccessModes': ['string'], 'AllowVolumeExpansion': True, 'Name': 'string', 'Provisioner': 'string'}], 'UseLoadBalancer': True, 'UseServerMetrics': True}, 'Flags': {'IsServerIngressClassDetected': True, 'IsServerMetricsDetected': True, 'IsServerStorageDetected': True}, 'Snapshots': [{'DiagnosticsData': {'DNS': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}, 'Log': 'string', 'Proxy': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}, 'Telnet': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}}, 'KubernetesVersion': 'string', 'NodeCount': 0, 'Time': 0, 'TotalCPU': 0, 'TotalMemory': 0}]}, name='my-environment', public_url='docker.mydomain.tld:2375', snapshots=[{'ContainerCount': 0, 'DiagnosticsData': {'DNS': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}, 'Log': 'string', 'Proxy': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}, 'Telnet': {'additionalProp1': 'string', 'additionalProp2': 'string', 'additionalProp3': 'string'}}, 'DockerSnapshotRaw': {}, 'DockerVersion': 'string', 'GpuUseAll': True, 'GpuUseList': ['string'], 'HealthyContainerCount': 0, 'ImageCount': 0, 'IsPodman': True, 'NodeCount': 0, 'RunningContainerCount': 0, 'ServiceCount': 0, 'StackCount': 0, 'StoppedContainerCount': 0, 'Swarm': True, 'Time': 0, 'TotalCPU': 0, 'TotalMemory': 0, 'UnhealthyContainerCount': 0, 'VolumeCount': 0}], status=1, tls=True, tls_ca_cert='string', tls_cert='string', tls_key='string', tag_ids=[1], tags=['string'], team_access_policies={'additionalProp1': {'RoleId': 1}, 'additionalProp2': {'RoleId': 1}, 'additionalProp3': {'RoleId': 1}}, type=1, url='docker.mydomain.tld:2375', user_access_policies={'additionalProp1': {'RoleId': 1}, 'additionalProp2': {'RoleId': 1}, 'additionalProp3': {'RoleId': 1}}, user_trusted=True, tls_config=TLSConfig(tls=True, tls_ca_cert='/data/tls/ca.pem', tls_cert='/data/tls/cert.pem', tls_key='/data/tls/key.pem', tls_skip_verify=False), agent=Agent(version='1.0.0'), edge=Edge(command_interval=60, ping_interval=60, snapshot_interval=60, async_mode=True), last_check_in_date=0, query_date=0, security_settings=SecuritySettings(allow_bind_mounts_for_regular_users=False, allow_container_capabilities_for_regular_users=True, allow_device_mapping_for_regular_users=True, allow_host_namespace_for_regular_users=True, allow_privileged_mode_for_regular_users=False, allow_stack_management_for_regular_users=True, allow_sysctl_setting_for_regular_users=True, allow_volume_browser_for_regular_users=True, enable_host_management_features=True)),
+    dict({
+      'agent': dict({
+        'version': '1.0.0',
+      }),
+      'amt_device_guid': '4c4c4544-004b-3910-8037-b6c04f504633',
+      'authorized_teams': list([
+        1,
+      ]),
+      'authorized_users': list([
+        1,
+      ]),
+      'azure_credentials': dict({
+        'ApplicationID': 'eag7cdo9-o09l-9i83-9dO9-f0b23oe78db4',
+        'AuthenticationKey': 'cOrXoK/1D35w8YQ8nH1/8ZGwzz45JIYD5jxHKXEQknk=',
+        'TenantID': '34ddc78d-4fel-2358-8cc1-df84c8o839f5',
+      }),
+      'compose_syntax_max_version': '3.8',
+      'container_engine': 'docker',
+      'edge': dict({
+        'async_mode': True,
+        'command_interval': 60,
+        'ping_interval': 60,
+        'snapshot_interval': 60,
+      }),
+      'edge_checkin_interval': 5,
+      'edge_id': 'string',
+      'edge_key': 'string',
+      'enable_gpu_management': True,
+      'gpus': list([
+        dict({
+          'name': 'name',
+          'value': 'value',
+        }),
+      ]),
+      'group_id': 1,
+      'heartbeat': True,
+      'id': 1,
+      'is_edge_device': True,
+      'kubernetes': dict({
+        'Configuration': dict({
+          'AllowNoneIngressClass': True,
+          'EnableResourceOverCommit': True,
+          'IngressAvailabilityPerNamespace': True,
+          'IngressClasses': list([
+            dict({
+              'Blocked': True,
+              'BlockedNamespaces': list([
+                'string',
+              ]),
+              'Name': 'string',
+              'Type': 'string',
+            }),
+          ]),
+          'ResourceOverCommitPercentage': 0,
+          'RestrictDefaultNamespace': True,
+          'StorageClasses': list([
+            dict({
+              'AccessModes': list([
+                'string',
+              ]),
+              'AllowVolumeExpansion': True,
+              'Name': 'string',
+              'Provisioner': 'string',
+            }),
+          ]),
+          'UseLoadBalancer': True,
+          'UseServerMetrics': True,
+        }),
+        'Flags': dict({
+          'IsServerIngressClassDetected': True,
+          'IsServerMetricsDetected': True,
+          'IsServerStorageDetected': True,
+        }),
+        'Snapshots': list([
+          dict({
+            'DiagnosticsData': dict({
+              'DNS': dict({
+                'additionalProp1': 'string',
+                'additionalProp2': 'string',
+                'additionalProp3': 'string',
+              }),
+              'Log': 'string',
+              'Proxy': dict({
+                'additionalProp1': 'string',
+                'additionalProp2': 'string',
+                'additionalProp3': 'string',
+              }),
+              'Telnet': dict({
+                'additionalProp1': 'string',
+                'additionalProp2': 'string',
+                'additionalProp3': 'string',
+              }),
+            }),
+            'KubernetesVersion': 'string',
+            'NodeCount': 0,
+            'Time': 0,
+            'TotalCPU': 0,
+            'TotalMemory': 0,
+          }),
+        ]),
+      }),
+      'last_check_in_date': 0,
+      'name': 'my-environment',
+      'public_url': 'docker.mydomain.tld:2375',
+      'query_date': 0,
+      'security_settings': dict({
+        'allow_bind_mounts_for_regular_users': False,
+        'allow_container_capabilities_for_regular_users': True,
+        'allow_device_mapping_for_regular_users': True,
+        'allow_host_namespace_for_regular_users': True,
+        'allow_privileged_mode_for_regular_users': False,
+        'allow_stack_management_for_regular_users': True,
+        'allow_sysctl_setting_for_regular_users': True,
+        'allow_volume_browser_for_regular_users': True,
+        'enable_host_management_features': True,
+      }),
+      'snapshots': list([
+        dict({
+          'ContainerCount': 0,
+          'DiagnosticsData': dict({
+            'DNS': dict({
+              'additionalProp1': 'string',
+              'additionalProp2': 'string',
+              'additionalProp3': 'string',
+            }),
+            'Log': 'string',
+            'Proxy': dict({
+              'additionalProp1': 'string',
+              'additionalProp2': 'string',
+              'additionalProp3': 'string',
+            }),
+            'Telnet': dict({
+              'additionalProp1': 'string',
+              'additionalProp2': 'string',
+              'additionalProp3': 'string',
+            }),
+          }),
+          'DockerSnapshotRaw': dict({
+          }),
+          'DockerVersion': 'string',
+          'GpuUseAll': True,
+          'GpuUseList': list([
+            'string',
+          ]),
+          'HealthyContainerCount': 0,
+          'ImageCount': 0,
+          'IsPodman': True,
+          'NodeCount': 0,
+          'RunningContainerCount': 0,
+          'ServiceCount': 0,
+          'StackCount': 0,
+          'StoppedContainerCount': 0,
+          'Swarm': True,
+          'Time': 0,
+          'TotalCPU': 0,
+          'TotalMemory': 0,
+          'UnhealthyContainerCount': 0,
+          'VolumeCount': 0,
+        }),
+      ]),
+      'status': 1,
+      'tag_ids': list([
+        1,
+      ]),
+      'tags': list([
+        'string',
+      ]),
+      'team_access_policies': dict({
+        'additionalProp1': dict({
+          'RoleId': 1,
+        }),
+        'additionalProp2': dict({
+          'RoleId': 1,
+        }),
+        'additionalProp3': dict({
+          'RoleId': 1,
+        }),
+      }),
+      'tls': True,
+      'tls_ca_cert': 'string',
+      'tls_cert': 'string',
+      'tls_config': dict({
+        'tls': True,
+        'tls_ca_cert': '/data/tls/ca.pem',
+        'tls_cert': '/data/tls/cert.pem',
+        'tls_key': '/data/tls/key.pem',
+        'tls_skip_verify': False,
+      }),
+      'tls_key': 'string',
+      'type': 1,
+      'url': 'docker.mydomain.tld:2375',
+      'user_access_policies': dict({
+        'additionalProp1': dict({
+          'RoleId': 1,
+        }),
+        'additionalProp2': dict({
+          'RoleId': 1,
+        }),
+        'additionalProp3': dict({
+          'RoleId': 1,
+        }),
+      }),
+      'user_trusted': True,
+    }),
   ])
 # ---
 # name: test_portainer_images
-  ImageInformation(descriptor=ImageManifestDescriptor(digest='sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96', size=424, urls=['http://example.com'], annotations={'com.docker.official-images.bashbrew.arch': 'amd64', 'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8', 'org.opencontainers.image.base.name': 'scratch', 'org.opencontainers.image.created': '2025-01-27T00:00:00Z', 'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79', 'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base', 'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu', 'org.opencontainers.image.version': '24.04'}, data=None, platform=ImageManifestDescriptorPlatform(architecture='arm', os='windows', variant='v7', os_version='10.0.19041.1165', os_features=['win32k']), media_type='application/vnd.oci.image.manifest.v1+json', artifact_type=None), platforms=[ImageManifestDescriptorPlatform(architecture='arm', os='windows', variant='v7', os_version='10.0.19041.1165', os_features=['win32k'])])
+  dict({
+    'descriptor': dict({
+      'annotations': dict({
+        'com.docker.official-images.bashbrew.arch': 'amd64',
+        'org.opencontainers.image.base.digest': 'sha256:0d0ef5c914d3ea700147da1bd050c59edb8bb12ca312f3800b29d7c8087eabd8',
+        'org.opencontainers.image.base.name': 'scratch',
+        'org.opencontainers.image.created': '2025-01-27T00:00:00Z',
+        'org.opencontainers.image.revision': '9fabb4bad5138435b01857e2fe9363e2dc5f6a79',
+        'org.opencontainers.image.source': 'https://git.launchpad.net/cloud-images/+oci/ubuntu-base',
+        'org.opencontainers.image.url': 'https://hub.docker.com/_/ubuntu',
+        'org.opencontainers.image.version': '24.04',
+      }),
+      'artifact_type': None,
+      'data': None,
+      'digest': 'sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96',
+      'media_type': 'application/vnd.oci.image.manifest.v1+json',
+      'platform': dict({
+        'architecture': 'arm',
+        'os': 'windows',
+        'os_features': list([
+          'win32k',
+        ]),
+        'os_version': '10.0.19041.1165',
+        'variant': 'v7',
+      }),
+      'size': 424,
+      'urls': list([
+        'http://example.com',
+      ]),
+    }),
+    'platforms': list([
+      dict({
+        'architecture': 'arm',
+        'os': 'windows',
+        'os_features': list([
+          'win32k',
+        ]),
+        'os_version': '10.0.19041.1165',
+        'variant': 'v7',
+      }),
+    ]),
+  })
 # ---
 # name: test_portainer_images_prune
-  DockerImagePruneResponse(images_deleted=["{'Untagged': 'string', 'Deleted': 'string'}"], space_reclaimed=0)
+  dict({
+    'images_deleted': list([
+      "{'Untagged': 'string', 'Deleted': 'string'}",
+    ]),
+    'space_reclaimed': 0,
+  })
 # ---
 # name: test_portainer_local_images
-  LocalImageInformation(id='sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710', repo_tags=['example:1.0', 'example:latest', 'example:stable', 'internal.registry.example.com:5000/example:1.0'], repo_digests=['example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb', 'internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578'], parent='', comment='', created='2022-02-04T21:20:12.497794809Z', container='65974bc86f1770ae4bff79f651ebdbce166ae9aada632ee3fa9af3a264911735', container_config={'Hostname': '439f4e91bd1d', 'Domainname': 'string', 'User': 'string', 'AttachStdin': False, 'AttachStdout': True, 'AttachStderr': True, 'ExposedPorts': {'80/tcp': {}, '443/tcp': {}}, 'Tty': False, 'OpenStdin': False, 'StdinOnce': False, 'Env': [], 'Cmd': [], 'Healthcheck': {}, 'ArgsEscaped': False, 'Image': 'example-image:1.0', 'Volumes': {}, 'WorkingDir': '/public/', 'Entrypoint': [], 'NetworkDisabled': True, 'MacAddress': 'string', 'OnBuild': [], 'Labels': {}, 'StopSignal': 'SIGTERM', 'StopTimeout': 10, 'Shell': []}, docker_version='20.10.7', author='', config={'Hostname': '', 'Domainname': '', 'User': 'web:web', 'AttachStdin': False, 'AttachStdout': False, 'AttachStderr': False, 'ExposedPorts': {}, 'Tty': False, 'OpenStdin': False, 'StdinOnce': False, 'Env': [], 'Cmd': [], 'Healthcheck': {}, 'ArgsEscaped': True, 'Image': '', 'Volumes': {}, 'WorkingDir': '/public/', 'Entrypoint': [], 'OnBuild': [], 'Labels': {}, 'StopSignal': 'SIGTERM', 'Shell': []}, architecture='arm', variant='v7', os='linux', os_version='', size=1239828, virtual_size=1239828, graph_driver={'Name': 'overlay2', 'Data': {}}, root_fs={'Type': 'layers', 'Layers': []}, metadata={'LastTagTime': '2022-02-28T14:40:02.623929178Z'}, labels=None)
+  dict({
+    'architecture': 'arm',
+    'author': '',
+    'comment': '',
+    'config': dict({
+      'ArgsEscaped': True,
+      'AttachStderr': False,
+      'AttachStdin': False,
+      'AttachStdout': False,
+      'Cmd': list([
+      ]),
+      'Domainname': '',
+      'Entrypoint': list([
+      ]),
+      'Env': list([
+      ]),
+      'ExposedPorts': dict({
+      }),
+      'Healthcheck': dict({
+      }),
+      'Hostname': '',
+      'Image': '',
+      'Labels': dict({
+      }),
+      'OnBuild': list([
+      ]),
+      'OpenStdin': False,
+      'Shell': list([
+      ]),
+      'StdinOnce': False,
+      'StopSignal': 'SIGTERM',
+      'Tty': False,
+      'User': 'web:web',
+      'Volumes': dict({
+      }),
+      'WorkingDir': '/public/',
+    }),
+    'container': '65974bc86f1770ae4bff79f651ebdbce166ae9aada632ee3fa9af3a264911735',
+    'container_config': dict({
+      'ArgsEscaped': False,
+      'AttachStderr': True,
+      'AttachStdin': False,
+      'AttachStdout': True,
+      'Cmd': list([
+      ]),
+      'Domainname': 'string',
+      'Entrypoint': list([
+      ]),
+      'Env': list([
+      ]),
+      'ExposedPorts': dict({
+        '443/tcp': dict({
+        }),
+        '80/tcp': dict({
+        }),
+      }),
+      'Healthcheck': dict({
+      }),
+      'Hostname': '439f4e91bd1d',
+      'Image': 'example-image:1.0',
+      'Labels': dict({
+      }),
+      'MacAddress': 'string',
+      'NetworkDisabled': True,
+      'OnBuild': list([
+      ]),
+      'OpenStdin': False,
+      'Shell': list([
+      ]),
+      'StdinOnce': False,
+      'StopSignal': 'SIGTERM',
+      'StopTimeout': 10,
+      'Tty': False,
+      'User': 'string',
+      'Volumes': dict({
+      }),
+      'WorkingDir': '/public/',
+    }),
+    'created': '2022-02-04T21:20:12.497794809Z',
+    'docker_version': '20.10.7',
+    'graph_driver': dict({
+      'Data': dict({
+      }),
+      'Name': 'overlay2',
+    }),
+    'id': 'sha256:ec3f0931a6e6b6855d76b2d7b0be30e81860baccd891b2e243280bf1cd8ad710',
+    'labels': None,
+    'metadata': dict({
+      'LastTagTime': '2022-02-28T14:40:02.623929178Z',
+    }),
+    'os': 'linux',
+    'os_version': '',
+    'parent': '',
+    'repo_digests': list([
+      'example@sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
+      'internal.registry.example.com:5000/example@sha256:b69959407d21e8a062e0416bf13405bb2b71ed7a84dde4158ebafacfa06f5578',
+    ]),
+    'repo_tags': list([
+      'example:1.0',
+      'example:latest',
+      'example:stable',
+      'internal.registry.example.com:5000/example:1.0',
+    ]),
+    'root_fs': dict({
+      'Layers': list([
+      ]),
+      'Type': 'layers',
+    }),
+    'size': 1239828,
+    'variant': 'v7',
+    'virtual_size': 1239828,
+  })
 # ---
 # name: test_portainer_system_df
-  DockerSystemDF(image_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), container_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), volume_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None), build_cache_disk_usage=DockerSystemDFAttribute(active_count=None, total_count=None, reclaimable=None, total_size=None, items=None))
+  dict({
+    'build_cache_disk_usage': dict({
+      'active_count': None,
+      'items': None,
+      'reclaimable': None,
+      'total_count': None,
+      'total_size': None,
+    }),
+    'container_disk_usage': dict({
+      'active_count': None,
+      'items': None,
+      'reclaimable': None,
+      'total_count': None,
+      'total_size': None,
+    }),
+    'image_disk_usage': dict({
+      'active_count': None,
+      'items': None,
+      'reclaimable': None,
+      'total_count': None,
+      'total_size': None,
+    }),
+    'volume_disk_usage': dict({
+      'active_count': None,
+      'items': None,
+      'reclaimable': None,
+      'total_count': None,
+      'total_size': None,
+    }),
+  })
 # ---
 # name: test_portainer_system_status
-  PortainerSystemStatus(instance_id='299ab403-70a8-4c05-92f7-bf7a994d50df', version='2.0.0')
+  dict({
+    'instance_id': '299ab403-70a8-4c05-92f7-bf7a994d50df',
+    'version': '2.0.0',
+  })
 # ---
 # name: test_portainer_volume_inspect
-  DockerVolume(name='tardis', driver='custom', mountpoint='/var/lib/docker/volumes/tardis', created_at='2016-06-07T20:31:11.853781916Z', status={'hello': 'world'}, labels={'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, scope='local', cluster_volume=DockerClusterVolume(id='string', version=DockerClusterVolumeVersion(index=373531), created_at='string', updated_at='string', spec=DockerClusterVolumeSpec(group='string', access_mode=DockerClusterVolumeAccessMode(scope='single', sharing='none', mount_volume={}, secrets=[DockerClusterVolumeSecret(key='string', secret='string')], accessibility_requirements={'Requisite': [{'property1': 'string', 'property2': 'string'}], 'Preferred': [{'property1': 'string', 'property2': 'string'}]}, capacity_range=DockerClusterVolumeCapacityRange(required_bytes=0, limit_bytes=0), availability='active')), info=DockerClusterVolumeInfo(capacity_bytes=0, volume_context={'property1': 'string', 'property2': 'string'}, volume_id='string', accessible_topology=[{'property1': 'string', 'property2': 'string'}]), publish_status=[DockerClusterVolumePublishStatus(node_id='string', state='pending-publish', publish_context={'property1': 'string', 'property2': 'string'})]), options={'device': 'tmpfs', 'o': 'size=100m,uid=1000', 'type': 'tmpfs'}, usage_data=DockerVolumeUsageData(size=-1, ref_count=-1))
+  dict({
+    'cluster_volume': dict({
+      'created_at': 'string',
+      'id': 'string',
+      'info': dict({
+        'accessible_topology': list([
+          dict({
+            'property1': 'string',
+            'property2': 'string',
+          }),
+        ]),
+        'capacity_bytes': 0,
+        'volume_context': dict({
+          'property1': 'string',
+          'property2': 'string',
+        }),
+        'volume_id': 'string',
+      }),
+      'publish_status': list([
+        dict({
+          'node_id': 'string',
+          'publish_context': dict({
+            'property1': 'string',
+            'property2': 'string',
+          }),
+          'state': 'pending-publish',
+        }),
+      ]),
+      'spec': dict({
+        'access_mode': dict({
+          'accessibility_requirements': dict({
+            'Preferred': list([
+              dict({
+                'property1': 'string',
+                'property2': 'string',
+              }),
+            ]),
+            'Requisite': list([
+              dict({
+                'property1': 'string',
+                'property2': 'string',
+              }),
+            ]),
+          }),
+          'availability': 'active',
+          'capacity_range': dict({
+            'limit_bytes': 0,
+            'required_bytes': 0,
+          }),
+          'mount_volume': dict({
+          }),
+          'scope': 'single',
+          'secrets': list([
+            dict({
+              'key': 'string',
+              'secret': 'string',
+            }),
+          ]),
+          'sharing': 'none',
+        }),
+        'group': 'string',
+      }),
+      'updated_at': 'string',
+      'version': dict({
+        'index': 373531,
+      }),
+    }),
+    'created_at': '2016-06-07T20:31:11.853781916Z',
+    'driver': 'custom',
+    'labels': dict({
+      'com.example.some-label': 'some-value',
+      'com.example.some-other-label': 'some-other-value',
+    }),
+    'mountpoint': '/var/lib/docker/volumes/tardis',
+    'name': 'tardis',
+    'options': dict({
+      'device': 'tmpfs',
+      'o': 'size=100m,uid=1000',
+      'type': 'tmpfs',
+    }),
+    'scope': 'local',
+    'status': dict({
+      'hello': 'world',
+    }),
+    'usage_data': dict({
+      'ref_count': -1,
+      'size': -1,
+    }),
+  })
 # ---
 # name: test_portainer_volumes
   list([
-    DockerVolume(name='tardis', driver='custom', mountpoint='/var/lib/docker/volumes/tardis', created_at='2016-06-07T20:31:11.853781916Z', status={'hello': 'world'}, labels={'com.example.some-label': 'some-value', 'com.example.some-other-label': 'some-other-value'}, scope='local', cluster_volume=DockerClusterVolume(id='string', version=DockerClusterVolumeVersion(index=373531), created_at='string', updated_at='string', spec=DockerClusterVolumeSpec(group='string', access_mode=DockerClusterVolumeAccessMode(scope='single', sharing='none', mount_volume={}, secrets=[DockerClusterVolumeSecret(key='string', secret='string')], accessibility_requirements={'Requisite': [{'property1': 'string', 'property2': 'string'}], 'Preferred': [{'property1': 'string', 'property2': 'string'}]}, capacity_range=DockerClusterVolumeCapacityRange(required_bytes=0, limit_bytes=0), availability='active')), info=DockerClusterVolumeInfo(capacity_bytes=0, volume_context={'property1': 'string', 'property2': 'string'}, volume_id='string', accessible_topology=[{'property1': 'string', 'property2': 'string'}]), publish_status=[DockerClusterVolumePublishStatus(node_id='string', state='pending-publish', publish_context={'property1': 'string', 'property2': 'string'})]), options={'device': 'tmpfs', 'o': 'size=100m,uid=1000', 'type': 'tmpfs'}, usage_data=DockerVolumeUsageData(size=-1, ref_count=-1)),
+    dict({
+      'cluster_volume': dict({
+        'created_at': 'string',
+        'id': 'string',
+        'info': dict({
+          'accessible_topology': list([
+            dict({
+              'property1': 'string',
+              'property2': 'string',
+            }),
+          ]),
+          'capacity_bytes': 0,
+          'volume_context': dict({
+            'property1': 'string',
+            'property2': 'string',
+          }),
+          'volume_id': 'string',
+        }),
+        'publish_status': list([
+          dict({
+            'node_id': 'string',
+            'publish_context': dict({
+              'property1': 'string',
+              'property2': 'string',
+            }),
+            'state': 'pending-publish',
+          }),
+        ]),
+        'spec': dict({
+          'access_mode': dict({
+            'accessibility_requirements': dict({
+              'Preferred': list([
+                dict({
+                  'property1': 'string',
+                  'property2': 'string',
+                }),
+              ]),
+              'Requisite': list([
+                dict({
+                  'property1': 'string',
+                  'property2': 'string',
+                }),
+              ]),
+            }),
+            'availability': 'active',
+            'capacity_range': dict({
+              'limit_bytes': 0,
+              'required_bytes': 0,
+            }),
+            'mount_volume': dict({
+            }),
+            'scope': 'single',
+            'secrets': list([
+              dict({
+                'key': 'string',
+                'secret': 'string',
+              }),
+            ]),
+            'sharing': 'none',
+          }),
+          'group': 'string',
+        }),
+        'updated_at': 'string',
+        'version': dict({
+          'index': 373531,
+        }),
+      }),
+      'created_at': '2016-06-07T20:31:11.853781916Z',
+      'driver': 'custom',
+      'labels': dict({
+        'com.example.some-label': 'some-value',
+        'com.example.some-other-label': 'some-other-value',
+      }),
+      'mountpoint': '/var/lib/docker/volumes/tardis',
+      'name': 'tardis',
+      'options': dict({
+        'device': 'tmpfs',
+        'o': 'size=100m,uid=1000',
+        'type': 'tmpfs',
+      }),
+      'scope': 'local',
+      'status': dict({
+        'hello': 'world',
+      }),
+      'usage_data': dict({
+        'ref_count': -1,
+        'size': -1,
+      }),
+    }),
   ])
 # ---
