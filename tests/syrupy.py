@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, is_dataclass
 from typing import TYPE_CHECKING, Any
 
-from syrupy.extensions import AmberSnapshotExtension
-from syrupy.extensions.amber import AmberDataSerializer
+from syrupy.extensions.amber import AmberDataSerializer, AmberSnapshotExtension
 
 if TYPE_CHECKING:
     from syrupy.types import (

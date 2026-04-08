@@ -5,14 +5,17 @@ from collections.abc import AsyncGenerator
 import pytest
 from aiohttp import ClientSession
 from syrupy.assertion import SnapshotAssertion
+
 from pyportainer import Portainer
 
 from .syrupy import PortainerSnapshotExtension
+
 
 @pytest.fixture(name="snapshot")
 def snapshot_assertion(snapshot: SnapshotAssertion) -> SnapshotAssertion:
     """Return snapshot assertion fixture with the Portainer extension."""
     return snapshot.use_extension(PortainerSnapshotExtension)
+
 
 @pytest.fixture(name="portainer_client")
 async def client() -> AsyncGenerator[Portainer, None]:
