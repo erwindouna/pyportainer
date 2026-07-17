@@ -9,6 +9,8 @@ from mashumaro import field_options
 from mashumaro.mixins.orjson import DataClassORJSONMixin
 from mashumaro.types import SerializationStrategy
 
+from pyportainer.models.docker import DockerHealthStatus  # noqa: TC001
+
 
 # Custom serialization strategy for Optional[int] fields that may be empty string
 class OptionalIntStringNoneStrategy(SerializationStrategy):
@@ -39,7 +41,7 @@ class HealthLog(DataClassORJSONMixin):
 class Health(DataClassORJSONMixin):
     """Represents the health status of a Docker container."""
 
-    status: str | None = field(default=None, metadata=field_options(alias="Status"))
+    status: DockerHealthStatus | None = field(default=None, metadata=field_options(alias="Status"))
     failing_streak: int | None = field(default=None, metadata=field_options(alias="FailingStreak"))
     log: list[HealthLog] | None = field(default=None, metadata=field_options(alias="Log"))
 
