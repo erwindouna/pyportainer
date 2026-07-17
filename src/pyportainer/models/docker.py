@@ -22,6 +22,15 @@ class DockerContainerState(StrEnum):
     DEAD = "dead"
 
 
+class DockerHealthStatus(StrEnum):
+    """Possible health states of a Docker container."""
+
+    NONE = "none"
+    STARTING = "starting"
+    HEALTHY = "healthy"
+    UNHEALTHY = "unhealthy"
+
+
 class EndpointStatus(IntEnum):
     """Portainer endpoint status."""
 

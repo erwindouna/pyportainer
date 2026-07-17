@@ -735,7 +735,7 @@
             'start': '2020-01-04T10:44:24.496525531Z',
           }),
         ]),
-        'status': 'healthy',
+        'status': <DockerHealthStatus.HEALTHY: 'healthy'>,
       }),
       'oom_killed': False,
       'paused': False,
