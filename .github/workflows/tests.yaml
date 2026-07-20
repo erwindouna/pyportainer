@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v7
       - name: 🏗 Set up Python ${{ matrix.python }}
         id: python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python }}
       - name: 📦 Cache uv
@@ -64,7 +64,7 @@ jobs:
         uses: actions/download-artifact@v8.0.1
       - name: 🏗 Set up Python ${{ env.DEFAULT_PYTHON }}
         id: python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ env.DEFAULT_PYTHON }}
       - name: 📦 Cache uv
