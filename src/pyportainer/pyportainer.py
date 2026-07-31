@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import socket
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -39,6 +40,8 @@ from pyportainer.models.docker import (
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
 from pyportainer.models.stacks import Stack
+
+_LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -641,7 +644,20 @@ class Portainer:
         local, remote = await asyncio.gather(
             self.get_image(endpoint_id, image),
             self.get_image_information(endpoint_id, image),
+            return_exceptions=True,
         )
+
+        if isinstance(local, BaseException):
+            raise local
+        if isinstance(remote, BaseException):
+            raise remote
+        if isinstance(remote, PortainerConnectionError) and isinstance(remote.__cause__, ClientResponseError) and remote.__cause__.status == 403:
+            _LOGGER.debug("No registry access for image %s on endpoint %s; skipping update check", image, endpoint_id)
+            local_digest = next(
+                (digest.partition("@")[2] for digest in (local.repo_digests or []) if "@" in digest),
+                None,
+            )
+            return PortainerImageUpdateStatus(update_available=False, local_digest=local_digest, registry_digest=None)
 
         registry_digest = remote.descriptor.digest if remote.descriptor else None
         local_digest = next(
