@@ -125,6 +125,7 @@ async def on_result(result: PortainerImageWatcherResult) -> None:
         # Follow up with an async action, e.g. send a notification
         await notify(result.container_id)
 
+
 watcher.register_callback(on_result)
 ```
 
