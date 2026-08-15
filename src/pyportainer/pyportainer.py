@@ -29,7 +29,6 @@ from pyportainer.models.docker import (
     DockerContainerCPUStats,
     DockerContainerStats,
     DockerDFType,
-    DockerEvent,
     DockerImagePruneResponse,
     DockerSystemDF,
     DockerVolume,
@@ -38,6 +37,7 @@ from pyportainer.models.docker import (
     PortainerImageUpdateStatus,
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
+from pyportainer.models.event import DockerEvent
 from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
 from pyportainer.models.stacks import Stack
 
@@ -45,6 +45,9 @@ _LOGGER = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
+
+    from aiohttp import ClientResponse
+
 
 try:
     VERSION = metadata.version(__package__)
@@ -207,27 +210,22 @@ class Portainer:
 
         return await response.json()
 
-    async def _stream_request(
+    async def _open_stream(
         self,
         uri: str,
         *,
         params: dict[str, Any] | None = None,
-    ) -> AsyncGenerator[dict[str, Any], None]:
-        """Open a persistent streaming connection and yield JSON events as they arrive.
-
-        Unlike :meth:`_request`, this method does not buffer the full response.
-        The connection remains open until cancelled or the server closes it.
-        The connection-establishment step is subject to the normal request timeout;
-        the ongoing stream is not time-limited.
+    ) -> tuple[ClientResponse, URL]:
+        """Establish a streaming connection and return the response and its URL.
 
         Args:
         ----
             uri: Request URI, without '/api/'.
             params: Query parameters to include in the request.
 
-        Yields:
-        ------
-            Parsed JSON objects, one per newline-delimited event.
+        Returns:
+        -------
+            A tuple of the open response and the URL it was requested from.
 
         Raises:
         ------
@@ -280,6 +278,39 @@ class Portainer:
             msg = f"Unexpected error connecting to {url}: {err}"
             raise PortainerConnectionError(msg) from err
 
+        return response, url
+
+    async def _stream_request(
+        self,
+        uri: str,
+        *,
+        params: dict[str, Any] | None = None,
+    ) -> AsyncGenerator[dict[str, Any], None]:
+        """Open a persistent streaming connection and yield JSON events as they arrive.
+
+        Unlike :meth:`_request`, this method does not buffer the full response.
+        The connection remains open until cancelled or the server closes it.
+        The connection-establishment step is subject to the normal request timeout;
+        the ongoing stream is not time-limited.
+
+        Args:
+        ----
+            uri: Request URI, without '/api/'.
+            params: Query parameters to include in the request.
+
+        Yields:
+        ------
+            Parsed JSON objects, one per newline-delimited event.
+
+        Raises:
+        ------
+            PortainerTimeoutError: If the connection cannot be established within the timeout.
+            PortainerAuthenticationError: If the API key is invalid.
+            PortainerConnectionError: On network errors.
+
+        """
+        response, url = await self._open_stream(uri, params=params)
+
         try:
             buffer = b""
             async for chunk in response.content:
@@ -287,8 +318,20 @@ class Portainer:
                 while b"\n" in buffer:
                     line, buffer = buffer.split(b"\n", 1)
                     stripped = line.strip()
-                    if stripped:
+                    if not stripped:
+                        continue
+                    try:
                         yield json.loads(stripped)
+                    except json.JSONDecodeError as err:
+                        _LOGGER.debug("Skipping malformed event line from %s: %s", url, err)
+                        msg = f"Malformed JSON event from {url}: {err}"
+                        raise PortainerError(msg) from err
+        except TimeoutError as err:
+            msg = f"Timeout while streaming from {url}: {err}"
+            raise PortainerTimeoutError(msg) from err
+        except (ClientError, socket.gaierror) as err:
+            msg = f"Connection lost while streaming from {url}: {err}"
+            raise PortainerConnectionError(msg) from err
         finally:
             response.release()
 
@@ -303,7 +346,7 @@ class Portainer:
         """Stream Docker events from an endpoint in real time.
 
         Opens a persistent connection to the Docker events endpoint and yields
-        :class:`~pyportainer.models.docker.DockerEvent` objects as they are emitted.
+        :class:`~pyportainer.models.event.DockerEvent` objects as they are emitted.
         When ``until`` is provided the Docker daemon closes the connection once
         all matching events have been sent, making this suitable for bounded
         queries as well as infinite streams.
@@ -320,7 +363,7 @@ class Portainer:
 
         Yields:
         ------
-            :class:`~pyportainer.models.docker.DockerEvent` objects.
+            :class:`~pyportainer.models.event.DockerEvent` objects.
 
         """
         params: dict[str, Any] = {}
@@ -364,7 +407,7 @@ class Portainer:
 
         Returns:
         -------
-            A list of :class:`~pyportainer.models.docker.DockerEvent` objects,
+            A list of :class:`~pyportainer.models.event.DockerEvent` objects,
             ordered as received from the Docker daemon.
 
         """

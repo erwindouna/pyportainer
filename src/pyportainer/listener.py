@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
 
 if TYPE_CHECKING:
-    from pyportainer.models.docker import DockerEvent
+    from pyportainer.models.event import DockerEvent
     from pyportainer.pyportainer import Portainer
 
 
@@ -163,17 +163,19 @@ class PortainerEventListener:
                     endpoint_id,
                 )
                 return
-            except PortainerTimeoutError:
+            except PortainerTimeoutError as err:
                 _LOGGER.warning(
-                    "Timeout on endpoint %s, reconnecting in %ss",
+                    "Timeout on endpoint %s, reconnecting in %ss: %s",
                     endpoint_id,
                     self._reconnect_interval.total_seconds(),
+                    err,
                 )
-            except PortainerConnectionError:
+            except PortainerConnectionError as err:
                 _LOGGER.warning(
-                    "Connection lost on endpoint %s, reconnecting in %ss",
+                    "Connection lost on endpoint %s, reconnecting in %ss: %s",
                     endpoint_id,
                     self._reconnect_interval.total_seconds(),
+                    err,
                 )
             except PortainerError:
                 _LOGGER.exception(
@@ -184,16 +186,57 @@ class PortainerEventListener:
 
             await asyncio.sleep(self._reconnect_interval.total_seconds())
 
+    async def _resolve_endpoint_ids(self) -> list[int]:
+        """Resolve the list of endpoint IDs to listen to.
+
+        Returns
+        -------
+            The list of endpoint IDs to listen to.
+
+        """
+        if self._endpoint_id is not None:
+            return [self._endpoint_id]
+
+        _LOGGER.debug("No endpoint_id specified, fetching all endpoints to listen to.")
+        while True:
+            try:
+                endpoints = await self._portainer.get_endpoints()
+            except PortainerTimeoutError as err:
+                _LOGGER.warning(
+                    "Timeout fetching endpoints, retrying in %ss: %s",
+                    self._reconnect_interval.total_seconds(),
+                    err,
+                )
+            except PortainerConnectionError as err:
+                _LOGGER.warning(
+                    "Connection error fetching endpoints, retrying in %ss: %s",
+                    self._reconnect_interval.total_seconds(),
+                    err,
+                )
+            else:
+                return [endpoint.id for endpoint in endpoints]
+
+            await asyncio.sleep(self._reconnect_interval.total_seconds())
+
     async def _run(self) -> None:
         """Resolve endpoints and open a streaming connection to each.
 
-        Runs all per-endpoint listeners concurrently via :func:`asyncio.gather`.
-        """
-        if self._endpoint_id is not None:
-            endpoint_ids: list[int] = [self._endpoint_id]
-        else:
-            _LOGGER.debug("No endpoint_id specified, fetching all endpoints to listen to.")
-            endpoints = await self._portainer.get_endpoints()
-            endpoint_ids = [endpoint.id for endpoint in endpoints]
+        Endpoint discovery (when no explicit ``endpoint_id`` was supplied)
+        retries indefinitely on transient errors; see
+        :meth:`_resolve_endpoint_ids`.
 
-        await asyncio.gather(*(self._listen_with_reconnect(ep_id) for ep_id in endpoint_ids))
+        """
+        endpoint_ids = await self._resolve_endpoint_ids()
+
+        results = await asyncio.gather(
+            *(self._listen_with_reconnect(ep_id) for ep_id in endpoint_ids),
+            return_exceptions=True,
+        )
+
+        for endpoint_id, result in zip(endpoint_ids, results, strict=True):
+            if isinstance(result, BaseException):
+                _LOGGER.error(
+                    "Listener for endpoint %s terminated unexpectedly",
+                    endpoint_id,
+                    exc_info=result,
+                )

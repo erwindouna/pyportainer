@@ -13,7 +13,7 @@ import pytest
 from aiohttp.web import Request, Response
 from aresponses import ResponsesMockServer
 
-from pyportainer.exceptions import PortainerError
+from pyportainer.exceptions import PortainerAuthenticationError, PortainerError
 from pyportainer.listener import PortainerEventListener, PortainerEventListenerResult
 from tests import load_fixtures
 
@@ -31,6 +31,22 @@ def _events_response(aresponses: ResponsesMockServer, *, status: int = 200, body
     aresponses.add(
         "localhost:9000",
         f"/api/endpoints/{ENDPOINT_ID}/docker/events",
+        "GET",
+        aresponses.Response(
+            status=status,
+            headers={"Content-Type": "application/json"},
+            text=body,
+        ),
+    )
+
+
+def _endpoints_response(aresponses: ResponsesMockServer, *, status: int = 200, body: str | None = None) -> None:
+    """Register a mock response for the endpoints listing endpoint."""
+    if body is None:
+        body = load_fixtures("endpoints.json")
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints",
         "GET",
         aresponses.Response(
             status=status,
@@ -352,3 +368,85 @@ async def test_event_listener_event_type_filter(
     assert len(received_params) == 1
     assert "filters" in received_params[0]
     assert "container" in received_params[0]
+
+
+async def test_resolve_endpoint_ids_explicit_skips_api_call(
+    portainer_client: Portainer,
+) -> None:
+    """Test that _resolve_endpoint_ids returns the given endpoint_id without calling the API."""
+    listener = PortainerEventListener(portainer_client, endpoint_id=ENDPOINT_ID)
+
+    assert await listener._resolve_endpoint_ids() == [ENDPOINT_ID]
+
+
+async def test_resolve_endpoint_ids_retries_on_connection_error(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that _resolve_endpoint_ids retries after a connection error and then succeeds."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints",
+        "GET",
+        aresponses.Response(text="Error response", status=500),
+    )
+    _endpoints_response(aresponses)
+
+    listener = PortainerEventListener(
+        portainer_client,
+        reconnect_interval=timedelta(seconds=0),
+    )
+
+    with caplog.at_level(logging.WARNING):
+        endpoint_ids = await listener._resolve_endpoint_ids()
+
+    assert endpoint_ids == [ENDPOINT_ID]
+    assert "retrying" in caplog.text.lower()
+
+
+async def test_resolve_endpoint_ids_auth_error_propagates(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that an authentication error from endpoint discovery is not retried."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints",
+        "GET",
+        aresponses.Response(text="Unauthorized", status=401),
+    )
+
+    listener = PortainerEventListener(portainer_client)
+
+    with pytest.raises(PortainerAuthenticationError):
+        await listener._resolve_endpoint_ids()
+
+
+async def test_run_isolates_endpoint_failure(
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that one endpoint's listener failing does not stop or cancel the others."""
+    completed: list[int] = []
+
+    async def fake_resolve_endpoint_ids() -> list[int]:
+        return [ENDPOINT_ID, 2]
+
+    async def fake_listen_with_reconnect(endpoint_id: int) -> None:
+        if endpoint_id == 2:
+            msg = "boom"
+            raise RuntimeError(msg)
+        await asyncio.sleep(0)
+        completed.append(endpoint_id)
+
+    listener = PortainerEventListener(portainer_client)
+    listener._resolve_endpoint_ids = fake_resolve_endpoint_ids  # type: ignore[method-assign]
+    listener._listen_with_reconnect = fake_listen_with_reconnect  # type: ignore[method-assign]
+
+    with caplog.at_level(logging.ERROR):
+        await listener._run()
+
+    assert completed == [ENDPOINT_ID]
+    assert "endpoint 2" in caplog.text.lower()
+    assert "terminated unexpectedly" in caplog.text.lower()
