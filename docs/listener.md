@@ -159,7 +159,7 @@ listener.unregister_callback(on_event)
 ### Stopping and restarting
 
 ```python
-listener.stop()   # Cancels all streaming connections
+listener.stop()  # Cancels all streaming connections
 listener.start()  # Reconnects and starts listening again
 ```
 

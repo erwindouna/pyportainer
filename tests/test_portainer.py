@@ -18,7 +18,8 @@ from pyportainer.exceptions import (
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
-from pyportainer.models.docker import DockerContainer, DockerEvent
+from pyportainer.models.docker import DockerContainer
+from pyportainer.models.event import DockerEvent
 from tests import load_fixtures
 
 
