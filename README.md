@@ -182,7 +182,7 @@ if __name__ == "__main__":
 | `reconnect_interval` | `timedelta`         | 5 seconds | How long to wait before reconnecting after a dropped connection |
 | `debug`              | `bool`              | `False`   | Enable debug-level logging                                      |
 
-Connections are automatically re-established after transient errors. Authentication errors stop the listener for the affected endpoint without retrying.
+Connections are automatically re-established after transient errors (timeouts, dropped connections, malformed events). Authentication errors stop the listener for the affected endpoint without retrying, but other endpoints keep running. See [Error handling](https://erwindouna.github.io/pyportainer/listener/#error-handling) in the full docs for the exact exception-by-exception behaviour, including how to handle errors yourself when calling `get_events` directly.
 
 ### Querying past events
 
