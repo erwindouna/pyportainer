@@ -5,11 +5,12 @@
 ## How it works
 
 1. On `start()`, a background asyncio task is created.
-2. The task resolves which endpoints to listen to (all, or a specific one).
-3. One persistent HTTP streaming connection is opened per endpoint, concurrently.
+2. The task resolves which endpoints to listen to (all, or a specific one). If no `endpoint_id` was given, `get_endpoints()` is called to discover them; on a timeout or connection error this retries indefinitely, waiting `reconnect_interval` between attempts, so a Portainer instance that isn't reachable yet at startup doesn't prevent the listener from eventually coming up.
+3. One persistent HTTP streaming connection is opened per endpoint, concurrently, via `asyncio.gather`.
 4. Each incoming Docker event is parsed and delivered to registered callbacks immediately.
-5. If a connection drops (network error, server restart), it is automatically re-established after `reconnect_interval`.
+5. If a connection drops (network error, server restart) or a malformed event is received, it is automatically re-established after `reconnect_interval`. See [Error handling](#error-handling) for exactly which errors trigger a reconnect.
 6. Authentication errors are treated as fatal for that endpoint — no retry is attempted.
+7. Endpoints are isolated from one another: each runs its own reconnect loop, so one endpoint hitting a fatal error (e.g. bad credentials) does not stop streaming from the others. If a per-endpoint task terminates unexpectedly, it is logged with a full traceback rather than propagating out of `start()`.
 
 ## Basic usage
 
@@ -170,6 +171,49 @@ from datetime import timedelta
 
 listener._reconnect_interval = timedelta(seconds=30)
 ```
+
+## Error handling
+
+All errors raised while streaming are subclasses of `PortainerError` (see `pyportainer.exceptions`):
+
+| Exception                       | Raised when                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| `PortainerAuthenticationError`   | The API key is rejected (HTTP 401), either when opening the stream or when discovering endpoints |
+| `PortainerTimeoutError`          | The connection cannot be established, or the request times out, within the configured request timeout |
+| `PortainerConnectionError`       | The connection is lost mid-stream, or a network error occurs (DNS failure, reset connection, etc.) |
+| `PortainerError`                 | A generic streaming failure — currently only raised when a line from the event stream fails to parse as JSON |
+
+### Inside `PortainerEventListener`
+
+`PortainerEventListener` catches these internally so a caller normally never sees them; how each is handled depends on the exception:
+
+- **`PortainerAuthenticationError`** is fatal for the affected endpoint. It is logged with `_LOGGER.exception` (full traceback) and that endpoint's listen loop returns — it will not be retried. Other endpoints keep running unaffected.
+- **`PortainerTimeoutError`** and **`PortainerConnectionError`** are treated as transient. A warning is logged including the error message, then the loop waits `reconnect_interval` before reopening the stream.
+- **Any other `PortainerError`** (for example, a malformed JSON event line) is also treated as transient: it is logged with a full traceback and the connection is retried after `reconnect_interval`.
+- The same timeout/connection-error handling applies to endpoint discovery in `_resolve_endpoint_ids` when `endpoint_id` is `None` — see [How it works](#how-it-works).
+- Exceptions that aren't `PortainerError` subclasses (unexpected bugs, cancellation aside) are not caught by the reconnect loop. They propagate out of that endpoint's task, are collected by `asyncio.gather(..., return_exceptions=True)`, and logged as an error with a traceback — they do not crash the other endpoints' listeners or `start()` itself.
+
+None of this requires any handling on your part when using `PortainerEventListener` — it's documented here so you know what to expect in the logs, and can tune `reconnect_interval` accordingly.
+
+### Calling `get_events` / `get_recent_events` directly
+
+Unlike `PortainerEventListener`, the raw `get_events` and `get_recent_events` methods do **not** catch or retry on these errors — they propagate to the caller, since there's no reconnect policy to apply on your behalf. Wrap them yourself if you need resilience:
+
+```python
+from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
+
+try:
+    async for event in portainer.get_events(endpoint_id=1):
+        print(event.type, event.action)
+except PortainerAuthenticationError:
+    print("Invalid API key")
+except (PortainerTimeoutError, PortainerConnectionError) as err:
+    print(f"Stream interrupted, consider reconnecting: {err}")
+except PortainerError as err:
+    print(f"Streaming error: {err}")
+```
+
+A `PortainerError` here most commonly means a single event line could not be parsed as JSON; the stream is not resumable after this — reopen it by calling `get_events` again if you want to keep listening.
 
 ## Querying events directly
 
