@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import random
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from datetime import timedelta
@@ -20,6 +21,9 @@ _LOGGER = logging.getLogger(__name__)
 
 EventListenerCallback = Callable[["PortainerEventListenerResult"], Awaitable[None] | None]
 
+#: Key used to track endpoint-discovery retries, which aren't tied to an endpoint ID.
+_DISCOVERY_KEY = "__endpoint_discovery__"
+
 
 @dataclass(frozen=True)
 class PortainerEventListenerResult:
@@ -34,7 +38,8 @@ class PortainerEventListener:
 
     One streaming connection is opened per endpoint. Events are delivered to
     registered callbacks as they arrive, in real time. If a connection drops,
-    it is automatically re-established after ``reconnect_interval``.
+    it is automatically re-established after ``reconnect_interval``, with the
+    delay doubling on each consecutive failure up to ``max_reconnect_interval``.
     """
 
     def __init__(  # pylint: disable=too-many-arguments,too-many-instance-attributes
@@ -44,6 +49,7 @@ class PortainerEventListener:
         *,
         event_types: list[str] | None = None,
         reconnect_interval: timedelta = timedelta(seconds=5),
+        max_reconnect_interval: timedelta = timedelta(minutes=5),
         debug: bool = False,
     ) -> None:
         """Initialize the PortainerEventListener.
@@ -56,19 +62,27 @@ class PortainerEventListener:
             event_types: Docker event types to filter on, e.g.
                 ``["container", "image"]``. If None, all event types are
                 delivered.
-            reconnect_interval: How long to wait before reconnecting after a
-                dropped connection. Defaults to 5 seconds.
-            debug: Enable debug logging.
+            reconnect_interval: How long to wait before the first reconnect
+                attempt after a dropped connection. Defaults to 5 seconds. The
+                delay doubles on each consecutive failure.
+            max_reconnect_interval: Upper bound on the reconnect delay.
+                Defaults to 5 minutes.
+            debug: Raise this logger's level to DEBUG. Logging is otherwise
+                left entirely to the application; the level configured by the
+                caller is never lowered or overwritten.
 
         """
         self._portainer = portainer
         self._endpoint_id = endpoint_id
         self._event_types = event_types
         self._reconnect_interval = reconnect_interval
+        self._max_reconnect_interval = max_reconnect_interval
         self._task: asyncio.Task[None] | None = None
         self._callbacks: list[EventListenerCallback] = []
+        self._failures: dict[int | str, int] = {}
 
-        _LOGGER.setLevel(logging.DEBUG if debug else logging.INFO)
+        if debug:
+            _LOGGER.setLevel(logging.DEBUG)
 
     def start(self) -> None:
         """Start listening for Docker events.
@@ -129,6 +143,43 @@ class PortainerEventListener:
                     result.endpoint_id,
                 )
 
+    async def _backoff(self, key: int | str, message: str, err: Exception, *, exc_info: bool = False) -> None:
+        """Log a failed attempt and sleep out the reconnect delay.
+
+        The delay doubles with each consecutive failure on ``key``, capped at
+        ``max_reconnect_interval``, with a little jitter so several endpoints
+        failing at once don't all retry in lockstep. Only the first failure of
+        a streak is logged at warning level; the rest are logged at debug
+        level so a persistently unreachable endpoint doesn't flood the log.
+
+        Args:
+        ----
+            key: Endpoint ID, or :data:`_DISCOVERY_KEY` for endpoint discovery.
+            message: What went wrong, e.g. ``"Timeout on endpoint 5"``.
+            err: The exception that ended the attempt.
+            exc_info: Whether to log a traceback with the first warning.
+
+        """
+        failures = self._failures.get(key, 0) + 1
+        self._failures[key] = failures
+
+        base = self._reconnect_interval.total_seconds()
+        ceiling = max(base, self._max_reconnect_interval.total_seconds())
+        delay = min(base * 2 ** (failures - 1), ceiling) * random.uniform(0.8, 1.0)  # noqa: S311 - jitter, not security
+
+        verb = "retrying" if key == _DISCOVERY_KEY else "reconnecting"
+        if failures == 1:
+            _LOGGER.warning("%s, %s in %.1fs: %s", message, verb, delay, err, exc_info=exc_info)
+        else:
+            _LOGGER.debug("%s, %s in %.1fs (attempt %d): %s", message, verb, delay, failures, err)
+
+        await asyncio.sleep(delay)
+
+    def _reset_failures(self, key: int | str) -> None:
+        """Clear a failure streak, e.g. after a successful reconnect."""
+        if self._failures.pop(key, None):
+            _LOGGER.info("Recovered on %s after previous failures", "endpoint discovery" if key == _DISCOVERY_KEY else f"endpoint {key}")
+
     async def _listen(self, endpoint_id: int) -> None:
         """Stream events from a single endpoint and fire callbacks for each.
 
@@ -139,6 +190,7 @@ class PortainerEventListener:
         """
         filters = {"type": self._event_types} if self._event_types else None
         async for event in self._portainer.get_events(endpoint_id, filters=filters):
+            self._reset_failures(endpoint_id)
             result = PortainerEventListenerResult(endpoint_id=endpoint_id, event=event)
             await self._fire_callbacks(result)
 
@@ -147,7 +199,8 @@ class PortainerEventListener:
 
         Authentication errors are treated as fatal and stop the listener for
         that endpoint. All other :class:`~pyportainer.exceptions.PortainerError`
-        subclasses trigger a reconnect after ``reconnect_interval``.
+        subclasses trigger a reconnect after a backoff delay; see
+        :meth:`_backoff` for the backoff and log-throttling policy.
 
         Args:
         ----
@@ -164,27 +217,11 @@ class PortainerEventListener:
                 )
                 return
             except PortainerTimeoutError as err:
-                _LOGGER.warning(
-                    "Timeout on endpoint %s, reconnecting in %ss: %s",
-                    endpoint_id,
-                    self._reconnect_interval.total_seconds(),
-                    err,
-                )
+                await self._backoff(endpoint_id, f"Timeout on endpoint {endpoint_id}", err)
             except PortainerConnectionError as err:
-                _LOGGER.warning(
-                    "Connection lost on endpoint %s, reconnecting in %ss: %s",
-                    endpoint_id,
-                    self._reconnect_interval.total_seconds(),
-                    err,
-                )
-            except PortainerError:
-                _LOGGER.exception(
-                    "Error on endpoint %s, reconnecting in %ss",
-                    endpoint_id,
-                    self._reconnect_interval.total_seconds(),
-                )
-
-            await asyncio.sleep(self._reconnect_interval.total_seconds())
+                await self._backoff(endpoint_id, f"Connection lost on endpoint {endpoint_id}", err)
+            except PortainerError as err:
+                await self._backoff(endpoint_id, f"Error on endpoint {endpoint_id}", err, exc_info=True)
 
     async def _resolve_endpoint_ids(self) -> list[int]:
         """Resolve the list of endpoint IDs to listen to.
@@ -202,21 +239,12 @@ class PortainerEventListener:
             try:
                 endpoints = await self._portainer.get_endpoints()
             except PortainerTimeoutError as err:
-                _LOGGER.warning(
-                    "Timeout fetching endpoints, retrying in %ss: %s",
-                    self._reconnect_interval.total_seconds(),
-                    err,
-                )
+                await self._backoff(_DISCOVERY_KEY, "Timeout fetching endpoints", err)
             except PortainerConnectionError as err:
-                _LOGGER.warning(
-                    "Connection error fetching endpoints, retrying in %ss: %s",
-                    self._reconnect_interval.total_seconds(),
-                    err,
-                )
+                await self._backoff(_DISCOVERY_KEY, "Connection error fetching endpoints", err)
             else:
+                self._reset_failures(_DISCOVERY_KEY)
                 return [endpoint.id for endpoint in endpoints]
-
-            await asyncio.sleep(self._reconnect_interval.total_seconds())
 
     async def _run(self) -> None:
         """Resolve endpoints and open a streaming connection to each.

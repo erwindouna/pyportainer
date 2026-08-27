@@ -12,7 +12,7 @@ from importlib import metadata
 from typing import TYPE_CHECKING, Any, Self
 from urllib.parse import urlparse
 
-from aiohttp import ClientError, ClientResponseError, ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession, ClientTimeout
 from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST
 from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 from yarl import URL
@@ -60,6 +60,7 @@ class Portainer:
     """Main class for handling connections with the Python Portainer API."""
 
     request_timeout: float = 10.0
+    stream_timeout: float = 30.0
     session: ClientSession | None = None
 
     _close_session: bool = False
@@ -70,6 +71,7 @@ class Portainer:
         api_key: str,
         *,
         request_timeout: float = 10.0,
+        stream_timeout: float = 30.0,
         session: ClientSession | None = None,
         max_retries: int = 3,
     ) -> None:
@@ -79,13 +81,19 @@ class Portainer:
         ----
             api_url: URL of the Portainer API.
             api_key: API key for authentication.
-            request_timeout: Timeout for requests (in seconds).
+            request_timeout: Timeout for regular, bounded requests (in seconds).
+            stream_timeout: Timeout for establishing a streaming connection (in
+                seconds). Streaming endpoints are proxied through to a Docker
+                host that may be slow to respond, so this is more generous than
+                ``request_timeout``. Once established, the stream itself is not
+                time-limited.
             session: Optional aiohttp session to use.
             max_retries: Maximum number of retry attempts on transient errors.
 
         """
         self._api_key = api_key
         self._request_timeout = request_timeout
+        self._stream_timeout = stream_timeout
         self._session = session
         self._max_retries = max_retries
 
@@ -227,6 +235,12 @@ class Portainer:
         -------
             A tuple of the open response and the URL it was requested from.
 
+        The connection-establishment step is bounded by ``stream_timeout``. An
+        explicit :class:`~aiohttp.ClientTimeout` without a ``total`` is passed to
+        the request so the session's default total timeout (300 seconds for a
+        plain :class:`~aiohttp.ClientSession`) cannot tear down a long-lived
+        stream part-way through.
+
         Raises:
         ------
             PortainerTimeoutError: If the connection cannot be established within the timeout.
@@ -252,12 +266,18 @@ class Portainer:
             self._close_session = True
 
         try:
-            async with asyncio.timeout(self._request_timeout):
+            async with asyncio.timeout(self._stream_timeout):
                 response = await self._session.request(
                     METH_GET,
                     url,
                     headers=headers,
                     params=params,
+                    timeout=ClientTimeout(
+                        total=None,
+                        connect=self._stream_timeout,
+                        sock_connect=self._stream_timeout,
+                        sock_read=None,
+                    ),
                 )
                 response.raise_for_status()
         except TimeoutError as err:
@@ -290,7 +310,7 @@ class Portainer:
 
         Unlike :meth:`_request`, this method does not buffer the full response.
         The connection remains open until cancelled or the server closes it.
-        The connection-establishment step is subject to the normal request timeout;
+        The connection-establishment step is subject to ``stream_timeout``;
         the ongoing stream is not time-limited.
 
         Args:
