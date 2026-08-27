@@ -3,10 +3,11 @@
 # pylint: disable=protected-access
 import asyncio
 from datetime import UTC, datetime
+from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from aiohttp import ClientError, ClientResponseError, ClientSession
+from aiohttp import ClientError, ClientResponseError, ClientSession, ClientTimeout
 from aiohttp.web import Request
 from aresponses import ResponsesMockServer
 
@@ -571,3 +572,76 @@ async def test_get_events_with_filters(
     assert "filters" in received_params[0]
     # The filter values should be URL-encoded in the query string
     assert "container" in received_params[0]
+
+
+async def test_open_stream_disables_the_session_total_timeout(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test that streams opt out of the session's total timeout.
+
+    aiohttp's default ClientTimeout has ``total=300``, which covers reading the
+    response body too — so without an explicit per-request timeout every Docker
+    event stream would be torn down after five minutes.
+    """
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/events",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("docker_event.json"),
+        ),
+    )
+
+    captured: list[ClientTimeout] = []
+
+    async with ClientSession(timeout=ClientTimeout(total=1)) as session:
+        original_request = session.request
+
+        def capturing_request(*args: Any, **kwargs: Any) -> Any:
+            captured.append(kwargs["timeout"])
+            return original_request(*args, **kwargs)
+
+        async with Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            stream_timeout=42.0,
+        ) as client:
+            with patch.object(session, "request", capturing_request):
+                async for _ in client.get_events(1):
+                    pass
+
+    assert len(captured) == 1
+    assert captured[0].total is None
+    assert captured[0].connect == 42.0
+    assert captured[0].sock_read is None
+
+
+async def test_open_stream_uses_stream_timeout_not_request_timeout(
+    aresponses: ResponsesMockServer,
+) -> None:
+    """Test that establishing a stream is bounded by stream_timeout."""
+
+    async def slow_handler(request: Request) -> aresponses.Response:  # noqa: ARG001  # pylint: disable=unused-argument
+        """Take longer to respond than the stream timeout allows."""
+        await asyncio.sleep(0.5)
+        return aresponses.Response(status=200, text="{}")
+
+    aresponses.add("localhost:9000", "/api/endpoints/1/docker/events", "GET", slow_handler)
+
+    async with (
+        ClientSession() as session,
+        Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            # Deliberately inverted: only stream_timeout should govern here.
+            request_timeout=30.0,
+            stream_timeout=0.05,
+        ) as client,
+    ):
+        with pytest.raises(PortainerTimeoutError):
+            async for _ in client.get_events(1):
+                pass

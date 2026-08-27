@@ -13,15 +13,64 @@ import pytest
 from aiohttp.web import Request, Response
 from aresponses import ResponsesMockServer
 
-from pyportainer.exceptions import PortainerAuthenticationError, PortainerError
+from pyportainer.exceptions import PortainerAuthenticationError, PortainerError, PortainerTimeoutError
 from pyportainer.listener import PortainerEventListener, PortainerEventListenerResult
 from tests import load_fixtures
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from pyportainer import Portainer
 
 ENDPOINT_ID = 1
 CONTAINER_ID = "aa86eacfb3b3ed4cd362c1e88fc89a53908ad05fb3a4103bca3f9b28292d14bf"
+
+
+async def _drive_failing_listener(
+    listener: PortainerEventListener,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    attempts: int,
+) -> list[float]:
+    """Run ``_listen_with_reconnect`` against an endpoint that always fails.
+
+    Sleeps are replaced by a recorder so the backoff can be asserted on without
+    the test actually waiting, and the loop is cancelled once ``attempts``
+    reconnects have been scheduled.
+
+    Returns
+    -------
+        The delay, in seconds, that was waited before each reconnect.
+
+    """
+    delays: list[float] = []
+    real_sleep = asyncio.sleep
+
+    async def failing_listen(_endpoint_id: int) -> None:
+        msg = "Timeout error while connecting"
+        raise PortainerTimeoutError(msg)
+
+    async def recording_sleep(seconds: float, *args: object, **kwargs: object) -> None:
+        delays.append(seconds)
+        # Yield control so the surrounding task stays cancellable.
+        await real_sleep(0, *args, **kwargs)
+
+    listener._listen = failing_listen  # type: ignore[assignment]
+    monkeypatch.setattr(asyncio, "sleep", recording_sleep)
+
+    task = asyncio.create_task(listener._listen_with_reconnect(ENDPOINT_ID))
+    while len(delays) < attempts:
+        await real_sleep(0)
+    task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await task
+
+    return delays
+
+
+def _levels_for(caplog: pytest.LogCaptureFixture, needle: str) -> list[int]:
+    """Return the levels of the captured listener records mentioning ``needle``."""
+    return [record.levelno for record in caplog.records if needle in record.getMessage()]
 
 
 def _events_response(aresponses: ResponsesMockServer, *, status: int = 200, body: str | None = None) -> None:
@@ -450,3 +499,110 @@ async def test_run_isolates_endpoint_failure(
     assert completed == [ENDPOINT_ID]
     assert "endpoint 2" in caplog.text.lower()
     assert "terminated unexpectedly" in caplog.text.lower()
+
+
+async def test_reconnect_delay_backs_off_and_clamps(
+    portainer_client: Portainer,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test that the reconnect delay doubles per failure and stops at max_reconnect_interval."""
+    listener = PortainerEventListener(
+        portainer_client,
+        endpoint_id=ENDPOINT_ID,
+        reconnect_interval=timedelta(seconds=1),
+        max_reconnect_interval=timedelta(seconds=8),
+    )
+
+    delays = await _drive_failing_listener(listener, monkeypatch, attempts=6)
+
+    # 1s, 2s, 4s, then clamped at 8s, each with 20% jitter applied.
+    assert 0.8 <= delays[0] < 1
+    assert 1.6 <= delays[1] < 2
+    assert 3.2 <= delays[2] < 4
+    for delay in delays[3:]:
+        assert 6.4 <= delay < 8
+
+
+async def test_repeated_failures_warn_once_then_drop_to_debug(
+    portainer_client: Portainer,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that an endpoint failing over and over only warns once (this is issue #180351)."""
+    listener = PortainerEventListener(
+        portainer_client,
+        endpoint_id=ENDPOINT_ID,
+        reconnect_interval=timedelta(seconds=1),
+        # High enough that the ceiling is never reached during this test.
+        max_reconnect_interval=timedelta(hours=1),
+    )
+
+    with caplog.at_level(logging.DEBUG, logger="pyportainer.listener"):
+        await _drive_failing_listener(listener, monkeypatch, attempts=5)
+
+    levels = _levels_for(caplog, f"Timeout on endpoint {ENDPOINT_ID}")
+    assert levels == [logging.WARNING, logging.DEBUG, logging.DEBUG, logging.DEBUG, logging.DEBUG]
+
+
+async def test_reconnect_logs_recovery_and_resets_streak(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that a stream recovering after failures logs one info line and clears the streak."""
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/{ENDPOINT_ID}/docker/events",
+        "GET",
+        aresponses.Response(text="Error response", status=500),
+    )
+    _events_response(aresponses)
+
+    listener = PortainerEventListener(
+        portainer_client,
+        endpoint_id=ENDPOINT_ID,
+        reconnect_interval=timedelta(seconds=0),
+    )
+
+    with caplog.at_level(logging.INFO, logger="pyportainer.listener"):
+        task = asyncio.create_task(listener._listen_with_reconnect(ENDPOINT_ID))
+        await asyncio.sleep(0.1)
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+
+    assert f"Recovered on endpoint {ENDPOINT_ID}" in caplog.text
+
+
+@pytest.fixture(name="preserve_listener_log_level")
+def _preserve_listener_log_level() -> Generator[None, None, None]:
+    """Restore the listener logger's level after a test changes it."""
+    logger = logging.getLogger("pyportainer.listener")
+    original = logger.level
+    yield
+    logger.setLevel(original)
+
+
+@pytest.mark.usefixtures("preserve_listener_log_level")
+@pytest.mark.parametrize(
+    ("debug", "expected"),
+    [(False, logging.ERROR), (True, logging.DEBUG)],
+)
+def test_listener_never_lowers_the_configured_log_level(
+    portainer_client: Portainer,
+    *,
+    debug: bool,
+    expected: int,
+) -> None:
+    """Test that constructing a listener doesn't undo the application's logger configuration.
+
+    Home Assistant configures logger levels at startup, well before a config
+    entry builds the listener, so overwriting the level here is what stopped
+    users from silencing the flood reported in issue #180351.
+    """
+    logger = logging.getLogger("pyportainer.listener")
+    logger.setLevel(logging.ERROR)
+
+    PortainerEventListener(portainer_client, endpoint_id=ENDPOINT_ID, debug=debug)
+
+    assert logger.level == expected

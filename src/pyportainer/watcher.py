@@ -53,6 +53,9 @@ class PortainerImageWatcher:
             portainer: An authenticated Portainer client instance.
             endpoint_id: The ID of the endpoint whose containers to monitor. If None, all endpoints are monitored.
             interval: How often to poll for updates. Defaults to 12 hours.
+            debug: Raise this logger's level to DEBUG. Logging is otherwise left
+                entirely to the application; the level configured by the caller
+                is never lowered or overwritten.
 
         """
         self._portainer = portainer
@@ -63,7 +66,8 @@ class PortainerImageWatcher:
         self._last_check: float | None = None
         self._callbacks: list[WatcherCallback] = []
 
-        _LOGGER.setLevel(logging.DEBUG if debug else logging.INFO)
+        if debug:
+            _LOGGER.setLevel(logging.DEBUG)
 
     @property
     def interval(self) -> timedelta:

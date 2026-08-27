@@ -15,6 +15,8 @@ from pyportainer.watcher import PortainerImageWatcher, PortainerImageWatcherResu
 from tests import load_fixtures
 
 if TYPE_CHECKING:
+    from collections.abc import Generator
+
     from pyportainer import Portainer
 
 IMAGE = "docker.io/library/ubuntu:latest"
@@ -385,3 +387,32 @@ async def test_image_watcher_callback_exception_logged(
 
     assert watcher.results  # Results still populated despite callback failure
     assert "Callback raised an exception" in caplog.text
+
+
+@pytest.fixture(name="preserve_watcher_log_level")
+def _preserve_watcher_log_level() -> Generator[None, None, None]:
+    """Restore the watcher logger's level after a test changes it."""
+    logger = logging.getLogger("pyportainer.watcher")
+    original = logger.level
+    yield
+    logger.setLevel(original)
+
+
+@pytest.mark.usefixtures("preserve_watcher_log_level")
+@pytest.mark.parametrize(
+    ("debug", "expected"),
+    [(False, logging.ERROR), (True, logging.DEBUG)],
+)
+def test_watcher_never_lowers_the_configured_log_level(
+    portainer_client: Portainer,
+    *,
+    debug: bool,
+    expected: int,
+) -> None:
+    """Test that constructing a watcher doesn't undo the application's logger configuration."""
+    logger = logging.getLogger("pyportainer.watcher")
+    logger.setLevel(logging.ERROR)
+
+    PortainerImageWatcher(portainer_client, endpoint_id=1, debug=debug)
+
+    assert logger.level == expected
