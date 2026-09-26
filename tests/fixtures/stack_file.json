@@ -1,0 +1,3 @@
+{
+  "StackFileContent": "services:\n  web:\n    image: nginx:latest\n"
+}

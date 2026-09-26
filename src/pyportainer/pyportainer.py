@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Self
 from urllib.parse import urlparse
 
 from aiohttp import ClientError, ClientResponseError, ClientSession, ClientTimeout
-from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST
+from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST, METH_PUT
 from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_exponential
 from yarl import URL
 
@@ -39,7 +39,7 @@ from pyportainer.models.docker import (
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.event import DockerEvent
 from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
-from pyportainer.models.stacks import Stack
+from pyportainer.models.stacks import Stack, StackType
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -1072,6 +1072,83 @@ class Portainer:
             timeout=timeout.total_seconds(),
         )
         return Stack.from_dict(stack)
+
+    async def get_stack_file(self, stack_id: int) -> str:
+        """Get the content of a stack's stack file.
+
+        Args:
+        ----
+            stack_id: The ID of the stack.
+
+        Returns:
+        -------
+            The stack file (for example a compose file) as text.
+
+        """
+        response = await self._request(f"stacks/{stack_id}/file")
+        return str(response["StackFileContent"])
+
+    async def update_stack(
+        self,
+        endpoint_id: int,
+        stack_id: int,
+        *,
+        pull_image: bool = True,
+        prune: bool | None = None,
+        timeout: timedelta = timedelta(minutes=5),
+    ) -> Stack:
+        """Redeploy a stack, pulling the latest images first by default.
+
+        Git-based stacks are redeployed from their repository. Other stacks are
+        redeployed from their current stack file with their current environment
+        variables, as Portainer replaces those with whatever an update sends.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            stack_id: The ID of the stack.
+            pull_image: Whether to pull the latest images before redeploying.
+            prune: Whether to remove services no longer in the stack file.
+                Defaults to the stack's own prune setting.
+            timeout: The timeout for redeploying the stack.
+
+        Returns:
+        -------
+            Updated stack details.
+
+        Raises:
+        ------
+            PortainerError: For Kubernetes stacks, which Portainer updates differently.
+
+        """
+        stack = await self.get_stack(stack_id)
+        if stack.stack_type == StackType.KUBERNETES:
+            msg = f"Updating Kubernetes stack {stack_id} is not supported"
+            raise PortainerError(msg)
+
+        # Portainer 2.36 renamed PullImage to RepullImageAndRedeploy; it still accepts both.
+        json_body: dict[str, Any] = {
+            "RepullImageAndRedeploy": pull_image,
+            "PullImage": pull_image,
+        }
+        if stack.git_config is not None:
+            uri = f"stacks/{stack_id}/git/redeploy"
+            if prune is not None:
+                json_body["Prune"] = prune
+        else:
+            uri = f"stacks/{stack_id}"
+            json_body["StackFileContent"] = await self.get_stack_file(stack_id)
+            json_body["Env"] = [{"name": env.name, "value": env.value} for env in stack.env or []]
+            json_body["Prune"] = prune if prune is not None else bool(stack.option and stack.option.prune)
+
+        response = await self._request(
+            uri,
+            method=METH_PUT,
+            params={"endpointId": endpoint_id},
+            json_body=json_body,
+            timeout=timeout.total_seconds(),
+        )
+        return Stack.from_dict(response)
 
     async def delete_stack(
         self,

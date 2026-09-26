@@ -557,3 +557,101 @@
     'updated_by': 'admin',
   })
 # ---
+# name: test_update_stack_file_based[defaults]
+  dict({
+    'additional_files': None,
+    'auto_update': None,
+    'created_by': 'admin',
+    'creation_date': 1704067200,
+    'endpoint_id': 1,
+    'entry_point': 'docker-compose.yml',
+    'env': list([
+      dict({
+        'name': 'NODE_ENV',
+        'value': 'production',
+      }),
+      dict({
+        'name': 'PORT',
+        'value': '3000',
+      }),
+    ]),
+    'from_app_template': False,
+    'git_config': None,
+    'id': 1,
+    'name': 'my-web-app',
+    'namespace': '',
+    'option': dict({
+      'prune': False,
+    }),
+    'project_path': '/data/compose/my-web-app',
+    'resource_control': dict({
+      'administrators_only': False,
+      'id': 1,
+      'owner_id': None,
+      'public': False,
+      'resource_id': '1_my-web-app',
+      'sub_resource_ids': list([
+      ]),
+      'system': False,
+      'team_accesses': list([
+      ]),
+      'type': 6,
+      'user_accesses': list([
+      ]),
+    }),
+    'status': 1,
+    'swarm_id': '',
+    'type': 2,
+    'update_date': 1704153600,
+    'updated_by': 'admin',
+  })
+# ---
+# name: test_update_stack_file_based[overrides]
+  dict({
+    'additional_files': None,
+    'auto_update': None,
+    'created_by': 'admin',
+    'creation_date': 1704067200,
+    'endpoint_id': 1,
+    'entry_point': 'docker-compose.yml',
+    'env': list([
+      dict({
+        'name': 'NODE_ENV',
+        'value': 'production',
+      }),
+      dict({
+        'name': 'PORT',
+        'value': '3000',
+      }),
+    ]),
+    'from_app_template': False,
+    'git_config': None,
+    'id': 1,
+    'name': 'my-web-app',
+    'namespace': '',
+    'option': dict({
+      'prune': False,
+    }),
+    'project_path': '/data/compose/my-web-app',
+    'resource_control': dict({
+      'administrators_only': False,
+      'id': 1,
+      'owner_id': None,
+      'public': False,
+      'resource_id': '1_my-web-app',
+      'sub_resource_ids': list([
+      ]),
+      'system': False,
+      'team_accesses': list([
+      ]),
+      'type': 6,
+      'user_accesses': list([
+      ]),
+    }),
+    'status': 1,
+    'swarm_id': '',
+    'type': 2,
+    'update_date': 1704153600,
+    'updated_by': 'admin',
+  })
+# ---
