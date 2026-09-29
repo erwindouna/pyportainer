@@ -1241,7 +1241,8 @@ class Portainer:
         stats = await self.container_stats(endpoint_id, container_id, stream=False)
 
         docker_stats = DockerContainerCPUStats()
-        num_cpus = len(stats.cpu_stats.cpu_usage.percpu_usage) if stats.cpu_stats.cpu_usage.percpu_usage else 1
+        # cgroup v2 hosts don't report percpu_usage, so prefer online_cpus like the Docker CLI.
+        num_cpus = stats.cpu_stats.online_cpus or len(stats.cpu_stats.cpu_usage.percpu_usage) or 1
 
         if self._prev_container_stats is not None and (prev_stats := self._prev_container_stats.get((endpoint_id, container_id))):
             docker_stats.container_prev_stats = prev_stats
@@ -1256,9 +1257,9 @@ class Portainer:
                 if cpu_delta > 0:
                     docker_stats.cpu_system_percentage = cpu_delta * scale
                 if cpu_kernel_delta > 0:
-                    docker_stats.cpu_kernel_percentage = (cpu_kernel_delta + cpu_user_delta) * scale
+                    docker_stats.cpu_kernel_percentage = cpu_kernel_delta * scale
                 if cpu_user_delta > 0:
-                    docker_stats.cpu_user_percentage = (cpu_user_delta + cpu_kernel_delta) * scale
+                    docker_stats.cpu_user_percentage = cpu_user_delta * scale
 
         docker_stats.cpu_system_usage = float(stats.cpu_stats.system_cpu_usage)
         docker_stats.online_cpus = stats.cpu_stats.online_cpus
