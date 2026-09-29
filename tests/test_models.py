@@ -313,6 +313,34 @@ async def test_container_image_status_up_to_date(
     assert status == snapshot
 
 
+async def test_container_image_status_no_registry_access(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
+) -> None:
+    """Test container_image_status when Portainer has no access to the image registry."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/distribution/nginx:latest/json",
+        "GET",
+        aresponses.Response(status=403),
+        repeat=aresponses.INFINITY,
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
+    assert status == snapshot
+
+
 async def test_portainer_volumes(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
