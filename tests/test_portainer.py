@@ -321,11 +321,12 @@ async def test_image_recreate(
     portainer_client: Portainer,
 ) -> None:
     """Test recreating an image."""
-    aresponses.add(
-        "localhost:9000",
-        "/api/endpoints/1/docker/images/create",
-        "POST",
-        aresponses.Response(
+    received_images: list[list[str]] = []
+
+    async def capturing_handler(request: Request) -> aresponses.Response:
+        """Capture the fromImage query params and return the pull progress."""
+        received_images.append(request.query.getall("fromImage"))
+        return aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
             text="""
@@ -333,11 +334,18 @@ async def test_image_recreate(
                 {"status": "Digest: sha256:09a24f05e110e53e213a340b22e5d3c8cdab12ff9be6775388c71b140255c54c"}
                 {"status": "Status: Image is up to date for adguard/adguardhome:latest"}
             """,
-        ),
+        )
+
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/create",
+        "POST",
+        capturing_handler,
     )
     response = await portainer_client.image_recreate(1, "adguard/adguardhome:latest")
     assert isinstance(response, list)
     assert response[0]["status"] == "Pulling from adguard/adguardhome"
+    assert received_images == [["adguard/adguardhome:latest"]]
 
 
 async def test_container_recreate_helper(
