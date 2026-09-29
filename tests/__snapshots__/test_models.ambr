@@ -140,7 +140,7 @@
     'online_cpus': 4,
   })
 # ---
-# name: test_get_container_cpu_usage_with_percentage
+# name: test_get_container_cpu_usage_with_percentage[cgroup_v1]
   dict({
     'container_prev_stats': dict({
       'blkio_stats': dict({
@@ -358,11 +358,222 @@
       'preread': '',
       'read': '2015-01-08T22:57:32.547920715Z',
     }),
-    'cpu_kernel_percentage': 0.01,
+    'cpu_kernel_percentage': 0.003,
     'cpu_kernel_usage': 60000000.0,
     'cpu_system_percentage': 0.0400216355,
     'cpu_system_usage': 743306590000000.0,
-    'cpu_user_percentage': 0.01,
+    'cpu_user_percentage': 0.007,
+    'cpu_user_usage': 120000000.0,
+    'online_cpus': 4,
+  })
+# ---
+# name: test_get_container_cpu_usage_with_percentage[cgroup_v2]
+  dict({
+    'container_prev_stats': dict({
+      'blkio_stats': dict({
+      }),
+      'cpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+          ]),
+          'total_usage': 100215355,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 739306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'memory_stats': dict({
+        'failcnt': 0,
+        'limit': 67108864,
+        'max_usage': 6651904,
+        'stats': dict({
+          'active_anon': 6537216,
+          'active_file': 0,
+          'cache': 0,
+          'hierarchical_memory_limit': 67108864,
+          'inactive_anon': 0,
+          'inactive_file': 0,
+          'mapped_file': 0,
+          'pgfault': 964,
+          'pgmajfault': 0,
+          'pgpgin': 477,
+          'pgpgout': 414,
+          'rss': 6537216,
+          'rss_huge': 6291456,
+          'total_active_anon': 6537216,
+          'total_active_file': 0,
+          'total_cache': 0,
+          'total_inactive_anon': 0,
+          'total_inactive_file': 0,
+          'total_mapped_file': 0,
+          'total_pgfault': 964,
+          'total_pgmajfault': 0,
+          'total_pgpgin': 477,
+          'total_pgpgout': 414,
+          'total_rss': 6537216,
+          'total_rss_huge': 6291456,
+          'total_unevictable': 0,
+          'total_writeback': 0,
+          'unevictable': 0,
+          'writeback': 0,
+        }),
+        'usage': 6537216,
+      }),
+      'networks': dict({
+        'eth0': dict({
+          'rx_bytes': 5338,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 36,
+          'tx_bytes': 648,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 8,
+        }),
+        'eth5': dict({
+          'rx_bytes': 4641,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 26,
+          'tx_bytes': 690,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 9,
+        }),
+      }),
+      'pids_stats': dict({
+        'current': 3,
+      }),
+      'precpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+          ]),
+          'total_usage': 100093996,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 9492140000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'preread': '',
+      'read': '2015-01-08T22:57:31.547920715Z',
+    }),
+    'container_stats': dict({
+      'blkio_stats': dict({
+      }),
+      'cpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+          ]),
+          'total_usage': 500431710,
+          'usage_in_kernelmode': 60000000,
+          'usage_in_usermode': 120000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 743306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'memory_stats': dict({
+        'failcnt': 0,
+        'limit': 67108864,
+        'max_usage': 6651904,
+        'stats': dict({
+          'active_anon': 6537216,
+          'active_file': 0,
+          'cache': 0,
+          'hierarchical_memory_limit': 67108864,
+          'inactive_anon': 0,
+          'inactive_file': 0,
+          'mapped_file': 0,
+          'pgfault': 964,
+          'pgmajfault': 0,
+          'pgpgin': 477,
+          'pgpgout': 414,
+          'rss': 6537216,
+          'rss_huge': 6291456,
+          'total_active_anon': 6537216,
+          'total_active_file': 0,
+          'total_cache': 0,
+          'total_inactive_anon': 0,
+          'total_inactive_file': 0,
+          'total_mapped_file': 0,
+          'total_pgfault': 964,
+          'total_pgmajfault': 0,
+          'total_pgpgin': 477,
+          'total_pgpgout': 414,
+          'total_rss': 6537216,
+          'total_rss_huge': 6291456,
+          'total_unevictable': 0,
+          'total_writeback': 0,
+          'unevictable': 0,
+          'writeback': 0,
+        }),
+        'usage': 6537216,
+      }),
+      'networks': dict({
+        'eth0': dict({
+          'rx_bytes': 5338,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 36,
+          'tx_bytes': 648,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 8,
+        }),
+        'eth5': dict({
+          'rx_bytes': 4641,
+          'rx_dropped': 0,
+          'rx_errors': 0,
+          'rx_packets': 26,
+          'tx_bytes': 690,
+          'tx_dropped': 0,
+          'tx_errors': 0,
+          'tx_packets': 9,
+        }),
+      }),
+      'pids_stats': dict({
+        'current': 3,
+      }),
+      'precpu_stats': dict({
+        'cpu_usage': dict({
+          'percpu_usage': list([
+          ]),
+          'total_usage': 100215355,
+          'usage_in_kernelmode': 30000000,
+          'usage_in_usermode': 50000000,
+        }),
+        'online_cpus': 4,
+        'system_cpu_usage': 739306590000000,
+        'throttling_data': dict({
+          'periods': 0,
+          'throttled_periods': 0,
+          'throttled_time': 0,
+        }),
+      }),
+      'preread': '',
+      'read': '2015-01-08T22:57:32.547920715Z',
+    }),
+    'cpu_kernel_percentage': 0.003,
+    'cpu_kernel_usage': 60000000.0,
+    'cpu_system_percentage': 0.0400216355,
+    'cpu_system_usage': 743306590000000.0,
+    'cpu_user_percentage': 0.007,
     'cpu_user_usage': 120000000.0,
     'online_cpus': 4,
   })

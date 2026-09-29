@@ -485,10 +485,19 @@ async def test_get_container_cpu_usage(
     assert cpu_usage == snapshot
 
 
+@pytest.mark.parametrize(
+    ("first", "second"),
+    [
+        pytest.param("container_stats.json", "container_stats_2.json", id="cgroup_v1"),
+        pytest.param("container_stats_cgroupv2.json", "container_stats_cgroupv2_2.json", id="cgroup_v2"),
+    ],
+)
 async def test_get_container_cpu_usage_with_percentage(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
     portainer_client: Portainer,
+    first: str,
+    second: str,
 ) -> None:
     """Test that CPU percentages are calculated correctly on the second call."""
     aresponses.add(
@@ -498,7 +507,7 @@ async def test_get_container_cpu_usage_with_percentage(
         aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
-            text=load_fixtures("container_stats.json"),
+            text=load_fixtures(first),
         ),
     )
     aresponses.add(
@@ -508,7 +517,7 @@ async def test_get_container_cpu_usage_with_percentage(
         aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
-            text=load_fixtures("container_stats_2.json"),
+            text=load_fixtures(second),
         ),
     )
 
