@@ -1768,6 +1768,15 @@
     'virtual_size': 1239828,
   })
 # ---
+# name: test_portainer_prune_build_cache
+  dict({
+    'caches_deleted': list([
+      'hbrl3u5qgw8x0nvm2k4a6c9d1',
+      'sk7j2p9x4t1q8w3e6r0y5u2i7',
+    ]),
+    'space_reclaimed': 734003200,
+  })
+# ---
 # name: test_portainer_system_df
   dict({
     'build_cache_disk_usage': dict({
