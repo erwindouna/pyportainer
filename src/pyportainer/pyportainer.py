@@ -907,14 +907,14 @@ class Portainer:
             The response from the Portainer API.
 
         """
-        params: dict[str, Any] = {"dangling": str(dangling).lower()}
+        filters: dict[str, list[str]] = {"dangling": [str(dangling).lower()]}
         if until is not None:
-            params["until"] = int((datetime.now(UTC) - until).timestamp())
+            filters["until"] = [str(int((datetime.now(UTC) - until).timestamp()))]
 
         response = await self._request(
             f"endpoints/{endpoint_id}/docker/images/prune",
             method="POST",
-            params=params,
+            params={"filters": json.dumps(filters)},
         )
 
         return DockerImagePruneResponse.from_dict(response)
@@ -1215,14 +1215,15 @@ class Portainer:
         Args:
         ----
             endpoint_id: The ID of the endpoint.
-            all_volumes: Set to True to prune all volumes, not just unused ones.
+            all_volumes: Set to True to also prune unused named volumes, not just anonymous ones.
 
         Returns:
         -------
             The response from the Portainer API.
 
         """
-        params = {"endpointId": endpoint_id, "all": str(all_volumes).lower()}
+        # Docker API < 1.42 rejects the "all" filter, so only send it when needed.
+        params = {"filters": json.dumps({"all": ["true"]})} if all_volumes else None
         return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
 
     async def get_container_cpu_usage(self, endpoint_id: int, container_id: str) -> DockerContainerCPUStats:
