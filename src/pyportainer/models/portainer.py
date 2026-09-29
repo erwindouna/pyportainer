@@ -22,6 +22,31 @@ class KubernetesSnapshot(DataClassORJSONMixin):
 
 
 @dataclass
+class DockerSnapshot(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attributes
+    """Represents a Docker snapshot of an endpoint, taken by Portainer at every snapshot interval."""
+
+    time: int | None = field(default=None, metadata=field_options(alias="Time"))
+    docker_version: str | None = field(default=None, metadata=field_options(alias="DockerVersion"))
+    swarm: bool | None = field(default=None, metadata=field_options(alias="Swarm"))
+    total_cpu: int | None = field(default=None, metadata=field_options(alias="TotalCPU"))
+    total_memory: int | None = field(default=None, metadata=field_options(alias="TotalMemory"))
+    container_count: int | None = field(default=None, metadata=field_options(alias="ContainerCount"))
+    running_container_count: int | None = field(default=None, metadata=field_options(alias="RunningContainerCount"))
+    stopped_container_count: int | None = field(default=None, metadata=field_options(alias="StoppedContainerCount"))
+    healthy_container_count: int | None = field(default=None, metadata=field_options(alias="HealthyContainerCount"))
+    unhealthy_container_count: int | None = field(default=None, metadata=field_options(alias="UnhealthyContainerCount"))
+    volume_count: int | None = field(default=None, metadata=field_options(alias="VolumeCount"))
+    image_count: int | None = field(default=None, metadata=field_options(alias="ImageCount"))
+    service_count: int | None = field(default=None, metadata=field_options(alias="ServiceCount"))
+    stack_count: int | None = field(default=None, metadata=field_options(alias="StackCount"))
+    node_count: int | None = field(default=None, metadata=field_options(alias="NodeCount"))
+    gpu_use_all: bool | None = field(default=None, metadata=field_options(alias="GpuUseAll"))
+    gpu_use_list: list[str] | None = field(default=None, metadata=field_options(alias="GpuUseList"))
+    is_podman: bool | None = field(default=None, metadata=field_options(alias="IsPodman"))
+    diagnostics_data: dict[str, Any] | None = field(default=None, metadata=field_options(alias="DiagnosticsData"))
+
+
+@dataclass
 class TLSConfig(DataClassORJSONMixin):
     """Represents TLS configuration."""
 
@@ -89,7 +114,7 @@ class Endpoint(DataClassORJSONMixin):  # pylint: disable=too-many-instance-attri
     kubernetes: dict[str, Any] | None = field(default=None, metadata=field_options(alias="Kubernetes"))
     name: str | None = field(default=None, metadata=field_options(alias="Name"))
     public_url: str | None = field(default=None, metadata=field_options(alias="PublicURL"))
-    snapshots: list[dict[str, Any]] | None = field(default=None, metadata=field_options(alias="Snapshots"))
+    snapshots: list[DockerSnapshot] | None = field(default=None, metadata=field_options(alias="Snapshots"))
     status: int | None = field(default=None, metadata=field_options(alias="Status"))
     tls: bool | None = field(default=None, metadata=field_options(alias="TLS"))
     tls_ca_cert: str | None = field(default=None, metadata=field_options(alias="TLSCACert"))

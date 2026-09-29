@@ -99,7 +99,7 @@
     "PublicURL": "docker.mydomain.tld:2375",
     "Snapshots": [
       {
-        "ContainerCount": 0,
+        "ContainerCount": 12,
         "DiagnosticsData": {
           "DNS": {
             "additionalProp1": "string",
@@ -119,25 +119,25 @@
           }
         },
         "DockerSnapshotRaw": {},
-        "DockerVersion": "string",
-        "GpuUseAll": true,
+        "DockerVersion": "27.3.1",
+        "GpuUseAll": false,
         "GpuUseList": [
           "string"
         ],
-        "HealthyContainerCount": 0,
-        "ImageCount": 0,
-        "IsPodman": true,
-        "NodeCount": 0,
-        "RunningContainerCount": 0,
+        "HealthyContainerCount": 4,
+        "ImageCount": 15,
+        "IsPodman": false,
+        "NodeCount": 1,
+        "RunningContainerCount": 10,
         "ServiceCount": 0,
-        "StackCount": 0,
-        "StoppedContainerCount": 0,
-        "Swarm": true,
-        "Time": 0,
-        "TotalCPU": 0,
-        "TotalMemory": 0,
-        "UnhealthyContainerCount": 0,
-        "VolumeCount": 0
+        "StackCount": 3,
+        "StoppedContainerCount": 2,
+        "Swarm": false,
+        "Time": 1735732800,
+        "TotalCPU": 4,
+        "TotalMemory": 8254468096,
+        "UnhealthyContainerCount": 1,
+        "VolumeCount": 8
       }
     ],
     "Status": 1,
