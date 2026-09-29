@@ -457,12 +457,11 @@ class Portainer:
         return [Endpoint.from_dict(endpoint) for endpoint in endpoints]
 
     async def get_containers(self, endpoint_id: int) -> list[DockerContainer]:
-        """Get the list of containers from the Portainer API.
+        """Get all containers, including stopped ones, from the Portainer API.
 
         Args:
         ----
             endpoint_id: The ID of the endpoint to get containers from.
-            all: If True, include all containers. If False, only running containers.
 
         Returns:
         -------
