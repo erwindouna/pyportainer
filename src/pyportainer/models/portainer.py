@@ -141,3 +141,40 @@ class PortainerSystemStatus(DataClassORJSONMixin):
 
     instance_id: str | None = field(default=None, metadata=field_options(alias="InstanceID"))
     version: str | None = field(default=None, metadata=field_options(alias="Version"))
+
+
+@dataclass
+class PortainerBuildInfo(DataClassORJSONMixin):
+    """Represents the build information of Portainer."""
+
+    build_number: str | None = field(default=None, metadata=field_options(alias="BuildNumber"))
+    image_tag: str | None = field(default=None, metadata=field_options(alias="ImageTag"))
+    git_commit: str | None = field(default=None, metadata=field_options(alias="GitCommit"))
+    go_version: str | None = field(default=None, metadata=field_options(alias="GoVersion"))
+
+
+@dataclass
+class PortainerDependenciesInfo(DataClassORJSONMixin):
+    """Represents the versions of the tools bundled with Portainer."""
+
+    docker_version: str | None = field(default=None, metadata=field_options(alias="DockerVersion"))
+    compose_version: str | None = field(default=None, metadata=field_options(alias="ComposeVersion"))
+    helm_version: str | None = field(default=None, metadata=field_options(alias="HelmVersion"))
+    kubectl_version: str | None = field(default=None, metadata=field_options(alias="KubectlVersion"))
+
+
+@dataclass
+class PortainerSystemVersion(DataClassORJSONMixin):
+    """Represents the version of Portainer and whether an update is available.
+
+    Portainer only sets latest_version when a newer version exists; otherwise it is an empty string.
+    """
+
+    update_available: bool = field(default=False, metadata=field_options(alias="UpdateAvailable"))
+    latest_version: str | None = field(default=None, metadata=field_options(alias="LatestVersion"))
+    server_version: str | None = field(default=None, metadata=field_options(alias="ServerVersion"))
+    server_edition: str | None = field(default=None, metadata=field_options(alias="ServerEdition"))
+    version_support: str | None = field(default=None, metadata=field_options(alias="VersionSupport"))
+    database_version: str | None = field(default=None, metadata=field_options(alias="DatabaseVersion"))
+    build: PortainerBuildInfo | None = field(default=None, metadata=field_options(alias="Build"))
+    dependencies: PortainerDependenciesInfo | None = field(default=None, metadata=field_options(alias="Dependencies"))

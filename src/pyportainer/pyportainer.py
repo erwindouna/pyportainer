@@ -38,7 +38,7 @@ from pyportainer.models.docker import (
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.event import DockerEvent
-from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
+from pyportainer.models.portainer import Endpoint, PortainerSystemStatus, PortainerSystemVersion
 from pyportainer.models.stacks import Stack, StackType
 
 _LOGGER = logging.getLogger(__name__)
@@ -969,6 +969,20 @@ class Portainer:
         status = await self._request("system/status")
 
         return PortainerSystemStatus.from_dict(status)
+
+    async def portainer_system_version(self) -> PortainerSystemVersion:
+        """Get the version of the Portainer instance and whether an update is available.
+
+        Portainer looks up the latest release on GitHub on every call, so don't poll this often.
+
+        Returns
+        -------
+            A PortainerSystemVersion object with the version data.
+
+        """
+        version = await self._request("system/version")
+
+        return PortainerSystemVersion.from_dict(version)
 
     async def get_stacks(
         self,

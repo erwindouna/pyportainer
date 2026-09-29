@@ -157,6 +157,35 @@ async def test_portainer_system_status(
     assert system_status == snapshot
 
 
+@pytest.mark.parametrize(
+    "fixture",
+    [
+        pytest.param("portainer_system_version.json", id="update_available"),
+        pytest.param("portainer_system_version_up_to_date.json", id="up_to_date"),
+    ],
+)
+async def test_portainer_system_version(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+    fixture: str,
+) -> None:
+    """Test the Portainer system version."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/system/version",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures(fixture),
+        ),
+    )
+
+    system_version = await portainer_client.portainer_system_version()
+    assert system_version == snapshot
+
+
 async def test_portainer_container_stats(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
