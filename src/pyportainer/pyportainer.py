@@ -712,8 +712,6 @@ class Portainer:
 
         if isinstance(local, BaseException):
             raise local
-        if isinstance(remote, BaseException):
-            raise remote
         if isinstance(remote, PortainerConnectionError) and isinstance(remote.__cause__, ClientResponseError) and remote.__cause__.status == 403:
             _LOGGER.debug("No registry access for image %s on endpoint %s; skipping update check", image, endpoint_id)
             local_digest = next(
@@ -721,6 +719,8 @@ class Portainer:
                 None,
             )
             return PortainerImageUpdateStatus(update_available=False, local_digest=local_digest, registry_digest=None)
+        if isinstance(remote, BaseException):
+            raise remote
 
         registry_digest = remote.descriptor.digest if remote.descriptor else None
         local_digest = next(
