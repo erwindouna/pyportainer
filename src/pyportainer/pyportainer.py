@@ -764,7 +764,7 @@ class Portainer:
         """
         params = {"fromImage": image_id}
         return await self._request(
-            uri=f"endpoints/{endpoint_id}/docker/images/create?fromImage={image_id}",
+            uri=f"endpoints/{endpoint_id}/docker/images/create",
             timeout=timeout.total_seconds(),
             method="POST",
             params=params,
