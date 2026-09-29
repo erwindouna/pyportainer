@@ -25,6 +25,7 @@ from pyportainer.exceptions import (
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import (
+    DockerBuildCachePruneResponse,
     DockerContainer,
     DockerContainerCPUStats,
     DockerContainerStats,
@@ -1238,6 +1239,30 @@ class Portainer:
         # Docker API < 1.42 rejects the "all" filter, so only send it when needed.
         params = {"filters": json.dumps({"all": ["true"]})} if all_volumes else None
         return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
+
+    async def prune_build_cache(self, endpoint_id: int, *, all_cache: bool = False, until: timedelta | None = None) -> DockerBuildCachePruneResponse:
+        """Prune the Docker build cache on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            all_cache: Set to True to prune all unused build cache, not just dangling cache.
+            until: Only prune build cache that was last used longer ago than this.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params: dict[str, str] = {}
+        if all_cache:
+            params["all"] = "true"
+        if until is not None:
+            params["filters"] = json.dumps({"until": [str(int((datetime.now(UTC) - until).timestamp()))]})
+
+        response = await self._request(f"endpoints/{endpoint_id}/docker/build/prune", method=METH_POST, params=params or None)
+
+        return DockerBuildCachePruneResponse.from_dict(response)
 
     async def get_container_cpu_usage(self, endpoint_id: int, container_id: str) -> DockerContainerCPUStats:
         """Get the current CPU usage percentage for the specified container.

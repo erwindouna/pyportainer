@@ -443,6 +443,57 @@ async def test_portainer_volumes_prune_filters(
     assert captured["query"] == expected_query
 
 
+async def test_portainer_prune_build_cache(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test pruning the build cache."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/build/prune",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("build_cache_prune.json"),
+        ),
+    )
+
+    prune_response = await portainer_client.prune_build_cache(1)
+    assert prune_response == snapshot
+
+
+@freeze_time("2025-01-01 12:00:00+00:00")
+@pytest.mark.parametrize(
+    ("kwargs", "expected_query"),
+    [
+        pytest.param({}, {}, id="dangling"),
+        pytest.param({"all_cache": True}, {"all": "true"}, id="all"),
+        pytest.param({"until": timedelta(hours=24)}, {"filters": '{"until": ["1735646400"]}'}, id="until"),
+    ],
+)
+async def test_portainer_prune_build_cache_filters(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    kwargs: dict[str, Any],
+    expected_query: dict[str, str],
+) -> None:
+    """Test the prune options are sent to Docker."""
+    captured: dict[str, Any] = {}
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/build/prune",
+        "POST",
+        _capture_query(captured, "build_cache_prune.json"),
+        match_querystring=False,
+    )
+
+    await portainer_client.prune_build_cache(1, **kwargs)
+
+    assert captured["query"] == expected_query
+
+
 async def test_portainer_volume_inspect(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
