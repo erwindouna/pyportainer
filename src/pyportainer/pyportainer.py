@@ -31,6 +31,7 @@ from pyportainer.models.docker import (
     DockerContainerStats,
     DockerDFType,
     DockerImagePruneResponse,
+    DockerNetworkPruneResponse,
     DockerSystemDF,
     DockerVolume,
     ImageInformation,
@@ -1253,6 +1254,27 @@ class Portainer:
         # Docker API < 1.42 rejects the "all" filter, so only send it when needed.
         params = {"filters": json.dumps({"all": ["true"]})} if all_volumes else None
         return await self._request(f"endpoints/{endpoint_id}/docker/volumes/prune", method=METH_POST, params=params)
+
+    async def prune_networks(self, endpoint_id: int, *, until: timedelta | None = None) -> DockerNetworkPruneResponse:
+        """Prune unused networks on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            until: Only prune networks created longer ago than this.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params = None
+        if until is not None:
+            params = {"filters": json.dumps({"until": [str(int((datetime.now(UTC) - until).timestamp()))]})}
+
+        response = await self._request(f"endpoints/{endpoint_id}/docker/networks/prune", method=METH_POST, params=params)
+
+        return DockerNetworkPruneResponse.from_dict(response)
 
     async def prune_build_cache(self, endpoint_id: int, *, all_cache: bool = False, until: timedelta | None = None) -> DockerBuildCachePruneResponse:
         """Prune the Docker build cache on the specified endpoint.

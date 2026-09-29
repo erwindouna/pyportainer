@@ -523,6 +523,56 @@ async def test_portainer_prune_build_cache_filters(
     assert captured["query"] == expected_query
 
 
+async def test_portainer_prune_networks(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test pruning networks."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/networks/prune",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("networks_prune.json"),
+        ),
+    )
+
+    prune_response = await portainer_client.prune_networks(1)
+    assert prune_response == snapshot
+
+
+@freeze_time("2025-01-01 12:00:00+00:00")
+@pytest.mark.parametrize(
+    ("kwargs", "expected_query"),
+    [
+        pytest.param({}, {}, id="default"),
+        pytest.param({"until": timedelta(hours=24)}, {"filters": '{"until": ["1735646400"]}'}, id="until"),
+    ],
+)
+async def test_portainer_prune_networks_filters(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    kwargs: dict[str, Any],
+    expected_query: dict[str, str],
+) -> None:
+    """Test the prune options are sent to Docker."""
+    captured: dict[str, Any] = {}
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/networks/prune",
+        "POST",
+        _capture_query(captured, "networks_prune.json"),
+        match_querystring=False,
+    )
+
+    await portainer_client.prune_networks(1, **kwargs)
+
+    assert captured["query"] == expected_query
+
+
 async def test_portainer_volume_inspect(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
