@@ -1768,6 +1768,14 @@
     'virtual_size': 1239828,
   })
 # ---
+# name: test_portainer_prune_networks
+  dict({
+    'networks_deleted': list([
+      'old_project_default',
+      'test_network',
+    ]),
+  })
+# ---
 # name: test_portainer_system_df
   dict({
     'build_cache_disk_usage': dict({

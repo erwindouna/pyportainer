@@ -360,6 +360,13 @@ class DockerImagePruneResponse(DataClassORJSONMixin):
 
 
 @dataclass
+class DockerNetworkPruneResponse(DataClassORJSONMixin):
+    """Represents the response from pruning Docker networks."""
+
+    networks_deleted: list[str] | None = field(default_factory=list, metadata=field_options(alias="NetworksDeleted"))
+
+
+@dataclass
 class DockerSystemDFAttribute(DataClassORJSONMixin):
     """Represents Docker system disk usage attribute."""
 
