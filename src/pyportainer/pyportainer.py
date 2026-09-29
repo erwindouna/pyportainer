@@ -25,6 +25,7 @@ from pyportainer.exceptions import (
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import (
+    DockerBuildCachePruneResponse,
     DockerContainer,
     DockerContainerCPUStats,
     DockerContainerStats,
@@ -39,7 +40,7 @@ from pyportainer.models.docker import (
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.event import DockerEvent
-from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
+from pyportainer.models.portainer import Endpoint, PortainerSystemStatus, PortainerSystemVersion
 from pyportainer.models.stacks import Stack, StackType
 
 _LOGGER = logging.getLogger(__name__)
@@ -971,6 +972,20 @@ class Portainer:
 
         return PortainerSystemStatus.from_dict(status)
 
+    async def portainer_system_version(self) -> PortainerSystemVersion:
+        """Get the version of the Portainer instance and whether an update is available.
+
+        Portainer looks up the latest release on GitHub on every call, so don't poll this often.
+
+        Returns
+        -------
+            A PortainerSystemVersion object with the version data.
+
+        """
+        version = await self._request("system/version")
+
+        return PortainerSystemVersion.from_dict(version)
+
     async def get_stacks(
         self,
         endpoint_id: int | None = None,
@@ -1260,6 +1275,30 @@ class Portainer:
         response = await self._request(f"endpoints/{endpoint_id}/docker/networks/prune", method=METH_POST, params=params)
 
         return DockerNetworkPruneResponse.from_dict(response)
+
+    async def prune_build_cache(self, endpoint_id: int, *, all_cache: bool = False, until: timedelta | None = None) -> DockerBuildCachePruneResponse:
+        """Prune the Docker build cache on the specified endpoint.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            all_cache: Set to True to prune all unused build cache, not just dangling cache.
+            until: Only prune build cache that was last used longer ago than this.
+
+        Returns:
+        -------
+            The response from the Portainer API.
+
+        """
+        params: dict[str, str] = {}
+        if all_cache:
+            params["all"] = "true"
+        if until is not None:
+            params["filters"] = json.dumps({"until": [str(int((datetime.now(UTC) - until).timestamp()))]})
+
+        response = await self._request(f"endpoints/{endpoint_id}/docker/build/prune", method=METH_POST, params=params or None)
+
+        return DockerBuildCachePruneResponse.from_dict(response)
 
     async def get_container_cpu_usage(self, endpoint_id: int, container_id: str) -> DockerContainerCPUStats:
         """Get the current CPU usage percentage for the specified container.

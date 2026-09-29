@@ -1768,6 +1768,15 @@
     'virtual_size': 1239828,
   })
 # ---
+# name: test_portainer_prune_build_cache
+  dict({
+    'caches_deleted': list([
+      'hbrl3u5qgw8x0nvm2k4a6c9d1',
+      'sk7j2p9x4t1q8w3e6r0y5u2i7',
+    ]),
+    'space_reclaimed': 734003200,
+  })
+# ---
 # name: test_portainer_prune_networks
   dict({
     'networks_deleted': list([
@@ -1812,6 +1821,50 @@
   dict({
     'instance_id': '299ab403-70a8-4c05-92f7-bf7a994d50df',
     'version': '2.0.0',
+  })
+# ---
+# name: test_portainer_system_version[up_to_date]
+  dict({
+    'build': dict({
+      'build_number': '12345',
+      'git_commit': 'a1b2c3d',
+      'go_version': 'go1.25.1',
+      'image_tag': '2.45.1',
+    }),
+    'database_version': '2.45.1',
+    'dependencies': dict({
+      'compose_version': 'v2.39.2',
+      'docker_version': '28.4.0',
+      'helm_version': 'v3.18.4',
+      'kubectl_version': 'v1.33.2',
+    }),
+    'latest_version': '',
+    'server_edition': 'CE',
+    'server_version': '2.45.1',
+    'update_available': False,
+    'version_support': 'STS',
+  })
+# ---
+# name: test_portainer_system_version[update_available]
+  dict({
+    'build': dict({
+      'build_number': '12345',
+      'git_commit': 'a1b2c3d',
+      'go_version': 'go1.25.1',
+      'image_tag': '2.45.1',
+    }),
+    'database_version': '2.45.1',
+    'dependencies': dict({
+      'compose_version': 'v2.39.2',
+      'docker_version': '28.4.0',
+      'helm_version': 'v3.18.4',
+      'kubectl_version': 'v1.33.2',
+    }),
+    'latest_version': '2.46.0',
+    'server_edition': 'CE',
+    'server_version': '2.45.1',
+    'update_available': True,
+    'version_support': 'STS',
   })
 # ---
 # name: test_portainer_volume_inspect

@@ -360,6 +360,14 @@ class DockerImagePruneResponse(DataClassORJSONMixin):
 
 
 @dataclass
+class DockerBuildCachePruneResponse(DataClassORJSONMixin):
+    """Represents the response from pruning the Docker build cache."""
+
+    caches_deleted: list[str] | None = field(default_factory=list, metadata=field_options(alias="CachesDeleted"))
+    space_reclaimed: int | None = field(default=0, metadata=field_options(alias="SpaceReclaimed"))
+
+
+@dataclass
 class DockerNetworkPruneResponse(DataClassORJSONMixin):
     """Represents the response from pruning Docker networks."""
 
