@@ -190,6 +190,54 @@ async def test_non_retryable_error_does_not_retry() -> None:
 
 
 @pytest.mark.parametrize(
+    ("status_code", "expected_calls"),
+    [
+        (400, 1),
+        (403, 1),
+        (408, 3),
+        (409, 1),
+        (429, 3),
+        (500, 3),
+        (503, 3),
+    ],
+)
+async def test_client_errors_are_not_retried(status_code: int, expected_calls: int) -> None:
+    """Test that 4xx responses are not retried, except 408 and 429, while 5xx responses are."""
+    async with ClientSession() as session:
+        client = Portainer(
+            api_url="http://localhost:9000",
+            api_key="test_api_key",
+            session=session,
+            max_retries=2,
+        )
+        call_count = 0
+
+        error_response = MagicMock()
+        error_response.status = status_code
+        error_response.raise_for_status = MagicMock(side_effect=ClientResponseError(MagicMock(), (), status=status_code))
+
+        async def side_effect(*_args: object, **_kwargs: object) -> MagicMock:
+            nonlocal call_count
+            call_count += 1
+            return error_response
+
+        with (
+            patch.object(session, "request", side_effect=side_effect),
+            patch("asyncio.sleep", new_callable=AsyncMock) as mock_sleep,
+            pytest.raises(PortainerConnectionError) as exc_info,
+        ):
+            await client._request("test")
+
+        assert call_count == expected_calls
+        # Every retry waits for the backoff first.
+        assert mock_sleep.await_count == expected_calls - 1
+        assert isinstance(exc_info.value.__cause__, ClientResponseError)
+        assert exc_info.value.__cause__.status == status_code
+
+        await session.close()
+
+
+@pytest.mark.parametrize(
     ("status_code", "expected_exception"),
     [
         (401, PortainerAuthenticationError),
