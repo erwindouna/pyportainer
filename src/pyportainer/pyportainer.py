@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 
 from aiohttp import ClientError, ClientResponseError, ClientSession, ClientTimeout
 from aiohttp.hdrs import METH_DELETE, METH_GET, METH_POST, METH_PUT
-from tenacity import AsyncRetrying, retry_if_exception_type, stop_after_attempt, wait_exponential
+from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait_exponential
 from yarl import URL
 
 from pyportainer.exceptions import (
@@ -42,6 +42,20 @@ from pyportainer.models.portainer import Endpoint, PortainerSystemStatus
 from pyportainer.models.stacks import Stack, StackType
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _is_retryable(err: BaseException) -> bool:
+    """Return whether a failed request is worth retrying.
+
+    Client errors (4xx) won't succeed on a retry, except request timeouts (408)
+    and rate limits (429). Connection errors, timeouts and server errors (5xx)
+    are retried as well.
+    """
+    if not isinstance(err, (PortainerConnectionError, PortainerTimeoutError)):
+        return False
+    cause = err.__cause__
+    return not (isinstance(cause, ClientResponseError) and 400 <= cause.status < 500 and cause.status not in (408, 429))
+
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator
@@ -159,7 +173,7 @@ class Portainer:
             timeout = self._request_timeout
 
         async for attempt in AsyncRetrying(
-            retry=retry_if_exception_type((PortainerConnectionError, PortainerTimeoutError)),
+            retry=retry_if_exception(_is_retryable),
             wait=wait_exponential(multiplier=1, min=1, max=10),
             stop=stop_after_attempt(self._max_retries + 1),
             reraise=True,
