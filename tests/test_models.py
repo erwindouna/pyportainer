@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import json
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
+from aiohttp.web import Request, Response
 from aresponses import ResponsesMockServer
 from freezegun import freeze_time
 from syrupy.assertion import SnapshotAssertion
@@ -13,8 +15,20 @@ from syrupy.assertion import SnapshotAssertion
 from tests import load_fixtures
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
     from pyportainer import Portainer
     from pyportainer.models.portainer import Endpoint
+
+
+def _capture_query(captured: dict[str, Any], fixture: str) -> Callable[[Request], Awaitable[Response]]:
+    """Return an aresponses handler that records the query string."""
+
+    async def handler(request: Request) -> Response:
+        captured["query"] = dict(request.query)
+        return Response(status=200, content_type="application/json", text=load_fixtures(fixture))
+
+    return handler
 
 
 async def test_portainer_endpoints(
@@ -231,6 +245,44 @@ async def test_portainer_images_prune(
     assert prune_response == snapshot
 
 
+@freeze_time("2025-01-01 12:00:00+00:00")
+@pytest.mark.parametrize(
+    ("kwargs", "expected_filters"),
+    [
+        pytest.param(
+            {"dangling": True, "until": None},
+            {"dangling": ["true"]},
+            id="dangling",
+        ),
+        pytest.param(
+            {"dangling": False, "until": timedelta(hours=1)},
+            {"dangling": ["false"], "until": ["1735729200"]},
+            id="all_until",
+        ),
+    ],
+)
+async def test_portainer_images_prune_filters(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    kwargs: dict[str, Any],
+    expected_filters: dict[str, list[str]],
+) -> None:
+    """Test the prune options are sent as Docker filters."""
+    captured: dict[str, Any] = {}
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/prune",
+        "POST",
+        _capture_query(captured, "docker_image_prune.json"),
+        match_querystring=False,
+    )
+
+    await portainer_client.images_prune(endpoint_id=1, **kwargs)
+
+    assert captured["query"].keys() == {"filters"}
+    assert json.loads(captured["query"]["filters"]) == expected_filters
+
+
 async def test_portainer_system_df(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
@@ -314,6 +366,34 @@ async def test_container_image_status_up_to_date(
     assert status == snapshot
 
 
+async def test_container_image_status_no_registry_access(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
+) -> None:
+    """Test container_image_status when Portainer has no access to the image registry."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/distribution/nginx:latest/json",
+        "GET",
+        aresponses.Response(status=403),
+        repeat=aresponses.INFINITY,
+    )
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
+    assert status == snapshot
+
+
 async def test_portainer_volumes(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
@@ -333,6 +413,34 @@ async def test_portainer_volumes(
 
     volumes = await portainer_client.get_volumes(1)
     assert volumes == snapshot
+
+
+@pytest.mark.parametrize(
+    ("kwargs", "expected_query"),
+    [
+        pytest.param({}, {}, id="anonymous"),
+        pytest.param({"all_volumes": True}, {"filters": '{"all": ["true"]}'}, id="all"),
+    ],
+)
+async def test_portainer_volumes_prune_filters(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    kwargs: dict[str, Any],
+    expected_query: dict[str, str],
+) -> None:
+    """Test the prune options are sent as Docker filters."""
+    captured: dict[str, Any] = {}
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/volumes/prune",
+        "POST",
+        _capture_query(captured, "volumes_prune.json"),
+        match_querystring=False,
+    )
+
+    await portainer_client.prune_volumes(1, **kwargs)
+
+    assert captured["query"] == expected_query
 
 
 async def test_portainer_volume_inspect(
