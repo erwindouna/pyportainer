@@ -19,3 +19,7 @@ class PortainerAuthenticationError(PortainerError):
 
 class PortainerNotFoundError(PortainerError):
     """Exception raised when a resource is not found."""
+
+
+class PortainerImagePullError(PortainerError):
+    """Exception raised when Docker reports an error while pulling an image."""

@@ -21,6 +21,7 @@ from pyportainer.exceptions import (
     PortainerAuthenticationError,
     PortainerConnectionError,
     PortainerError,
+    PortainerImagePullError,
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
@@ -40,6 +41,7 @@ from pyportainer.models.docker import (
 )
 from pyportainer.models.docker_inspect import DockerInfo, DockerInspect, DockerVersion
 from pyportainer.models.event import DockerEvent
+from pyportainer.models.image_pull import DockerImagePullEvent
 from pyportainer.models.portainer import Endpoint, PortainerSystemStatus, PortainerSystemVersion
 from pyportainer.models.stacks import Stack, StackType
 
@@ -238,6 +240,7 @@ class Portainer:
         self,
         uri: str,
         *,
+        method: str = METH_GET,
         params: dict[str, Any] | None = None,
     ) -> tuple[ClientResponse, URL]:
         """Establish a streaming connection and return the response and its URL.
@@ -245,6 +248,7 @@ class Portainer:
         Args:
         ----
             uri: Request URI, without '/api/'.
+            method: HTTP method to use.
             params: Query parameters to include in the request.
 
         Returns:
@@ -284,7 +288,7 @@ class Portainer:
         try:
             async with asyncio.timeout(self._stream_timeout):
                 response = await self._session.request(
-                    METH_GET,
+                    method,
                     url,
                     headers=headers,
                     params=params,
@@ -320,6 +324,7 @@ class Portainer:
         self,
         uri: str,
         *,
+        method: str = METH_GET,
         params: dict[str, Any] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
         """Open a persistent streaming connection and yield JSON events as they arrive.
@@ -332,6 +337,7 @@ class Portainer:
         Args:
         ----
             uri: Request URI, without '/api/'.
+            method: HTTP method to use.
             params: Query parameters to include in the request.
 
         Yields:
@@ -345,7 +351,7 @@ class Portainer:
             PortainerConnectionError: On network errors.
 
         """
-        response, url = await self._open_stream(uri, params=params)
+        response, url = await self._open_stream(uri, method=method, params=params)
 
         try:
             buffer = b""
@@ -771,6 +777,39 @@ class Portainer:
             params=params,
             parse=False,
         )
+
+    async def image_pull(self, endpoint_id: int, image: str) -> AsyncGenerator[DockerImagePullEvent, None]:
+        """Pull a Docker image and stream its progress.
+
+        Feed the events to :class:`~pyportainer.image_pull.ImagePullProgress`
+        for an overall percentage. Portainer only adds stored registry
+        credentials to pulls that name a registry, so private images may fail
+        to pull here.
+
+        Args:
+        ----
+            endpoint_id: The ID of the endpoint.
+            image: The image to pull, for example ``nginx:latest``.
+
+        Yields:
+        ------
+            :class:`~pyportainer.models.image_pull.DockerImagePullEvent` objects.
+
+        Raises:
+        ------
+            PortainerImagePullError: If Docker reports an error during the pull.
+
+        """
+        async for raw in self._stream_request(
+            f"endpoints/{endpoint_id}/docker/images/create",
+            method=METH_POST,
+            params={"fromImage": image},
+        ):
+            event = DockerImagePullEvent.from_dict(raw)
+            if event.error:
+                msg = f"Failed to pull image {image}: {event.error}"
+                raise PortainerImagePullError(msg)
+            yield event
 
     async def container_recreate_helper(self, endpoint_id: int, container_id: str, image: str, timeout: timedelta = timedelta(minutes=5)) -> Any:
         """Recreate a Docker container service.
