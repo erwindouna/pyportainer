@@ -1,0 +1,12 @@
+{"status":"Pulling from library/nginx","id":"latest"}
+{"status":"Already exists","progressDetail":{},"id":"a2318d6c47ec"}
+{"status":"Pulling fs layer","progressDetail":{},"id":"095d327c79ae"}
+{"status":"Waiting","progressDetail":{},"id":"095d327c79ae"}
+{"status":"Downloading","progressDetail":{"current":1024,"total":4096},"progress":"[=====>    ]  1.024kB/4.096kB","id":"095d327c79ae"}
+{"status":"Downloading","progressDetail":{"current":4096,"total":4096},"progress":"[==========>]  4.096kB/4.096kB","id":"095d327c79ae"}
+{"status":"Verifying Checksum","progressDetail":{},"id":"095d327c79ae"}
+{"status":"Download complete","progressDetail":{},"id":"095d327c79ae"}
+{"status":"Extracting","progressDetail":{"current":2048,"total":4096},"progress":"[=====>    ]  2.048kB/4.096kB","id":"095d327c79ae"}
+{"status":"Pull complete","progressDetail":{},"id":"095d327c79ae"}
+{"status":"Digest: sha256:0000000000000000000000000000000000000000000000000000000000000000"}
+{"status":"Status: Downloaded newer image for nginx:latest"}

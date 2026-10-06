@@ -1,0 +1,2 @@
+{"status":"Pulling from library/nginx","id":"latest"}
+{"errorDetail":{"message":"unauthorized: authentication required"},"error":"unauthorized: authentication required"}

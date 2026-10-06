@@ -11,16 +11,18 @@ from aiohttp import ClientError, ClientResponseError, ClientSession, ClientTimeo
 from aiohttp.web import Request
 from aresponses import ResponsesMockServer
 
-from pyportainer import Portainer
+from pyportainer import ImagePullProgress, Portainer
 from pyportainer.exceptions import (
     PortainerAuthenticationError,
     PortainerConnectionError,
     PortainerError,
+    PortainerImagePullError,
     PortainerNotFoundError,
     PortainerTimeoutError,
 )
 from pyportainer.models.docker import DockerContainer
 from pyportainer.models.event import DockerEvent
+from pyportainer.models.image_pull import DockerImagePullEvent
 from tests import load_fixtures
 
 
@@ -701,3 +703,101 @@ async def test_open_stream_uses_stream_timeout_not_request_timeout(
         with pytest.raises(PortainerTimeoutError):
             async for _ in client.get_events(1):
                 pass
+
+
+async def test_image_pull(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that image_pull streams the pull events and tracks the progress."""
+
+    async def response_handler(request: Request) -> aresponses.Response:
+        """Check the pulled image and return the pull progress."""
+        assert request.query["fromImage"] == "nginx:latest"
+        return aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_pull.ndjson"),
+        )
+
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/create",
+        "POST",
+        response_handler,
+        match_querystring=False,
+    )
+
+    progress = ImagePullProgress()
+    percentages = [progress.update(event) async for event in portainer_client.image_pull(1, "nginx:latest")]
+
+    assert percentages == [0.0, 0.0, 0.0, 0.0, 60.0, 90.0, 90.0, 90.0, 95.0, 100.0, 100.0, 100.0]
+    assert progress.percentage == 100.0
+
+
+async def test_image_pull_error(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test that an error in the pull stream raises PortainerImagePullError."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/images/create",
+        "POST",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_pull_error.ndjson"),
+        ),
+        match_querystring=False,
+    )
+
+    with pytest.raises(PortainerImagePullError, match="unauthorized: authentication required"):
+        async for _ in portainer_client.image_pull(1, "nginx:latest"):
+            pass
+
+
+@pytest.mark.parametrize(
+    ("events", "expected"),
+    [
+        pytest.param(
+            [{"status": "Already exists", "id": "a"}, {"status": "Already exists", "id": "b"}],
+            0.0,
+            id="nothing_to_download",
+        ),
+        pytest.param(
+            [
+                {"status": "Pulling fs layer", "id": "a"},
+                {"status": "Downloading", "progressDetail": {"current": 10, "total": 0}, "id": "a"},
+            ],
+            0.0,
+            id="unknown_size",
+        ),
+        pytest.param(
+            [
+                {"status": "Pulling fs layer", "id": "a"},
+                {"status": "Download complete", "id": "a"},
+                {"status": "Extracting", "progressDetail": {"current": 3, "units": "s"}, "id": "a"},
+            ],
+            80.0,
+            id="extracting_without_total",
+        ),
+        pytest.param(
+            [
+                {"status": "Pulling fs layer", "id": "a"},
+                {"status": "Downloading", "progressDetail": {"current": 50, "total": 100}, "id": "a"},
+                {"status": "Retrying in 5 seconds", "progressDetail": {}, "id": "a"},
+                {"status": "Downloading", "progressDetail": {"current": 10, "total": 100}, "id": "a"},
+            ],
+            40.0,
+            id="never_goes_down",
+        ),
+    ],
+)
+def test_image_pull_progress(events: list[dict[str, Any]], expected: float) -> None:
+    """Test the image pull progress for edge cases in the pull stream."""
+    progress = ImagePullProgress()
+    for event in events:
+        progress.update(DockerImagePullEvent.from_dict(event))
+
+    assert progress.percentage == expected
