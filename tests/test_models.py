@@ -423,6 +423,42 @@ async def test_container_image_status_no_registry_access(
     assert status == snapshot
 
 
+async def test_container_image_status_local_image(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test container_image_status compares the registry reference with a separate local image."""
+    local_image = "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/distribution/nginx:latest/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_information.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/images/{local_image}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("local_image_information.json"),
+        ),
+    )
+
+    status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest", local_image=local_image)
+
+    assert status.update_available is True
+    assert status.local_digest == "sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb"
+    assert status.registry_digest == "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96"
+    aresponses.assert_no_unused_routes()
+    aresponses.assert_all_requests_matched()
+
+
 async def test_portainer_volumes(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
