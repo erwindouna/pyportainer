@@ -48,6 +48,41 @@ from pyportainer.models.stacks import Stack, StackType
 _LOGGER = logging.getLogger(__name__)
 
 
+def _is_image_id(image: str) -> bool:
+    """Return whether an image reference is a full SHA-256 image ID."""
+    algorithm, separator, digest = image.partition(":")
+    return separator == ":" and algorithm == "sha256" and len(digest) == 64 and all(character in "0123456789abcdefABCDEF" for character in digest)
+
+
+def _has_explicit_registry(image: str) -> bool:
+    """Return whether an image reference explicitly names a registry."""
+    repository = image.partition("@")[0]
+    first_component, separator, _ = repository.partition("/")
+    if not separator:
+        return False
+    return first_component == "localhost" or "." in first_component or ":" in first_component
+
+
+def _local_image_digest(image: LocalImageInformation) -> str | None:
+    """Return the first usable repository digest for a local image."""
+    return next(
+        (digest.partition("@")[2] for digest in (image.repo_digests or []) if digest.partition("@")[2]),
+        None,
+    )
+
+
+def _is_local_only_image_reference(image: str, local: LocalImageInformation) -> bool:
+    """Return whether a failed registry lookup is expected for a local image."""
+    return _local_image_digest(local) is None and not _has_explicit_registry(image)
+
+
+def _image_lookup_status(error: BaseException) -> int | None:
+    """Return the HTTP status from a failed image lookup."""
+    if isinstance(error, PortainerConnectionError) and isinstance(error.__cause__, ClientResponseError):
+        return error.__cause__.status
+    return None
+
+
 def _is_retryable(err: BaseException) -> bool:
     """Return whether a failed request is worth retrying.
 
@@ -733,21 +768,18 @@ class Portainer:
 
         if isinstance(local, BaseException):
             raise local
-        if isinstance(remote, PortainerConnectionError) and isinstance(remote.__cause__, ClientResponseError) and remote.__cause__.status == 403:
-            _LOGGER.debug("No registry access for image %s on endpoint %s; skipping update check", image, endpoint_id)
-            local_digest = next(
-                (digest.partition("@")[2] for digest in (local.repo_digests or []) if "@" in digest),
-                None,
-            )
+        local_digest = _local_image_digest(local)
+        remote_status = _image_lookup_status(remote) if isinstance(remote, BaseException) else None
+        local_lookup_failure = (_is_image_id(image) and remote_status == 500) or (
+            remote_status == 403 and _is_local_only_image_reference(image, local)
+        )
+        if local_lookup_failure:
+            _LOGGER.debug("Image %s on endpoint %s has no registry-backed digest; skipping update check", image, endpoint_id)
             return PortainerImageUpdateStatus(update_available=False, local_digest=local_digest, registry_digest=None)
         if isinstance(remote, BaseException):
             raise remote
 
         registry_digest = remote.descriptor.digest if remote.descriptor else None
-        local_digest = next(
-            (digest.partition("@")[2] for digest in (local.repo_digests or []) if "@" in digest),
-            None,
-        )
 
         return PortainerImageUpdateStatus(
             update_available=bool(registry_digest and registry_digest != local_digest),
