@@ -398,9 +398,8 @@ async def test_container_image_status_up_to_date(
 async def test_container_image_status_no_registry_access(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
-    snapshot: SnapshotAssertion,
 ) -> None:
-    """Test container_image_status when Portainer has no access to the image registry."""
+    """Test a local-only image returns a neutral status when registry lookup fails."""
     aresponses.add(
         "localhost:9000",
         "/api/endpoints/1/docker/distribution/nginx:latest/json",
@@ -415,12 +414,20 @@ async def test_container_image_status_no_registry_access(
         aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
-            text=load_fixtures("local_image_information.json"),
+            text=json.dumps(
+                {
+                    "Id": f"sha256:{'a' * 64}",
+                    "RepoTags": ["nginx:latest"],
+                    "RepoDigests": [],
+                },
+            ),
         ),
     )
 
     status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
-    assert status == snapshot
+    assert status.update_available is False
+    assert status.local_digest is None
+    assert status.registry_digest is None
 
 
 async def test_portainer_volumes(

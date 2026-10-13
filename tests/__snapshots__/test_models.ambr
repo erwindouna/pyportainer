@@ -1,11 +1,4 @@
 # serializer version: 1
-# name: test_container_image_status_no_registry_access
-  dict({
-    'local_digest': 'sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
-    'registry_digest': None,
-    'update_available': False,
-  })
-# ---
 # name: test_container_image_status_up_to_date
   dict({
     'local_digest': 'sha256:afcc7f1ac1b49db317a7196c902e61c6c3c4607d63599ee1a82d702d249a0ccb',
