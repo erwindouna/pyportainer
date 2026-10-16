@@ -712,13 +712,22 @@ class Portainer:
 
         return LocalImageInformation.from_dict(image)
 
-    async def container_image_status(self, endpoint_id: int, image: str) -> PortainerImageUpdateStatus:
+    async def container_image_status(
+        self,
+        endpoint_id: int,
+        image: str,
+        *,
+        local_image: str | None = None,
+    ) -> PortainerImageUpdateStatus:
         """Check whether a newer version of a Docker image is available in the registry.
 
         Args:
         ----
             endpoint_id: The ID of the endpoint.
-            image: The image name (with optional tag) to check.
+            image: The image name (with optional tag) to look up in the registry.
+            local_image: The local image (name or ID) to compare against. Defaults to
+                ``image``. Pass the container's image ID when its tag has since moved
+                to another image, so the image the container actually runs is compared.
 
         Returns:
         -------
@@ -726,7 +735,7 @@ class Portainer:
 
         """
         local, remote = await asyncio.gather(
-            self.get_image(endpoint_id, image),
+            self.get_image(endpoint_id, local_image or image),
             self.get_image_information(endpoint_id, image),
             return_exceptions=True,
         )
