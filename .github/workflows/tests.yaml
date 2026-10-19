@@ -89,6 +89,8 @@ jobs:
           uv run coverage combine coverage*/.coverage*
           uv run coverage xml -i
       - name: 🚀 Upload coverage report
+        # Dependabot runs don't get Actions secrets, and Codecov rejects tokenless uploads
+        if: github.actor != 'dependabot[bot]'
         uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
