@@ -398,6 +398,7 @@ async def test_container_image_status_up_to_date(
 async def test_container_image_status_no_registry_access(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
+    snapshot: SnapshotAssertion,
 ) -> None:
     """Test a local-only image returns a neutral status when registry lookup fails."""
     aresponses.add(
@@ -425,9 +426,7 @@ async def test_container_image_status_no_registry_access(
     )
 
     status = await portainer_client.container_image_status(endpoint_id=1, image="nginx:latest")
-    assert status.update_available is False
-    assert status.local_digest is None
-    assert status.registry_digest is None
+    assert status == snapshot
 
 
 async def test_portainer_volumes(

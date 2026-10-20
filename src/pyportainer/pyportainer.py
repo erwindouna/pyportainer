@@ -48,12 +48,6 @@ from pyportainer.models.stacks import Stack, StackType
 _LOGGER = logging.getLogger(__name__)
 
 
-def _is_image_id(image: str) -> bool:
-    """Return whether an image reference is a full SHA-256 image ID."""
-    algorithm, separator, digest = image.partition(":")
-    return separator == ":" and algorithm == "sha256" and len(digest) == 64 and all(character in "0123456789abcdefABCDEF" for character in digest)
-
-
 def _has_explicit_registry(image: str) -> bool:
     """Return whether an image reference explicitly names a registry."""
     repository = image.partition("@")[0]
@@ -770,9 +764,7 @@ class Portainer:
             raise local
         local_digest = _local_image_digest(local)
         remote_status = _image_lookup_status(remote) if isinstance(remote, BaseException) else None
-        local_lookup_failure = (_is_image_id(image) and remote_status == 500) or (
-            remote_status == 403 and _is_local_only_image_reference(image, local)
-        )
+        local_lookup_failure = remote_status == 403 and _is_local_only_image_reference(image, local)
         if local_lookup_failure:
             _LOGGER.debug("Image %s on endpoint %s has no registry-backed digest; skipping update check", image, endpoint_id)
             return PortainerImageUpdateStatus(update_available=False, local_digest=local_digest, registry_digest=None)

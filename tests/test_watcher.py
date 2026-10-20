@@ -278,21 +278,13 @@ def _add_single_container_response(aresponses: ResponsesMockServer, image: str) 
     )
 
 
-@pytest.mark.parametrize(
-    ("image", "registry_status"),
-    [
-        ("voice-xtts-gpu:latest", 403),
-        (f"sha256:{'8cbc' * 16}", 500),
-    ],
-)
-async def test_image_watcher_treats_local_only_images_as_unknown(
+async def test_image_watcher_treats_local_tag_as_unknown(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
-    image: str,
-    registry_status: int,
     caplog: pytest.LogCaptureFixture,
 ) -> None:
-    """Test local-only image registry failures return a neutral status without warnings."""
+    """Test a local-only tagged image returns a neutral status without warnings."""
+    image = "voice-xtts-gpu:latest"
     _add_single_container_response(aresponses, image)
     aresponses.add(
         "localhost:9000",
@@ -308,7 +300,7 @@ async def test_image_watcher_treats_local_only_images_as_unknown(
         "localhost:9000",
         f"/api/endpoints/1/docker/distribution/{image}/json",
         "GET",
-        aresponses.Response(text="registry lookup failed", status=registry_status),
+        aresponses.Response(text="registry lookup failed", status=403),
     )
 
     watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
