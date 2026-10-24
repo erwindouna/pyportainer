@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from typing import TYPE_CHECKING
 
@@ -416,3 +417,177 @@ def test_watcher_never_lowers_the_configured_log_level(
     PortainerImageWatcher(portainer_client, endpoint_id=1, debug=debug)
 
     assert logger.level == expected
+
+
+MOVED_TAG_CONTAINER_ID = "1111111111111111111111111111111111111111111111111111111111111111"
+MOVED_TAG_IMAGE_ID = "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+MOVED_TAG_IMAGE = "portainer/portainer-ce:latest"
+STOPPED_CONTAINER_ID = "3333333333333333333333333333333333333333333333333333333333333333"
+SECOND_CONTAINER_ID = "4444444444444444444444444444444444444444444444444444444444444444"
+OLD_DIGEST = "sha256:5555555555555555555555555555555555555555555555555555555555555555"
+REGISTRY_DIGEST = "sha256:c0537ff6a5218ef531ece93d4984efc99bbf3f7497c0a7726c88e2bb7584dc96"
+
+
+def _add_container_list(aresponses: ResponsesMockServer, image: str) -> None:
+    """Add a container list with a running and a stopped container listed by image ID."""
+    containers = [
+        {"Id": MOVED_TAG_CONTAINER_ID, "Image": image, "State": "running"},
+        {"Id": STOPPED_CONTAINER_ID, "Image": image, "State": "exited"},
+    ]
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(containers),
+        ),
+    )
+
+
+def _add_container_inspect(
+    aresponses: ResponsesMockServer,
+    config_image: str | None,
+    container_id: str = MOVED_TAG_CONTAINER_ID,
+) -> None:
+    """Add an inspect response with the given Config.Image."""
+    inspect = {"Id": container_id, "Image": MOVED_TAG_IMAGE_ID, "Config": {"Image": config_image}}
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/containers/{container_id}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(inspect),
+        ),
+    )
+
+
+@pytest.mark.parametrize(
+    "listed_image",
+    [
+        pytest.param(MOVED_TAG_IMAGE_ID, id="sha256_prefix"),
+        pytest.param(MOVED_TAG_IMAGE_ID.removeprefix("sha256:"), id="bare_hex"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("local_digest", "update_available"),
+    [
+        pytest.param(OLD_DIGEST, True, id="old_image"),
+        pytest.param(REGISTRY_DIGEST, False, id="up_to_date"),
+    ],
+)
+async def test_image_watcher_resolves_image_id(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    listed_image: str,
+    local_digest: str,
+    *,
+    update_available: bool,
+) -> None:
+    """Test that containers listed by image ID compare the image they run with the registry."""
+    containers = [
+        {"Id": MOVED_TAG_CONTAINER_ID, "Image": listed_image, "State": "running"},
+        {"Id": SECOND_CONTAINER_ID, "Image": listed_image, "State": "running"},
+    ]
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(containers),
+        ),
+    )
+    _add_container_inspect(aresponses, MOVED_TAG_IMAGE)
+    _add_container_inspect(aresponses, MOVED_TAG_IMAGE, SECOND_CONTAINER_ID)
+    # One registry and one local lookup shared by both containers on the same image.
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/distribution/{MOVED_TAG_IMAGE}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_information.json"),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/images/{listed_image}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps({"Id": MOVED_TAG_IMAGE_ID, "RepoDigests": [f"portainer/portainer-ce@{local_digest}"]}),
+        ),
+    )
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    await watcher._check_all()
+
+    assert set(watcher.results) == {(1, MOVED_TAG_CONTAINER_ID), (1, SECOND_CONTAINER_ID)}
+    for result in watcher.results.values():
+        assert result.status is not None
+        assert result.status.update_available is update_available
+        assert result.status.local_digest == local_digest
+        assert result.status.registry_digest == REGISTRY_DIGEST
+    aresponses.assert_no_unused_routes()
+    aresponses.assert_all_requests_matched()
+
+
+@pytest.mark.parametrize(
+    "config_image",
+    [
+        pytest.param(MOVED_TAG_IMAGE_ID, id="sha256_prefix"),
+        pytest.param(MOVED_TAG_IMAGE_ID.removeprefix("sha256:"), id="bare_hex"),
+        pytest.param(None, id="missing"),
+    ],
+)
+async def test_image_watcher_skips_container_without_reference(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+    config_image: str | None,
+) -> None:
+    """Test that a container created from an image ID is skipped without a registry lookup."""
+    _add_container_list(aresponses, MOVED_TAG_IMAGE_ID)
+    _add_container_inspect(aresponses, config_image)
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    with caplog.at_level(logging.DEBUG, logger="pyportainer.watcher"):
+        await watcher._check_all()
+
+    assert not watcher.results
+    assert "has no registry reference" in caplog.text
+    assert not [record for record in caplog.records if record.levelno >= logging.WARNING]
+    aresponses.assert_no_unused_routes()
+    aresponses.assert_all_requests_matched()
+
+
+async def test_image_watcher_skips_container_on_inspect_error(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test that a failed inspect skips only that container."""
+    _add_container_list(aresponses, MOVED_TAG_IMAGE_ID)
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/containers/{MOVED_TAG_CONTAINER_ID}/json",
+        "GET",
+        aresponses.Response(text="Not found", status=404),
+    )
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    with caplog.at_level(logging.DEBUG, logger="pyportainer.watcher"):
+        await watcher._check_all()
+
+    assert not watcher.results
+    assert "Failed to inspect container" in caplog.text
+    assert not [record for record in caplog.records if record.levelno >= logging.WARNING]
+    aresponses.assert_no_unused_routes()
+    aresponses.assert_all_requests_matched()
