@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import re
 import time
 from collections import defaultdict
 from collections.abc import Awaitable, Callable
@@ -14,11 +15,13 @@ from typing import TYPE_CHECKING
 from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
 
 if TYPE_CHECKING:
-    from pyportainer.models.docker import PortainerImageUpdateStatus
+    from pyportainer.models.docker import DockerContainer, PortainerImageUpdateStatus
     from pyportainer.pyportainer import Portainer
 
 
 _LOGGER = logging.getLogger(__name__)
+
+_IMAGE_ID = re.compile(r"(sha256:)?[0-9a-f]{64}")
 
 WatcherCallback = Callable[["PortainerImageWatcherResult"], Awaitable[None] | None]
 
@@ -185,22 +188,19 @@ class PortainerImageWatcher:
                 _LOGGER.warning("Failed to fetch containers for endpoint %s, skipping", endpoint_id)
                 continue
 
-            image_containers = defaultdict(list)
-            for container in containers:
-                if container.image and container.state == "running":
-                    image_containers[container.image].append(container.id)
+            image_containers = await self._group_by_image(endpoint_id, containers)
 
             _LOGGER.debug("Checking %d unique images for endpoint %s...", len(image_containers), endpoint_id)
 
             statuses = await asyncio.gather(
-                *(self._portainer.container_image_status(endpoint_id, image) for image in image_containers),
+                *(self._portainer.container_image_status(endpoint_id, image, local_image=local_image) for image, local_image in image_containers),
                 return_exceptions=True,
             )
-            for image, status in zip(image_containers, statuses, strict=False):
+            for ((image, _), container_ids), status in zip(image_containers.items(), statuses, strict=True):
                 if isinstance(status, BaseException):
                     _LOGGER.warning("Failed to check image %s on endpoint %s: %s", image, endpoint_id, status)
                     continue
-                for container_id in image_containers[image]:
+                for container_id in container_ids:
                     fresh[(endpoint_id, container_id)] = PortainerImageWatcherResult(
                         endpoint_id=endpoint_id,
                         container_id=container_id,
@@ -213,3 +213,47 @@ class PortainerImageWatcher:
 
         if self._callbacks and fresh:
             await asyncio.gather(*(self._fire_callbacks(result) for result in fresh.values()))
+
+    async def _group_by_image(
+        self,
+        endpoint_id: int,
+        containers: list[DockerContainer],
+    ) -> dict[tuple[str, str | None], list[str]]:
+        """Group the IDs of running containers by image reference and local image.
+
+        Docker lists the image ID instead of the reference when the container was
+        created from an ID or its tag has since moved to another image. Those
+        containers are inspected for the reference they were created with and
+        compared against the image ID they run; containers without a registry
+        reference are skipped. Other containers have no separate local image.
+        """
+        image_containers: dict[tuple[str, str | None], list[str]] = defaultdict(list)
+        by_id: list[DockerContainer] = []
+        for container in containers:
+            if not container.image or container.state != "running":
+                continue
+            if _IMAGE_ID.fullmatch(container.image):
+                by_id.append(container)
+            else:
+                image_containers[container.image, None].append(container.id)
+
+        inspections = await asyncio.gather(
+            *(self._portainer.inspect_container(endpoint_id, container.id) for container in by_id),
+            return_exceptions=True,
+        )
+        for container, inspection in zip(by_id, inspections, strict=True):
+            if isinstance(inspection, BaseException):
+                _LOGGER.debug("Failed to inspect container %s on endpoint %s: %s", container.id, endpoint_id, inspection)
+                continue
+            image = inspection.config.image if inspection.config else None
+            if not image or _IMAGE_ID.fullmatch(image):
+                _LOGGER.debug(
+                    "Skipping container %s on endpoint %s: image %s has no registry reference",
+                    container.id,
+                    endpoint_id,
+                    image or container.image,
+                )
+                continue
+            image_containers[image, container.image].append(container.id)
+
+        return image_containers
