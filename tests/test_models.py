@@ -400,7 +400,7 @@ async def test_container_image_status_no_registry_access(
     portainer_client: Portainer,
     snapshot: SnapshotAssertion,
 ) -> None:
-    """Test container_image_status when Portainer has no access to the image registry."""
+    """Test a local-only image returns a neutral status when registry lookup fails."""
     aresponses.add(
         "localhost:9000",
         "/api/endpoints/1/docker/distribution/nginx:latest/json",
@@ -415,7 +415,13 @@ async def test_container_image_status_no_registry_access(
         aresponses.Response(
             status=200,
             headers={"Content-Type": "application/json"},
-            text=load_fixtures("local_image_information.json"),
+            text=json.dumps(
+                {
+                    "Id": f"sha256:{'a' * 64}",
+                    "RepoTags": ["nginx:latest"],
+                    "RepoDigests": [],
+                },
+            ),
         ),
     )
 

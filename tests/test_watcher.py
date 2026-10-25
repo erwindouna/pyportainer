@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from typing import TYPE_CHECKING
 
@@ -253,6 +254,123 @@ async def test_image_watcher_check_all_exceptions(
 
     assert not watcher.results
     assert "Failed to check image" in caplog.text
+
+
+def _add_single_container_response(aresponses: ResponsesMockServer, image: str) -> None:
+    """Add a running container response for one image."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(
+                [
+                    {
+                        "Id": CONTAINER_ID,
+                        "Image": image,
+                        "State": "running",
+                    },
+                ],
+            ),
+        ),
+    )
+
+
+async def test_image_watcher_treats_local_tag_as_unknown(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a local-only tagged image returns a neutral status without warnings."""
+    image = "voice-xtts-gpu:latest"
+    _add_single_container_response(aresponses, image)
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/images/{image}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps({"Id": f"sha256:{'a' * 64}", "RepoTags": [image], "RepoDigests": []}),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/distribution/{image}/json",
+        "GET",
+        aresponses.Response(text="registry lookup failed", status=403),
+    )
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    with caplog.at_level(logging.WARNING):
+        await watcher._check_all()
+
+    result = watcher.results[(1, CONTAINER_ID)]
+    assert result.status is not None
+    assert result.status.update_available is False
+    assert result.status.local_digest is None
+    assert result.status.registry_digest is None
+    assert "Failed to check image" not in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("image", "repo_digests", "local_digest"),
+    [
+        pytest.param("registry.example.com/team/private:latest", [], None, id="explicit_registry"),
+        pytest.param(
+            "myorg/private:latest",
+            [f"myorg/private@sha256:{'c' * 64}"],
+            f"sha256:{'c' * 64}",
+            id="private_docker_hub",
+        ),
+    ],
+)
+async def test_image_watcher_registry_auth_failure_is_neutral(  # noqa: PLR0917 # pylint: disable=too-many-arguments,too-many-positional-arguments
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    caplog: pytest.LogCaptureFixture,
+    image: str,
+    repo_digests: list[str],
+    local_digest: str | None,
+) -> None:
+    """Test a registry authorization failure returns a neutral status with a specific debug message."""
+    _add_single_container_response(aresponses, image)
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/images/{image}/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(
+                {
+                    "Id": f"sha256:{'b' * 64}",
+                    "RepoTags": [image],
+                    "RepoDigests": repo_digests,
+                },
+            ),
+        ),
+    )
+    aresponses.add(
+        "localhost:9000",
+        f"/api/endpoints/1/docker/distribution/{image}/json",
+        "GET",
+        aresponses.Response(text="denied: requested access to the resource is denied", status=403),
+    )
+
+    watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
+    with caplog.at_level(logging.DEBUG):
+        await watcher._check_all()
+
+    result = watcher.results[(1, CONTAINER_ID)]
+    assert result.status is not None
+    assert result.status.update_available is False
+    assert result.status.local_digest == local_digest
+    assert result.status.registry_digest is None
+    assert "Failed to check image" not in caplog.text
+    assert f"Registry denied access to image {image} on endpoint 1" in caplog.text
 
 
 def _add_image_check_responses(aresponses: ResponsesMockServer) -> None:
