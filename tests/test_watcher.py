@@ -315,13 +315,27 @@ async def test_image_watcher_treats_local_tag_as_unknown(
     assert "Failed to check image" not in caplog.text
 
 
-async def test_image_watcher_keeps_private_registry_auth_failure_visible(
+@pytest.mark.parametrize(
+    ("image", "repo_digests", "local_digest"),
+    [
+        pytest.param("registry.example.com/team/private:latest", [], None, id="explicit_registry"),
+        pytest.param(
+            "myorg/private:latest",
+            [f"myorg/private@sha256:{'c' * 64}"],
+            f"sha256:{'c' * 64}",
+            id="private_docker_hub",
+        ),
+    ],
+)
+async def test_image_watcher_registry_auth_failure_is_neutral(  # noqa: PLR0917 # pylint: disable=too-many-arguments,too-many-positional-arguments
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
     caplog: pytest.LogCaptureFixture,
+    image: str,
+    repo_digests: list[str],
+    local_digest: str | None,
 ) -> None:
-    """Test a private-registry authorization failure remains actionable."""
-    image = "registry.example.com/team/private:latest"
+    """Test a registry authorization failure returns a neutral status with a specific debug message."""
     _add_single_container_response(aresponses, image)
     aresponses.add(
         "localhost:9000",
@@ -334,7 +348,7 @@ async def test_image_watcher_keeps_private_registry_auth_failure_visible(
                 {
                     "Id": f"sha256:{'b' * 64}",
                     "RepoTags": [image],
-                    "RepoDigests": [],
+                    "RepoDigests": repo_digests,
                 },
             ),
         ),
@@ -347,11 +361,16 @@ async def test_image_watcher_keeps_private_registry_auth_failure_visible(
     )
 
     watcher = PortainerImageWatcher(portainer_client, endpoint_id=1)
-    with caplog.at_level(logging.WARNING):
+    with caplog.at_level(logging.DEBUG):
         await watcher._check_all()
 
-    assert not watcher.results
-    assert f"Failed to check image {image} on endpoint 1" in caplog.text
+    result = watcher.results[(1, CONTAINER_ID)]
+    assert result.status is not None
+    assert result.status.update_available is False
+    assert result.status.local_digest == local_digest
+    assert result.status.registry_digest is None
+    assert "Failed to check image" not in caplog.text
+    assert f"Registry denied access to image {image} on endpoint 1" in caplog.text
 
 
 def _add_image_check_responses(aresponses: ResponsesMockServer) -> None:

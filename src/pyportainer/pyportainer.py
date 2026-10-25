@@ -763,10 +763,15 @@ class Portainer:
         if isinstance(local, BaseException):
             raise local
         local_digest = _local_image_digest(local)
-        remote_status = _image_lookup_status(remote) if isinstance(remote, BaseException) else None
-        local_lookup_failure = remote_status == 403 and _is_local_only_image_reference(image, local)
-        if local_lookup_failure:
-            _LOGGER.debug("Image %s on endpoint %s has no registry-backed digest; skipping update check", image, endpoint_id)
+        if isinstance(remote, BaseException) and _image_lookup_status(remote) == 403:
+            if _is_local_only_image_reference(image, local):
+                _LOGGER.debug("Image %s on endpoint %s has no registry-backed digest; skipping update check", image, endpoint_id)
+            else:
+                _LOGGER.debug(
+                    "Registry denied access to image %s on endpoint %s; check the registry credentials in Portainer. Skipping update check",
+                    image,
+                    endpoint_id,
+                )
             return PortainerImageUpdateStatus(update_available=False, local_digest=local_digest, registry_digest=None)
         if isinstance(remote, BaseException):
             raise remote
