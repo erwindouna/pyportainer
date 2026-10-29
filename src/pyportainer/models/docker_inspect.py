@@ -45,6 +45,16 @@ class Health(DataClassORJSONMixin):
     failing_streak: int | None = field(default=None, metadata=field_options(alias="FailingStreak"))
     log: list[HealthLog] | None = field(default=None, metadata=field_options(alias="Log"))
 
+    @classmethod
+    def __pre_deserialize__(cls, d: dict[Any, Any]) -> dict[Any, Any]:
+        """Treat an empty status as no status.
+
+        Podman sends an empty status for containers without a healthcheck.
+        """
+        if d.get("Status") == "":
+            return {**d, "Status": None}
+        return d
+
 
 @dataclass
 class State(DataClassORJSONMixin):

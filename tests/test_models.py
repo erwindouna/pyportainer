@@ -94,6 +94,30 @@ async def test_portainer_container_inspect(
     assert container == snapshot
 
 
+async def test_portainer_container_inspect_empty_health_status(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+) -> None:
+    """Test an empty health status, as sent by Podman, parses as no status."""
+    data = json.loads(load_fixtures("container_inspect.json"))
+    data["State"]["Health"] = {"FailingStreak": 0, "Log": None, "Status": ""}
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/json",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=json.dumps(data),
+        ),
+    )
+
+    container = await portainer_client.inspect_container(1, "test_container")
+    assert container.state is not None
+    assert container.state.health is not None
+    assert container.state.health.status is None
+
+
 async def test_portainer_docker_version(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
