@@ -55,7 +55,7 @@ dev = [
     "ruff==0.17.5",
     "syrupy==7.0.0",
     "yamllint==1.38.0",
-    "datamodel-code-generator>=0.28.5,<0.96.0",
+    "datamodel-code-generator>=0.28.5,<0.100.0",
 ]
 docs = [
     "mkdocs>=1.6.1,<2",
