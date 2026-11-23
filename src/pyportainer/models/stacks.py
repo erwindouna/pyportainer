@@ -43,40 +43,40 @@ class StackEnvVar(DataClassORJSONMixin):
 class StackOption(DataClassORJSONMixin):
     """Stack deployment options."""
 
-    prune: bool | None = None
+    prune: bool | None = field(default=None, metadata=field_options(alias="Prune"))
 
 
 @dataclass
 class AutoUpdateSettings(DataClassORJSONMixin):
     """GitOps auto-update settings for a stack."""
 
-    force_pull_image: bool | None = field(default=None, metadata=field_options(alias="forcePullImage"))
-    force_update: bool | None = field(default=None, metadata=field_options(alias="forceUpdate"))
-    interval: str | None = None
-    job_id: str | None = field(default=None, metadata=field_options(alias="jobID"))
-    webhook: str | None = None
+    force_pull_image: bool | None = field(default=None, metadata=field_options(alias="ForcePullImage"))
+    force_update: bool | None = field(default=None, metadata=field_options(alias="ForceUpdate"))
+    interval: str | None = field(default=None, metadata=field_options(alias="Interval"))
+    job_id: str | None = field(default=None, metadata=field_options(alias="JobID"))
+    webhook: str | None = field(default=None, metadata=field_options(alias="Webhook"))
 
 
 @dataclass
 class GitAuthentication(DataClassORJSONMixin):
     """Git authentication configuration."""
 
-    authorization_type: GitCredentialAuthType | None = field(default=None, metadata=field_options(alias="authorizationType"))
-    git_credential_id: int | None = field(default=None, metadata=field_options(alias="gitCredentialID"))
-    password: str | None = None
-    username: str | None = None
+    authorization_type: GitCredentialAuthType | None = field(default=None, metadata=field_options(alias="AuthorizationType"))
+    git_credential_id: int | None = field(default=None, metadata=field_options(alias="GitCredentialID"))
+    password: str | None = field(default=None, metadata=field_options(alias="Password"))
+    username: str | None = field(default=None, metadata=field_options(alias="Username"))
 
 
 @dataclass
 class GitRepoConfig(DataClassORJSONMixin):
     """Git repository configuration for a stack."""
 
-    authentication: GitAuthentication | None = None
-    config_file_path: str | None = field(default=None, metadata=field_options(alias="configFilePath"))
-    config_hash: str | None = field(default=None, metadata=field_options(alias="configHash"))
-    reference_name: str | None = field(default=None, metadata=field_options(alias="referenceName"))
-    tls_skip_verify: bool | None = field(default=None, metadata=field_options(alias="tlsskipVerify"))
-    url: str | None = None
+    authentication: GitAuthentication | None = field(default=None, metadata=field_options(alias="Authentication"))
+    config_file_path: str | None = field(default=None, metadata=field_options(alias="ConfigFilePath"))
+    config_hash: str | None = field(default=None, metadata=field_options(alias="ConfigHash"))
+    reference_name: str | None = field(default=None, metadata=field_options(alias="ReferenceName"))
+    tls_skip_verify: bool | None = field(default=None, metadata=field_options(alias="TLSSkipVerify"))
+    url: str | None = field(default=None, metadata=field_options(alias="URL"))
 
 
 @dataclass

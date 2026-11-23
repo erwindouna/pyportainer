@@ -273,12 +273,12 @@ def _capture_update(captured: dict[str, Any]) -> Callable[[Request], Awaitable[R
     [
         pytest.param(
             {},
-            {"Prune": False, "RepullImageAndRedeploy": True, "PullImage": True},
+            {"Prune": True, "RepullImageAndRedeploy": True, "PullImage": True},
             id="defaults",
         ),
         pytest.param(
-            {"pull_image": False, "prune": True},
-            {"Prune": True, "RepullImageAndRedeploy": False, "PullImage": False},
+            {"pull_image": False, "prune": False},
+            {"Prune": False, "RepullImageAndRedeploy": False, "PullImage": False},
             id="overrides",
         ),
     ],

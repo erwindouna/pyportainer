@@ -18,16 +18,16 @@
     }
   ],
   "Option": {
-    "prune": false
+    "Prune": false
   },
   "AutoUpdate": null,
   "GitConfig": {
-    "url": "https://github.com/example/my-git-app.git",
-    "referenceName": "refs/heads/main",
-    "configFilePath": "docker-compose.yml",
-    "configHash": "4b2f1c0e",
-    "tlsskipVerify": false,
-    "authentication": null
+    "URL": "https://github.com/example/my-git-app.git",
+    "ReferenceName": "refs/heads/main",
+    "ConfigFilePath": "docker-compose.yml",
+    "ConfigHash": "4b2f1c0e",
+    "TLSSkipVerify": false,
+    "Authentication": null
   },
   "ResourceControl": {
     "Id": 1,

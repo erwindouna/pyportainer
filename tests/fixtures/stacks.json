@@ -19,7 +19,7 @@
       }
     ],
     "Option": {
-      "prune": false
+      "Prune": false
     },
     "AutoUpdate": null,
     "GitConfig": null,
@@ -60,17 +60,17 @@
     "Option": null,
     "AutoUpdate": null,
     "GitConfig": {
-      "authentication": {
-        "authorizationType": 0,
-        "gitCredentialID": 0,
-        "password": "",
-        "username": ""
+      "Authentication": {
+        "AuthorizationType": 0,
+        "GitCredentialID": 0,
+        "Password": "",
+        "Username": ""
       },
-      "configFilePath": "docker-compose.yml",
-      "configHash": "abc123def456",
-      "referenceName": "refs/heads/main",
-      "tlsskipVerify": false,
-      "url": "https://github.com/example/database-stack.git"
+      "ConfigFilePath": "docker-compose.yml",
+      "ConfigHash": "abc123def456",
+      "ReferenceName": "refs/heads/main",
+      "TLSSkipVerify": false,
+      "URL": "https://github.com/example/database-stack.git"
     },
     "ResourceControl": null,
     "ProjectPath": "/data/compose/database-stack",
@@ -95,14 +95,14 @@
     ],
     "Env": [],
     "Option": {
-      "prune": true
+      "Prune": true
     },
     "AutoUpdate": {
-      "forcePullImage": true,
-      "forceUpdate": false,
-      "interval": "5m",
-      "jobID": "42",
-      "webhook": "550e8400-e29b-41d4-a716-446655440000"
+      "ForcePullImage": true,
+      "ForceUpdate": false,
+      "Interval": "5m",
+      "JobID": "42",
+      "Webhook": "550e8400-e29b-41d4-a716-446655440000"
     },
     "GitConfig": null,
     "ResourceControl": null,
