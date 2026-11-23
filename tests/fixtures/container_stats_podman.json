@@ -1,0 +1,102 @@
+{
+  "read": "2026-09-14T09:12:57.956669929+02:00",
+  "preread": "0001-01-01T00:00:00Z",
+  "pids_stats": {
+    "current": 11
+  },
+  "blkio_stats": {
+    "io_service_bytes_recursive": [
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "read",
+        "value": 25300992
+      },
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "write",
+        "value": 0
+      },
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "rios",
+        "value": 394
+      },
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "wios",
+        "value": 0
+      },
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "dbytes",
+        "value": 0
+      },
+      {
+        "major": 32,
+        "minor": 8,
+        "op": "dios",
+        "value": 0
+      }
+    ],
+    "io_serviced_recursive": null,
+    "io_queue_recursive": null,
+    "io_service_time_recursive": null,
+    "io_wait_time_recursive": null,
+    "io_merged_recursive": null,
+    "io_time_recursive": null,
+    "sectors_recursive": null
+  },
+  "num_procs": 0,
+  "storage_stats": {},
+  "cpu_stats": {
+    "cpu_usage": {
+      "total_usage": 190238763000,
+      "usage_in_kernelmode": 27628006,
+      "usage_in_usermode": 190211134994
+    },
+    "system_cpu_usage": 114041426881000,
+    "online_cpus": 8,
+    "cpu": 75.74464453358368,
+    "throttling_data": {
+      "periods": 0,
+      "throttled_periods": 0,
+      "throttled_time": 0
+    }
+  },
+  "precpu_stats": {
+    "cpu_usage": {
+      "total_usage": 0,
+      "usage_in_kernelmode": 0,
+      "usage_in_usermode": 0
+    },
+    "cpu": 0,
+    "throttling_data": {
+      "periods": 0,
+      "throttled_periods": 0,
+      "throttled_time": 0
+    }
+  },
+  "memory_stats": {
+    "usage": 31494144,
+    "limit": 41996759040
+  },
+  "name": "portainer_agent",
+  "id": "bd15c3d468bfd6c3c7a590e2485f8e2216c1fb12fafc9cd774178c163b890d69",
+  "networks": {
+    "enp11s0": {
+      "rx_bytes": 78391601,
+      "rx_packets": 420646,
+      "rx_errors": 0,
+      "rx_dropped": 0,
+      "tx_bytes": 499828523,
+      "tx_packets": 450865,
+      "tx_errors": 0,
+      "tx_dropped": 0
+    }
+  }
+}
