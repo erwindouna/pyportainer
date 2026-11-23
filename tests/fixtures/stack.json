@@ -18,7 +18,7 @@
     }
   ],
   "Option": {
-    "prune": false
+    "Prune": true
   },
   "AutoUpdate": null,
   "GitConfig": null,

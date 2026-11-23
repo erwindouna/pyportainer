@@ -23,7 +23,7 @@
     'name': 'my-web-app',
     'namespace': '',
     'option': dict({
-      'prune': False,
+      'prune': True,
     }),
     'project_path': '/data/compose/my-web-app',
     'resource_control': dict({
@@ -503,7 +503,7 @@
     'name': 'my-web-app',
     'namespace': '',
     'option': dict({
-      'prune': False,
+      'prune': True,
     }),
     'project_path': '/data/compose/my-web-app',
     'resource_control': dict({
@@ -581,7 +581,7 @@
     'name': 'my-web-app',
     'namespace': '',
     'option': dict({
-      'prune': False,
+      'prune': True,
     }),
     'project_path': '/data/compose/my-web-app',
     'resource_control': dict({
@@ -630,7 +630,7 @@
     'name': 'my-web-app',
     'namespace': '',
     'option': dict({
-      'prune': False,
+      'prune': True,
     }),
     'project_path': '/data/compose/my-web-app',
     'resource_control': dict({
