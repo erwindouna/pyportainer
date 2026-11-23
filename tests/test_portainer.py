@@ -68,9 +68,18 @@ async def test_timeout() -> None:
                 await client._request("test")
 
 
+@pytest.mark.parametrize(
+    ("content_type", "body"),
+    [
+        pytest.param("blabla/blabla", "", id="unknown"),
+        pytest.param("text/plain; charset=utf-8", "not json", id="text_plain_not_json"),
+    ],
+)
 async def test_content_type(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
+    content_type: str,
+    body: str,
 ) -> None:
     """Test request content type error from Portainer API."""
     aresponses.add(
@@ -79,7 +88,8 @@ async def test_content_type(
         "GET",
         aresponses.Response(
             status=200,
-            headers={"Content-Type": "blabla/blabla"},
+            headers={"Content-Type": content_type},
+            text=body,
         ),
     )
     with pytest.raises(PortainerError):

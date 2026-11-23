@@ -1075,6 +1075,143 @@
     'read': '2015-01-08T22:57:31.547920715Z',
   })
 # ---
+# name: test_portainer_container_stats_text_plain
+  dict({
+    'blkio_stats': dict({
+      'io_merged_recursive': None,
+      'io_queue_recursive': None,
+      'io_service_bytes_recursive': list([
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'read',
+          'value': 25300992,
+        }),
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'write',
+          'value': 0,
+        }),
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'rios',
+          'value': 394,
+        }),
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'wios',
+          'value': 0,
+        }),
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'dbytes',
+          'value': 0,
+        }),
+        dict({
+          'major': 32,
+          'minor': 8,
+          'op': 'dios',
+          'value': 0,
+        }),
+      ]),
+      'io_service_time_recursive': None,
+      'io_serviced_recursive': None,
+      'io_time_recursive': None,
+      'io_wait_time_recursive': None,
+      'sectors_recursive': None,
+    }),
+    'cpu_stats': dict({
+      'cpu_usage': dict({
+        'percpu_usage': list([
+        ]),
+        'total_usage': 190238763000,
+        'usage_in_kernelmode': 27628006,
+        'usage_in_usermode': 190211134994,
+      }),
+      'online_cpus': 8,
+      'system_cpu_usage': 114041426881000,
+      'throttling_data': dict({
+        'periods': 0,
+        'throttled_periods': 0,
+        'throttled_time': 0,
+      }),
+    }),
+    'memory_stats': dict({
+      'failcnt': 0,
+      'limit': 41996759040,
+      'max_usage': 0,
+      'stats': dict({
+        'active_anon': 0,
+        'active_file': 0,
+        'cache': 0,
+        'hierarchical_memory_limit': 0,
+        'inactive_anon': 0,
+        'inactive_file': 0,
+        'mapped_file': 0,
+        'pgfault': 0,
+        'pgmajfault': 0,
+        'pgpgin': 0,
+        'pgpgout': 0,
+        'rss': 0,
+        'rss_huge': 0,
+        'total_active_anon': 0,
+        'total_active_file': 0,
+        'total_cache': 0,
+        'total_inactive_anon': 0,
+        'total_inactive_file': 0,
+        'total_mapped_file': 0,
+        'total_pgfault': 0,
+        'total_pgmajfault': 0,
+        'total_pgpgin': 0,
+        'total_pgpgout': 0,
+        'total_rss': 0,
+        'total_rss_huge': 0,
+        'total_unevictable': 0,
+        'total_writeback': 0,
+        'unevictable': 0,
+        'writeback': 0,
+      }),
+      'usage': 31494144,
+    }),
+    'networks': dict({
+      'enp11s0': dict({
+        'rx_bytes': 78391601,
+        'rx_dropped': 0,
+        'rx_errors': 0,
+        'rx_packets': 420646,
+        'tx_bytes': 499828523,
+        'tx_dropped': 0,
+        'tx_errors': 0,
+        'tx_packets': 450865,
+      }),
+    }),
+    'pids_stats': dict({
+      'current': 11,
+    }),
+    'precpu_stats': dict({
+      'cpu_usage': dict({
+        'percpu_usage': list([
+        ]),
+        'total_usage': 0,
+        'usage_in_kernelmode': 0,
+        'usage_in_usermode': 0,
+      }),
+      'online_cpus': 0,
+      'system_cpu_usage': 0,
+      'throttling_data': dict({
+        'periods': 0,
+        'throttled_periods': 0,
+        'throttled_time': 0,
+      }),
+    }),
+    'preread': '0001-01-01T00:00:00Z',
+    'read': '2026-09-14T09:12:57.956669929+02:00',
+  })
+# ---
 # name: test_portainer_containers
   list([
     dict({

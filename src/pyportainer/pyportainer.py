@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import socket
+from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from importlib import metadata
@@ -246,6 +247,10 @@ class Portainer:
         content_type = response.headers.get("Content-Type", "")
         if "application/json" not in content_type:
             text = await response.text()
+            # Podman sends JSON bodies, such as container stats, as text/plain
+            if parse and "text/plain" in content_type:
+                with suppress(json.JSONDecodeError):
+                    return json.loads(text)
             msg = "Unexpected content type response from the Portainer API"
             raise PortainerError(
                 msg,

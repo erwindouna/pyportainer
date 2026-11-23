@@ -231,6 +231,27 @@ async def test_portainer_container_stats(
     assert container_stats == snapshot
 
 
+async def test_portainer_container_stats_text_plain(
+    aresponses: ResponsesMockServer,
+    snapshot: SnapshotAssertion,
+    portainer_client: Portainer,
+) -> None:
+    """Test container stats sent as text/plain, as Podman does."""
+    aresponses.add(
+        "localhost:9000",
+        "/api/endpoints/1/docker/containers/test_container/stats",
+        "GET",
+        aresponses.Response(
+            status=200,
+            headers={"Content-Type": "text/plain; charset=utf-8"},
+            text=load_fixtures("container_stats_podman.json"),
+        ),
+    )
+
+    container_stats = await portainer_client.container_stats(1, "test_container")
+    assert container_stats == snapshot
+
+
 async def test_portainer_images(
     aresponses: ResponsesMockServer,
     snapshot: SnapshotAssertion,
