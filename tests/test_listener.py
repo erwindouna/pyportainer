@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import json
 import logging
 from datetime import timedelta
 from typing import TYPE_CHECKING
@@ -13,12 +14,13 @@ import pytest
 from aiohttp.web import Request, Response
 from aresponses import ResponsesMockServer
 
-from pyportainer.exceptions import PortainerAuthenticationError, PortainerError, PortainerTimeoutError
+from pyportainer.exceptions import PortainerAuthenticationError, PortainerConnectionError, PortainerError, PortainerTimeoutError
 from pyportainer.listener import PortainerEventListener, PortainerEventListenerResult
+from pyportainer.models.event import DockerEvent
 from tests import load_fixtures
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
+    from collections.abc import AsyncGenerator, Generator
 
     from pyportainer import Portainer
 
@@ -572,6 +574,70 @@ async def test_reconnect_logs_recovery_and_resets_streak(
             await task
 
     assert f"Recovered on endpoint {ENDPOINT_ID}" in caplog.text
+
+
+@pytest.mark.parametrize(
+    ("events_per_attempt", "expected_log"),
+    [
+        pytest.param(
+            [2, 1],
+            [(logging.DEBUG, "Connection lost"), (logging.DEBUG, "Connection lost")],
+            id="dropped_after_events",
+        ),
+        pytest.param(
+            [2, 0, 0],
+            [(logging.DEBUG, "Connection lost"), (logging.WARNING, "Connection lost"), (logging.DEBUG, "Connection lost")],
+            id="reconnect_fails",
+        ),
+        pytest.param(
+            [0, 0, 1, 1],
+            [
+                (logging.WARNING, "Connection lost"),
+                (logging.DEBUG, "Connection lost"),
+                (logging.INFO, "Recovered"),
+                (logging.DEBUG, "Connection lost"),
+                (logging.DEBUG, "Connection lost"),
+            ],
+            id="recovers_after_failures",
+        ),
+    ],
+)
+async def test_stream_drop_logging(
+    portainer_client: Portainer,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    events_per_attempt: list[int],
+    expected_log: list[tuple[int, str]],
+) -> None:
+    """Test that only failed reconnects warn, not a stream the agent drops after delivering events."""
+    event = DockerEvent.from_dict(json.loads(load_fixtures("docker_event.json")))
+    attempts = iter(events_per_attempt)
+    real_sleep = asyncio.sleep
+    sleeps: list[float] = []
+
+    async def scripted_events(_endpoint_id: int, **_kwargs: object) -> AsyncGenerator[DockerEvent, None]:
+        for _ in range(next(attempts, 0)):
+            yield event
+        msg = "Connection lost while streaming"
+        raise PortainerConnectionError(msg)
+
+    async def recording_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        await real_sleep(0)
+
+    monkeypatch.setattr(portainer_client, "get_events", scripted_events)
+    monkeypatch.setattr(asyncio, "sleep", recording_sleep)
+    listener = PortainerEventListener(portainer_client, endpoint_id=ENDPOINT_ID)
+
+    with caplog.at_level(logging.DEBUG, logger="pyportainer.listener"):
+        task = asyncio.create_task(listener._listen_with_reconnect(ENDPOINT_ID))
+        while len(sleeps) < len(events_per_attempt):
+            await real_sleep(0)
+        task.cancel()
+        with contextlib.suppress(asyncio.CancelledError):
+            await task
+
+    assert [(record.levelno, record.getMessage().split(" on endpoint")[0]) for record in caplog.records] == expected_log
 
 
 @pytest.fixture(name="preserve_listener_log_level")
