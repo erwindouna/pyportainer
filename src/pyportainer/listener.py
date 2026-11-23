@@ -80,6 +80,7 @@ class PortainerEventListener:
         self._task: asyncio.Task[None] | None = None
         self._callbacks: list[EventListenerCallback] = []
         self._failures: dict[int | str, int] = {}
+        self._streaming: set[int | str] = set()
 
         if debug:
             _LOGGER.setLevel(logging.DEBUG)
@@ -151,6 +152,9 @@ class PortainerEventListener:
         failing at once don't all retry in lockstep. Only the first failure of
         a streak is logged at warning level; the rest are logged at debug
         level so a persistently unreachable endpoint doesn't flood the log.
+        A stream that delivered events before it ended is not a failure: the
+        Portainer agent drops busy streams periodically, so that reconnect is
+        logged at debug level and does not start a streak.
 
         Args:
         ----
@@ -160,15 +164,21 @@ class PortainerEventListener:
             exc_info: Whether to log a traceback with the first warning.
 
         """
-        failures = self._failures.get(key, 0) + 1
-        self._failures[key] = failures
+        if key in self._streaming:
+            self._streaming.discard(key)
+            failures = 0
+        else:
+            failures = self._failures.get(key, 0) + 1
+            self._failures[key] = failures
 
         base = self._reconnect_interval.total_seconds()
         ceiling = max(base, self._max_reconnect_interval.total_seconds())
-        delay = min(base * 2 ** (failures - 1), ceiling) * random.uniform(0.8, 1.0)  # noqa: S311 - jitter, not security
+        delay = min(base * 2 ** max(failures - 1, 0), ceiling) * random.uniform(0.8, 1.0)  # noqa: S311 - jitter, not security
 
         verb = "retrying" if key == _DISCOVERY_KEY else "reconnecting"
-        if failures == 1:
+        if failures == 0:
+            _LOGGER.debug("%s, %s in %.1fs: %s", message, verb, delay, err)
+        elif failures == 1:
             _LOGGER.warning("%s, %s in %.1fs: %s", message, verb, delay, err, exc_info=exc_info)
         else:
             _LOGGER.debug("%s, %s in %.1fs (attempt %d): %s", message, verb, delay, failures, err)
@@ -191,6 +201,7 @@ class PortainerEventListener:
         filters = {"type": self._event_types} if self._event_types else None
         async for event in self._portainer.get_events(endpoint_id, filters=filters):
             self._reset_failures(endpoint_id)
+            self._streaming.add(endpoint_id)
             result = PortainerEventListenerResult(endpoint_id=endpoint_id, event=event)
             await self._fire_callbacks(result)
 
