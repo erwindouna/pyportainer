@@ -58,6 +58,14 @@ def _has_explicit_registry(image: str) -> bool:
     return first_component == "localhost" or "." in first_component or ":" in first_component
 
 
+def _image_reference(image: str) -> str:
+    """Return the image with a tag, as Docker pulls every tag of an untagged image."""
+    # A registry port (registry:5000/foo) puts a colon in an earlier path segment
+    if "@" in image or ":" in image.rsplit("/", 1)[-1]:
+        return image
+    return f"{image}:latest"
+
+
 def _local_image_digest(image: LocalImageInformation) -> str | None:
     """Return the first usable repository digest for a local image."""
     return next(
@@ -812,7 +820,7 @@ class Portainer:
             An ImageInformation object with the recreated image data.
 
         """
-        params = {"fromImage": image_id}
+        params = {"fromImage": _image_reference(image_id)}
         return await self._request(
             uri=f"endpoints/{endpoint_id}/docker/images/create",
             timeout=timeout.total_seconds(),
@@ -846,7 +854,7 @@ class Portainer:
         async for raw in self._stream_request(
             f"endpoints/{endpoint_id}/docker/images/create",
             method=METH_POST,
-            params={"fromImage": image},
+            params={"fromImage": _image_reference(image)},
         ):
             event = DockerImagePullEvent.from_dict(raw)
             if event.error:

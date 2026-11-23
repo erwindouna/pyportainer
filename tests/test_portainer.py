@@ -745,6 +745,49 @@ async def test_image_pull(
     assert progress.percentage == 100.0
 
 
+@pytest.mark.parametrize(
+    ("image", "expected"),
+    [
+        pytest.param("nginx", "nginx:latest", id="untagged"),
+        pytest.param("registry:5000/foo", "registry:5000/foo:latest", id="registry_port"),
+        pytest.param("nginx:1.27", "nginx:1.27", id="tagged"),
+        pytest.param("nginx@sha256:abc123", "nginx@sha256:abc123", id="digest"),
+    ],
+)
+async def test_image_pull_reference(
+    aresponses: ResponsesMockServer,
+    portainer_client: Portainer,
+    image: str,
+    expected: str,
+) -> None:
+    """Test that an untagged image is pulled as latest instead of every tag."""
+    received_images: list[list[str]] = []
+
+    async def capturing_handler(request: Request) -> aresponses.Response:
+        """Capture the fromImage query params and return the pull progress."""
+        received_images.append(request.query.getall("fromImage"))
+        return aresponses.Response(
+            status=200,
+            headers={"Content-Type": "application/json"},
+            text=load_fixtures("image_pull.ndjson"),
+        )
+
+    for _ in range(2):
+        aresponses.add(
+            "localhost:9000",
+            "/api/endpoints/1/docker/images/create",
+            "POST",
+            capturing_handler,
+            match_querystring=False,
+        )
+
+    async for _ in portainer_client.image_pull(1, image):
+        pass
+    await portainer_client.image_recreate(1, image)
+
+    assert received_images == [[expected], [expected]]
+
+
 async def test_image_pull_error(
     aresponses: ResponsesMockServer,
     portainer_client: Portainer,
